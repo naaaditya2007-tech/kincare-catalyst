@@ -28,6 +28,8 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({ elderProfile, onSucc
         });
         const data = await res.json();
         if (data.success && data.member) {
+          setLoading(false);
+          setPin("");
           onSuccess(data.member.role);
         } else {
           setErrorMsg(data.error || "Incorrect 4-digit passcode");
@@ -48,16 +50,17 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({ elderProfile, onSucc
   const handleDigit = useCallback(
     (digit: string) => {
       if (loading) return;
-      if (pin.length < 4) {
-        const nextPin = pin + digit;
-        setPin(nextPin);
-        setErrorMsg(null);
+      setErrorMsg(null);
+      setPin((prevPin) => {
+        if (prevPin.length >= 4) return prevPin;
+        const nextPin = prevPin + digit;
         if (nextPin.length === 4) {
           verifyPin(nextPin);
         }
-      }
+        return nextPin;
+      });
     },
-    [pin, loading, verifyPin]
+    [loading, verifyPin]
   );
 
   const handleBackspace = useCallback(() => {
@@ -89,6 +92,9 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({ elderProfile, onSucc
 
   // 1-Click Auto Login buttons
   const handleQuickUnlock = async (role: Role, code: string) => {
+    if (loading) return;
+    setLoading(false);
+    setErrorMsg(null);
     setPin(code);
     await verifyPin(code);
   };

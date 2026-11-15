@@ -105,7 +105,7 @@ export default function HomePage() {
           </div>
 
           {/* Passcode Gate Component */}
-          <PasscodeGate elderProfile={elderProfile} onSuccess={handleUnlockSuccess} />
+          <PasscodeGate key={checkingAuth ? "auth" : elderProfile.id || "gate"} elderProfile={elderProfile} onSuccess={handleUnlockSuccess} />
         </div>
       </div>
     </main>

@@ -19,28 +19,32 @@ import {
   Info,
 } from "lucide-react";
 import { KinCareState, Medication, DoseLog } from "@/types/kincare";
+import { useCare } from "@/context/CareContext";
 import { ReasonSelectorModal } from "./ReasonSelectorModal";
 
 interface ElderDashboardProps {
-  state: KinCareState;
-  onDoseAction: (
+  state?: KinCareState;
+  onDoseAction?: (
     medicationId: string,
     status: "TAKEN" | "SKIPPED_WITH_REASON",
     elderNote?: string,
     scheduledTime?: string
   ) => Promise<void>;
-  onRequestCall: () => void;
+  onRequestCall?: () => void;
 }
 
-export const ElderDashboard: React.FC<ElderDashboardProps> = ({
-  state,
-  onDoseAction,
-  onRequestCall,
-}) => {
+export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
+  const care = useCare();
+  const state = props.state || care.state;
+  const onDoseAction = props.onDoseAction || care.logDoseAction;
+  const onRequestCall = props.onRequestCall || care.requestFamilyCall;
+
   const [selectedMedForSkip, setSelectedMedForSkip] = useState<Medication | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [callRequested, setCallRequested] = useState(false);
   const [takingMedId, setTakingMedId] = useState<string | null>(null);
+
+  if (!state) return null;
 
   const elder = state.elderProfile;
   const todayStr = new Date().toISOString().split("T")[0];
@@ -359,11 +363,11 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
         layout
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         key={med.id}
-        className={`rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 relative overflow-hidden ${
+        className={`bg-white rounded-2xl p-8 shadow-sm transition-all duration-300 relative overflow-hidden ${
           isCurrentlyTaking
-            ? "bg-emerald-50/70 scale-[1.01]"
+            ? "ring-2 ring-teal-500/40 scale-[1.01]"
             : isTaken
-            ? "bg-emerald-50/25"
+            ? "bg-slate-50/70"
             : isSkipped
             ? "bg-amber-50/30"
             : "bg-white"
@@ -371,81 +375,83 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
       >
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           {/* Left Details */}
-          <div className="space-y-3 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-bold bg-slate-100 text-slate-700 px-3 py-1 rounded-full flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-teal-600" />
+          <div className="space-y-4 flex-1">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="text-sm sm:text-base font-bold bg-slate-100 text-slate-800 px-4 py-1.5 rounded-full flex items-center gap-2">
+                <Clock className="w-4 h-4 text-[#0D9488]" />
                 {med.scheduledTimes.join(", ")}
               </span>
 
-              <span className="text-xs font-semibold bg-teal-50 text-teal-800 px-3 py-1 rounded-full">
+              <span className="text-sm sm:text-base font-bold bg-teal-50 text-teal-900 px-4 py-1.5 rounded-full border border-teal-200/60">
                 {med.instructions}
               </span>
 
               {med.conflictNote && (
-                <span className="text-xs font-semibold bg-amber-50 text-amber-800 px-3 py-1 rounded-full flex items-center gap-1">
-                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                  Spacing Guard
+                <span className="text-sm sm:text-base font-bold bg-amber-50 text-amber-900 px-4 py-1.5 rounded-full flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 text-amber-600" />
+                  Spacing Guard Active
                 </span>
               )}
             </div>
 
             <div>
-              <h3 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
-                <Pill className="w-6 h-6 text-teal-600 shrink-0" />
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+                <Pill className="w-7 h-7 text-[#0D9488] shrink-0" />
                 {med.name}
               </h3>
-              <p className="text-base sm:text-lg text-slate-600 mt-1 font-normal">
-                Dosage: <strong>{med.dosage}</strong> ({med.form})
+              <p className="text-lg sm:text-xl text-slate-700 mt-2 font-normal leading-relaxed">
+                Dosage: <strong className="text-slate-900 font-bold">{med.dosage}</strong> ({med.form})
                 {med.purpose ? ` • ${med.purpose}` : ""}
               </p>
             </div>
 
             {/* Spacing Caution Note if present */}
             {med.conflictNote && (
-              <div className="text-xs sm:text-sm bg-amber-50 rounded-xl p-3.5 text-amber-900 flex items-start gap-2.5">
-                <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="text-base sm:text-lg bg-amber-50 rounded-2xl p-4 text-amber-900 flex items-start gap-3 leading-relaxed">
+                <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                 <span>{med.conflictNote}</span>
               </div>
             )}
 
             {/* Elder's Reason Note if postponed */}
             {isSkipped && doseLog?.elderNote && (
-              <div className="text-xs sm:text-sm bg-amber-50 rounded-xl p-3.5 text-amber-950 flex items-start gap-2">
-                <Clock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+              <div className="text-base sm:text-lg bg-amber-50 rounded-2xl p-4 text-amber-950 flex items-start gap-3 leading-relaxed">
+                <Clock className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
                 <div>
-                  <strong>Postponed with reason:</strong> &ldquo;{doseLog.elderNote}&rdquo;
+                  <strong className="text-amber-950 font-bold">Postponed with reason:</strong> &ldquo;{doseLog.elderNote}&rdquo;
                 </div>
               </div>
             )}
           </div>
 
-          {/* Right Action Buttons (Pill-shaped, 56px+ target) */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+          {/* Right Action Buttons (Pill-shaped, massive tactile target) */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 shrink-0">
             {isTaken ? (
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className="h-14 px-8 rounded-full bg-emerald-600 text-white font-bold text-base flex items-center justify-center gap-2 shadow-xs"
+                className="h-16 px-8 rounded-full bg-emerald-600 text-white font-extrabold text-lg flex items-center justify-center gap-3 shadow-sm"
               >
-                <CheckCircle2 className="w-5 h-5" />
+                <CheckCircle2 className="w-6 h-6" />
                 <span>
                   Taken {doseLog?.takenAt ? `at ${new Date(doseLog.takenAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "Today"}
                 </span>
               </motion.div>
             ) : isSkipped ? (
-              <div className="flex flex-col sm:flex-row gap-2">
-                <div className="h-14 px-6 rounded-full bg-amber-100 text-amber-900 font-bold text-sm flex items-center justify-center gap-2">
-                  <Clock className="w-4 h-4 text-amber-700" />
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="h-16 px-7 rounded-full bg-amber-50 text-amber-900 font-bold text-base sm:text-lg flex items-center justify-center gap-2.5">
+                  <Clock className="w-5 h-5 text-amber-700" />
                   <span>Postponed / Reason Logged</span>
                 </div>
                 <button
+                  type="button"
                   onClick={() => handleTakeDose(med)}
                   disabled={isCurrentlyTaking}
-                  className="h-14 px-6 rounded-full bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm transition shadow-xs active:scale-98 disabled:opacity-50"
+                  className="h-16 px-8 rounded-full bg-[#0D9488] hover:bg-[#0F766E] text-white font-extrabold text-base sm:text-lg transition shadow-sm active:scale-98 disabled:opacity-50 flex items-center justify-center gap-2.5"
                 >
-                  Take Now Instead
+                  <Check className="w-5 h-5 stroke-[3]" />
+                  <span>Take Now</span>
                 </button>
               </div>
             ) : (
@@ -455,34 +461,34 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
                   type="button"
                   onClick={() => setSelectedMedForSkip(med)}
                   disabled={isCurrentlyTaking}
-                  className="h-14 px-7 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-base transition active:scale-98 disabled:opacity-50"
+                  className="h-16 px-8 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-base sm:text-lg transition active:scale-98 disabled:opacity-50"
                 >
                   Not Now / Skip
                 </button>
 
-                {/* Primary Pill Button: I Took This with satisfying checkmark animation */}
+                {/* Primary Pill Button: Take Now in deep medical teal bg-[#0D9488] */}
                 <motion.button
                   type="button"
                   onClick={() => handleTakeDose(med)}
                   disabled={isCurrentlyTaking}
-                  animate={isCurrentlyTaking ? { scale: [1, 1.05, 1], backgroundColor: "#059669" } : {}}
+                  animate={isCurrentlyTaking ? { scale: [1, 1.05, 1], backgroundColor: "#0F766E" } : {}}
                   transition={{ duration: 0.35 }}
-                  className="h-14 px-8 rounded-full bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-base transition shadow-sm flex items-center justify-center gap-2.5 active:scale-98 disabled:opacity-90"
+                  className="h-16 px-9 rounded-full bg-[#0D9488] hover:bg-[#0F766E] text-white font-extrabold text-lg sm:text-xl transition shadow-sm flex items-center justify-center gap-3 active:scale-98 disabled:opacity-90"
                 >
                   {isCurrentlyTaking ? (
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: "spring", stiffness: 500, damping: 20 }}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2.5"
                     >
                       <Check className="w-6 h-6 stroke-[3.5] text-white" />
-                      <span>Logging...</span>
+                      <span>Recording Dose...</span>
                     </motion.div>
                   ) : (
                     <>
-                      <Check className="w-5 h-5 stroke-[3]" />
-                      <span>I Took This</span>
+                      <Check className="w-6 h-6 stroke-[3.5]" />
+                      <span>Take Now</span>
                     </>
                   )}
                 </motion.button>

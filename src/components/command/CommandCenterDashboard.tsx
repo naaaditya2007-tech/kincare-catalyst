@@ -22,37 +22,41 @@ import {
 } from "lucide-react";
 import { KinCareState, Medication, Role, CareCircleMember } from "@/types/kincare";
 import { detectTimingConflicts } from "@/lib/timingGuard";
+import { useCare } from "@/context/CareContext";
 import { MedicationModal } from "./MedicationModal";
 import { ClinicalBriefModal } from "./ClinicalBriefModal";
 import { CareCircleModal } from "./CareCircleModal";
 
 interface CommandCenterDashboardProps {
-  state: KinCareState;
-  currentRole: Role;
-  onUpdateMedication: (action: "ADD" | "UPDATE" | "TOGGLE_ACTIVE" | "DELETE", med: Partial<Medication>) => Promise<void>;
-  onAddDoctorQuestion: (question: string) => Promise<void>;
-  onDeleteDoctorQuestion: (index: number) => Promise<void>;
-  onUpdatePasscode: (memberId: string, newPasscode: string) => Promise<void>;
-  onAddMember: (member: Partial<CareCircleMember>) => Promise<void>;
-  onTriggerEscalation: () => void;
+  state?: KinCareState;
+  currentRole?: Role;
+  onUpdateMedication?: (action: "ADD" | "UPDATE" | "TOGGLE_ACTIVE" | "DELETE", med: Partial<Medication>) => Promise<void>;
+  onAddDoctorQuestion?: (question: string) => Promise<void>;
+  onDeleteDoctorQuestion?: (index: number) => Promise<void>;
+  onUpdatePasscode?: (memberId: string, newPasscode: string) => Promise<void>;
+  onAddMember?: (member: Partial<CareCircleMember>) => Promise<void>;
+  onTriggerEscalation?: () => void;
 }
 
-export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
-  state,
-  currentRole,
-  onUpdateMedication,
-  onAddDoctorQuestion,
-  onDeleteDoctorQuestion,
-  onUpdatePasscode,
-  onAddMember,
-  onTriggerEscalation,
-}) => {
+export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (props) => {
+  const care = useCare();
+  const state = props.state || care.state;
+  const currentRole = props.currentRole || care.currentRole;
+  const onUpdateMedication = props.onUpdateMedication || care.updateMedication;
+  const onAddDoctorQuestion = props.onAddDoctorQuestion || care.addDoctorQuestion;
+  const onDeleteDoctorQuestion = props.onDeleteDoctorQuestion || care.deleteDoctorQuestion;
+  const onUpdatePasscode = props.onUpdatePasscode || care.updatePasscode;
+  const onAddMember = props.onAddMember || care.addCareCircleMember;
+  const onTriggerEscalation = props.onTriggerEscalation || (() => care.setEmailCenterOpen(true));
+
   const [activeTab, setActiveTab] = useState<"medications" | "adherence" | "appointments">("medications");
   const [medModalOpen, setMedModalOpen] = useState(false);
   const [medToEdit, setMedToEdit] = useState<Medication | null>(null);
   const [briefModalOpen, setBriefModalOpen] = useState(false);
   const [circleModalOpen, setCircleModalOpen] = useState(false);
   const [newQuestionText, setNewQuestionText] = useState("");
+
+  if (!state) return null;
 
   const elder = state.elderProfile;
   const timingConflicts = detectTimingConflicts(state.medications);
