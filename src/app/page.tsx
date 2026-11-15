@@ -17,7 +17,7 @@ export default function HomePage() {
       .then((res) => res.json())
       .then((data) => {
         if (data.authenticated && data.session) {
-          router.push("/dashboard");
+          router.replace("/dashboard");
         } else {
           setCheckingAuth(false);
         }
@@ -40,9 +40,9 @@ export default function HomePage() {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="h-screen w-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center animate-pulse shadow-sm">
+          <div className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center animate-pulse shadow-xs">
             <Heart className="w-5 h-5 fill-white" />
           </div>
           <span className="text-xs font-medium text-slate-500 tracking-wider uppercase">Loading KinCare...</span>
@@ -52,7 +52,7 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen w-full bg-white grid grid-cols-1 lg:grid-cols-2">
+    <main className="h-screen w-full bg-white grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
       {/* Left Column: Full-Height Raw Image with Human Connection */}
       <div className="relative hidden lg:block h-full w-full overflow-hidden bg-slate-900">
         {/* Calming, warm human connection / care scene */}
@@ -67,7 +67,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-slate-950/30" />
 
         {/* Top Floating Logo Pill */}
-        <div className="absolute top-10 left-10 z-10 flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white">
+        <div className="absolute top-8 left-8 z-10 flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white">
           <div className="w-6 h-6 rounded-full bg-teal-500 text-white flex items-center justify-center">
             <Heart className="w-3.5 h-3.5 fill-white" />
           </div>
@@ -77,7 +77,7 @@ export default function HomePage() {
         </div>
 
         {/* Bottom Editorial Caption */}
-        <div className="absolute bottom-12 left-12 right-12 z-10 max-w-lg space-y-3">
+        <div className="absolute bottom-10 left-10 right-10 z-10 max-w-lg space-y-2.5">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-300/30 text-teal-200 text-xs font-medium">
             <Sparkles className="w-3.5 h-3.5 text-teal-300" />
             <span>Dignity-Preserving Care Technology</span>
@@ -87,17 +87,17 @@ export default function HomePage() {
             &ldquo;Autonomy is not about managing alone. It is about staying in control of every decision.&rdquo;
           </h2>
 
-          <p className="text-sm text-slate-300 font-light leading-relaxed">
+          <p className="text-xs xl:text-sm text-slate-300 font-light leading-relaxed">
             Protecting Raghavan Iyer with verified dosage timing, proactive family alerts, and gentle audio reminders.
           </p>
         </div>
       </div>
 
-      {/* Right Column: Pure White Canvas with Massive Whitespace */}
-      <div className="min-h-screen bg-white p-8 sm:p-12 lg:p-20 xl:p-24 flex flex-col justify-center items-center">
-        <div className="w-full max-w-md mx-auto">
+      {/* Right Column: Exactly h-full with Centered Content and Zero Scroll on Desktop */}
+      <div className="h-full w-full bg-white p-6 sm:p-10 lg:p-12 xl:p-16 flex flex-col justify-center items-center overflow-hidden">
+        <div className="w-full max-w-sm mx-auto my-auto flex flex-col justify-center">
           {/* Mobile Brand Header */}
-          <div className="flex lg:hidden items-center gap-2.5 mb-8 justify-center">
+          <div className="flex lg:hidden items-center gap-2.5 mb-6 justify-center">
             <div className="w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center shadow-xs">
               <Heart className="w-4 h-4 fill-white" />
             </div>

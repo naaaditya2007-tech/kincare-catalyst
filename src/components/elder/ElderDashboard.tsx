@@ -154,13 +154,13 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-10">
       {/* Elder Greeting Banner (Apple Health Pure Card) */}
-      <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-xs ring-1 ring-slate-900/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <div className="text-xs font-semibold uppercase tracking-wider text-teal-700 flex items-center gap-1.5 mb-2">
             <Sparkles className="w-4 h-4 text-teal-600" />
             Elder Companion Mode
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
             Good day, {elder.name}
           </h1>
           <p className="text-base sm:text-lg text-slate-500 mt-1 font-normal">
@@ -176,6 +176,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
 
         {/* Read Schedule Aloud Button (Full Pill) */}
         <button
+          type="button"
           onClick={handleReadScheduleAloud}
           className={`h-14 sm:h-16 px-8 rounded-full font-bold text-base flex items-center justify-center gap-3 transition shadow-xs active:scale-98 shrink-0 ${
             isSpeaking
@@ -198,7 +199,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
       </div>
 
       {/* Quick Ping: Request Family Call (Pure Card) */}
-      <div className="bg-white rounded-3xl p-7 sm:p-8 shadow-xs ring-1 ring-slate-900/5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-5">
+      <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-5">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
             <PhoneCall className="w-5 h-5" />
@@ -212,6 +213,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
         </div>
 
         <button
+          type="button"
           onClick={handleCallClick}
           disabled={callRequested}
           className={`h-14 px-8 rounded-full font-bold text-base flex items-center justify-center gap-2.5 transition shrink-0 active:scale-98 shadow-xs ${
@@ -287,7 +289,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
 
       {/* Upcoming Doctor Visit Card (Apple Health Pure Card) */}
       {nextAppt && (
-        <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-xs ring-1 ring-slate-900/5 space-y-4">
+        <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-4">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-teal-700">
             <Calendar className="w-4 h-4 text-teal-600" />
             <span>Upcoming Doctor Consultation</span>
@@ -295,7 +297,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">
                 {nextAppt.doctorName}
               </h3>
               <p className="text-base text-slate-500 mt-1 font-normal">
@@ -315,7 +317,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
               </div>
             </div>
 
-            <div className="bg-slate-50 rounded-2xl p-4.5 max-w-sm ring-1 ring-slate-900/5">
+            <div className="bg-slate-50 rounded-xl p-4 max-w-sm">
               <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
                 Clinical Focus Note:
               </div>
@@ -357,14 +359,14 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
         layout
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         key={med.id}
-        className={`rounded-3xl p-7 sm:p-9 shadow-xs ring-1 transition-all duration-300 relative overflow-hidden ${
+        className={`rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 relative overflow-hidden ${
           isCurrentlyTaking
-            ? "bg-emerald-50/50 ring-4 ring-emerald-500/40 scale-[1.01]"
+            ? "bg-emerald-50/70 scale-[1.01]"
             : isTaken
-            ? "bg-emerald-50/15 ring-emerald-500/20"
+            ? "bg-emerald-50/25"
             : isSkipped
-            ? "bg-amber-50/15 ring-amber-500/20"
-            : "bg-white ring-slate-900/5 hover:ring-slate-900/15"
+            ? "bg-amber-50/30"
+            : "bg-white"
         }`}
       >
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -376,12 +378,12 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
                 {med.scheduledTimes.join(", ")}
               </span>
 
-              <span className="text-xs font-semibold bg-teal-50 text-teal-800 px-3 py-1 rounded-full border border-teal-200/80">
+              <span className="text-xs font-semibold bg-teal-50 text-teal-800 px-3 py-1 rounded-full">
                 {med.instructions}
               </span>
 
               {med.conflictNote && (
-                <span className="text-xs font-semibold bg-amber-50 text-amber-800 px-3 py-1 rounded-full border border-amber-200 flex items-center gap-1">
+                <span className="text-xs font-semibold bg-amber-50 text-amber-800 px-3 py-1 rounded-full flex items-center gap-1">
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
                   Spacing Guard
                 </span>
@@ -389,7 +391,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
             </div>
 
             <div>
-              <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
+              <h3 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
                 <Pill className="w-6 h-6 text-teal-600 shrink-0" />
                 {med.name}
               </h3>
@@ -401,7 +403,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
 
             {/* Spacing Caution Note if present */}
             {med.conflictNote && (
-              <div className="text-xs sm:text-sm bg-amber-50/70 border border-amber-200/70 rounded-2xl p-3.5 text-amber-900 flex items-start gap-2.5">
+              <div className="text-xs sm:text-sm bg-amber-50 rounded-xl p-3.5 text-amber-900 flex items-start gap-2.5">
                 <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <span>{med.conflictNote}</span>
               </div>
@@ -409,7 +411,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
 
             {/* Elder's Reason Note if postponed */}
             {isSkipped && doseLog?.elderNote && (
-              <div className="text-xs sm:text-sm bg-amber-50 border border-amber-200 rounded-2xl p-3.5 text-amber-950 flex items-start gap-2">
+              <div className="text-xs sm:text-sm bg-amber-50 rounded-xl p-3.5 text-amber-950 flex items-start gap-2">
                 <Clock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
                 <div>
                   <strong>Postponed with reason:</strong> &ldquo;{doseLog.elderNote}&rdquo;

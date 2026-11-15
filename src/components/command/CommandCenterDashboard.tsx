@@ -127,7 +127,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
       {/* Top KPI Strip (Apple Health Massive Bold Numbers & Whitespace) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* KPI 1: Adherence % */}
-        <div className="bg-white rounded-3xl p-7 sm:p-8 shadow-xs ring-1 ring-slate-900/5 flex flex-col justify-between">
+        <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between text-slate-400 mb-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -136,7 +136,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
               <Activity className="w-4 h-4 text-teal-600" />
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
+              <span className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900">
                 {adherencePercent}%
               </span>
               <span className="text-xs font-medium text-slate-500">
@@ -153,13 +153,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
         </div>
 
         {/* KPI 2: Pill Stock Alerts */}
-        <div
-          className={`rounded-3xl p-7 sm:p-8 shadow-xs ring-1 transition flex flex-col justify-between ${
-            lowStockMeds.length > 0
-              ? "bg-amber-50/30 ring-amber-500/20"
-              : "bg-white ring-slate-900/5"
-          }`}
-        >
+        <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between text-slate-400 mb-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -168,7 +162,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
               <AlertTriangle className={`w-4 h-4 ${lowStockMeds.length > 0 ? "text-amber-600" : "text-slate-400"}`} />
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
+              <span className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900">
                 {lowStockMeds.length}
               </span>
               <span className="text-xs font-medium text-slate-500">
@@ -184,7 +178,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
         </div>
 
         {/* KPI 3: Next Appointment Countdown */}
-        <div className="bg-white rounded-3xl p-7 sm:p-8 shadow-xs ring-1 ring-slate-900/5 flex flex-col justify-between">
+        <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between text-slate-400 mb-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -193,7 +187,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
               <Calendar className="w-4 h-4 text-teal-600" />
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
+              <span className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900">
                 {daysUntilAppt > 0 ? `In ${daysUntilAppt}d` : "Today"}
               </span>
               <span className="text-xs font-medium text-slate-500 truncate max-w-[120px]">
@@ -207,7 +201,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
         </div>
 
         {/* KPI 4: Active Care Circle */}
-        <div className="bg-white rounded-3xl p-7 sm:p-8 shadow-xs ring-1 ring-slate-900/5 flex flex-col justify-between">
+        <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between text-slate-400 mb-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -216,7 +210,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
               <Users className="w-4 h-4 text-teal-600" />
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
+              <span className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900">
                 {state.careCircle.length}
               </span>
               <span className="text-xs font-medium text-slate-500">members</span>
@@ -230,8 +224,8 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
 
       {/* Killer Feature: Autonomous Timing Guard Notice (Hero Amber Card) */}
       {timingConflicts.length > 0 && (
-        <div className="bg-gradient-to-r from-amber-500/10 via-amber-50/50 to-white rounded-3xl p-8 sm:p-9 ring-1 ring-amber-500/30 shadow-xs space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-amber-200/60">
+        <div className="bg-amber-50 rounded-2xl p-6 text-amber-900 space-y-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-2">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
                 <ShieldAlert className="w-5 h-5" />
@@ -240,23 +234,23 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
                 <span className="text-[11px] font-bold uppercase tracking-wider text-amber-900 bg-amber-200/70 px-2.5 py-0.5 rounded-full inline-block">
                   Autonomous Timing Guard • Active Clinical Safeguard
                 </span>
-                <h3 className="text-xl font-extrabold text-slate-900 tracking-tight mt-1">
+                <h3 className="text-xl font-bold text-amber-950 tracking-tight mt-1">
                   Absorption Interaction: Shelcal-HD (Calcium) blocks Thyronorm (Levothyroxine)
                 </h3>
               </div>
             </div>
 
-            <span className="text-xs font-bold text-amber-900 bg-amber-100 px-3.5 py-1.5 rounded-full ring-1 ring-amber-300 shrink-0 self-start md:self-auto">
+            <span className="text-xs font-bold text-amber-900 bg-amber-100/90 px-3.5 py-1.5 rounded-full shrink-0 self-start md:self-auto">
               Patient Actively Protected
             </span>
           </div>
 
-          <p className="text-sm text-slate-700 leading-relaxed font-normal">
+          <p className="text-sm text-amber-900/90 leading-relaxed font-normal">
             Calcium carbonate in <strong>Shelcal-HD (500mg)</strong> binds with synthetic thyroid hormone in <strong>Thyronorm (50mcg)</strong> in the gastrointestinal tract, causing up to <strong>50% loss in therapeutic bioavailability</strong>. Rather than triggering reactive alarms, KinCare&apos;s timing guard automatically enforces a safe administration schedule:
           </p>
 
           {/* Visual Safe Window Buffer */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/80 rounded-2xl p-5 ring-1 ring-amber-500/20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/90 rounded-xl p-5 shadow-xs">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-teal-50 text-teal-700 font-mono font-bold text-xs flex items-center justify-center shrink-0">
                 07:00
@@ -268,12 +262,12 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-700 font-mono font-bold text-xs flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-800 font-mono font-bold text-xs flex items-center justify-center shrink-0">
                 13:30
               </div>
               <div>
                 <div className="text-xs font-bold text-slate-900">Shelcal-HD (Calcium + Vit D3 500mg)</div>
-                <div className="text-[11px] text-amber-700 font-medium">After Lunch • 6h 30m safe spacing window maintained</div>
+                <div className="text-[11px] text-amber-800 font-medium">After Lunch • 6h 30m safe spacing window maintained</div>
               </div>
             </div>
           </div>
@@ -342,17 +336,15 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
               return (
                 <div
                   key={med.id}
-                  className={`bg-white rounded-3xl p-7 sm:p-8 shadow-xs ring-1 transition flex flex-col justify-between ${
+                  className={`bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition flex flex-col justify-between ${
                     !med.active
-                      ? "opacity-60 ring-slate-900/5 bg-slate-50"
-                      : isLow
-                      ? "ring-amber-500/20"
-                      : "ring-slate-900/5 hover:ring-slate-900/15"
+                      ? "opacity-60 bg-slate-50"
+                      : ""
                   }`}
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-teal-800 bg-teal-50 px-3 py-1 rounded-full border border-teal-200/60">
+                      <span className="text-xs font-bold text-teal-800 bg-teal-50 px-3 py-1 rounded-full">
                         {med.instructions}
                       </span>
                       <span className="text-xs font-mono font-medium text-slate-400">
@@ -370,16 +362,16 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
                     </div>
 
                     {med.conflictNote && (
-                      <div className="text-[11px] bg-amber-50 text-amber-900 rounded-2xl p-3 border border-amber-200/60 leading-relaxed">
+                      <div className="text-[11px] bg-amber-50 text-amber-900 rounded-xl p-3 leading-relaxed">
                         {med.conflictNote}
                       </div>
                     )}
                   </div>
 
-                  <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between">
                     <div>
                       <div className="text-[10px] uppercase font-bold text-slate-400">Inventory</div>
-                      <div className="text-base font-extrabold text-slate-900 flex items-center gap-1.5">
+                      <div className="text-base font-bold text-slate-900 flex items-center gap-1.5">
                         <span className={isLow ? "text-amber-600" : "text-slate-900"}>
                           {med.stockRemaining} units
                         </span>
@@ -393,6 +385,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
 
                     <div className="flex items-center gap-1.5">
                       <button
+                        type="button"
                         onClick={() => handleRestock(med, 30)}
                         title="Add 30 units to inventory"
                         className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-full text-xs font-semibold transition"
@@ -400,6 +393,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
                         +30
                       </button>
                       <button
+                        type="button"
                         onClick={() => {
                           setMedToEdit(med);
                           setMedModalOpen(true);
@@ -410,6 +404,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => onUpdateMedication("TOGGLE_ACTIVE", { id: med.id })}
                         title={med.active ? "Pause prescription" : "Resume prescription"}
                         className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-full transition"
@@ -417,6 +412,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
                         {med.active ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
                       </button>
                       <button
+                        type="button"
                         onClick={() => onUpdateMedication("DELETE", { id: med.id })}
                         title="Delete prescription"
                         className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition"
@@ -448,7 +444,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
             </button>
           </div>
 
-          <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xs ring-1 ring-slate-900/5 divide-y divide-slate-100">
+          <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] divide-y divide-slate-100">
             {state.doseLogs.map((log) => {
               const isTaken = log.status === "TAKEN";
               const isSkipped = log.status === "SKIPPED_WITH_REASON";
@@ -480,7 +476,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
 
                     {/* Empathy-driven Elder Note callout */}
                     {log.elderNote && (
-                      <div className="text-xs sm:text-sm text-slate-700 bg-slate-50 rounded-2xl p-3 flex items-start gap-2 ring-1 ring-slate-900/5">
+                      <div className="text-xs sm:text-sm text-slate-700 bg-slate-50 rounded-xl p-3.5 flex items-start gap-2">
                         <MessageSquare className="w-3.5 h-3.5 text-teal-600 shrink-0 mt-0.5" />
                         <div>
                           <strong className="text-slate-900">Elder Comment:</strong> &ldquo;{log.elderNote}&rdquo;
@@ -508,11 +504,11 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
       {/* Tab 3: Appointments & Doctor Prep */}
       {activeTab === "appointments" && (
         <div className="space-y-6">
-          <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-xs ring-1 ring-slate-900/5 space-y-6">
+          <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-teal-700">Next Consultation</span>
-                <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight mt-1">
+                <h3 className="text-2xl font-bold text-slate-900 tracking-tight mt-1">
                   {nextAppt?.doctorName || "Dr. Arvind Swaminathan"}
                 </h3>
                 <p className="text-sm text-slate-500 font-normal">
@@ -521,6 +517,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
               </div>
 
               <button
+                type="button"
                 onClick={() => setBriefModalOpen(true)}
                 className="px-5 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-2"
               >
@@ -541,7 +538,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
                 {(nextAppt?.checklistQuestions || []).map((q, idx) => (
                   <div
                     key={idx}
-                    className="p-4 bg-slate-50 rounded-2xl flex items-center justify-between gap-3 text-xs sm:text-sm ring-1 ring-slate-900/5"
+                    className="p-4 bg-slate-50 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm"
                   >
                     <div className="flex items-start gap-3">
                       <span className="font-bold text-teal-700">Q{idx + 1}.</span>
@@ -549,6 +546,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
                     </div>
 
                     <button
+                      type="button"
                       onClick={() => onDeleteDoctorQuestion(idx)}
                       className="p-1.5 text-slate-400 hover:text-rose-600 rounded-full transition"
                       title="Remove question"
