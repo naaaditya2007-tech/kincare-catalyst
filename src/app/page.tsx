@@ -7,6 +7,16 @@ import { DEFAULT_ELDER_PROFILE } from "@/lib/constants";
 import { ElderProfile } from "@/types/kincare";
 import { Heart, Sparkles } from "lucide-react";
 
+/**
+ * HomePage Component
+ * 
+ * Serves as the primary landing gateway and authentication screen for KinCare.
+ * Automatically checks for existing active sessions via `/api/auth` and redirects
+ * to `/dashboard` if authenticated; otherwise renders the multi-tenant PasscodeGate
+ * with full elder and care circle profile selection.
+ * 
+ * @returns {React.ReactElement} The rendered landing page with PasscodeGate
+ */
 export default function HomePage() {
   const router = useRouter();
   const [elderProfile, setElderProfile] = useState<ElderProfile>(DEFAULT_ELDER_PROFILE);
@@ -34,6 +44,10 @@ export default function HomePage() {
       .catch(() => {});
   }, [router]);
 
+  /**
+   * Callback invoked upon successful passcode verification.
+   * Seamlessly transitions authenticated user to the main companion/admin dashboard.
+   */
   const handleUnlockSuccess = () => {
     router.push("/dashboard");
   };

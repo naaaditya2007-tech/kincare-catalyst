@@ -12,6 +12,16 @@ interface PasscodeGateProps {
   onPatientChange?: (newProfile: ElderProfile) => void;
 }
 
+/**
+ * PasscodeGate Component
+ * 
+ * Secure entry point for the KinCare multi-tenant platform.
+ * Provides a tactile 4-digit numeric keypad, dynamic role detection,
+ * patient profile selection, and smooth onboarding modal access.
+ * 
+ * @param {PasscodeGateProps} props - Component properties
+ * @returns {React.ReactElement} The rendered PasscodeGate view
+ */
 export const PasscodeGate: React.FC<PasscodeGateProps> = ({
   elderProfile,
   onSuccess,
@@ -70,6 +80,13 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({
   const caretakerPin =
     currentRecord?.careCircle.find((m) => m.role === "CARETAKER")?.passcode || "3333";
 
+  /**
+   * Verifies the 4-digit passcode against the backend auth endpoint.
+   * On success, routes the user to their designated role dashboard.
+   * 
+   * @param {string} passcodeToTest - The 4-digit PIN string to validate
+   * @returns {Promise<void>}
+   */
   const verifyPin = useCallback(
     async (passcodeToTest: string) => {
       setLoading(true);
@@ -104,6 +121,12 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({
     [onSuccess, selectedPatient.id]
   );
 
+  /**
+   * Handles user numeric digit input from physical keyboard or virtual keypad.
+   * Triggers PIN verification automatically once 4 digits are accumulated.
+   * 
+   * @param {string} digit - The single digit character ("0"-"9")
+   */
   const handleDigit = useCallback(
     (digit: string) => {
       if (loading) return;
@@ -120,12 +143,18 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({
     [loading, verifyPin]
   );
 
+  /**
+   * Deletes the most recently entered digit from the PIN buffer.
+   */
   const handleBackspace = useCallback(() => {
     if (loading) return;
     setPin((prev) => prev.slice(0, -1));
     setErrorMsg(null);
   }, [loading]);
 
+  /**
+   * Clears the entire PIN buffer and resets any error indicator state.
+   */
   const handleClear = useCallback(() => {
     if (loading) return;
     setPin("");
@@ -147,7 +176,13 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleDigit, handleBackspace, handleClear]);
 
-  // 1-Click Auto Login with dynamic PINs
+  /**
+   * 1-Click quick login handler for demo testing and hackathon judging.
+   * Populates the PIN and triggers instant authentication.
+   * 
+   * @param {Role} role - The target role to unlock
+   * @param {string} code - The 4-digit PIN associated with that role
+   */
   const handleQuickUnlock = async (role: Role, code: string) => {
     if (loading) return;
     setLoading(false);
@@ -156,6 +191,11 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({
     await verifyPin(code);
   };
 
+  /**
+   * Selects an active elder patient from the dropdown list.
+   * 
+   * @param {ElderProfile} patient - The selected elder profile
+   */
   const handleSelectPatient = (patient: ElderProfile) => {
     setSelectedPatient(patient);
     setPatientDropdownOpen(false);
@@ -164,6 +204,11 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({
     if (onPatientChange) onPatientChange(patient);
   };
 
+  /**
+   * Registers a new elder profile and updates local multi-patient lists.
+   * 
+   * @param {PatientOnboardingInput} input - New patient registration payload
+   */
   const handleOnboardNewPatient = async (input: PatientOnboardingInput) => {
     try {
       const res = await fetch("/api/kincare", {

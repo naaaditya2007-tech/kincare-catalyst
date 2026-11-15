@@ -12,6 +12,15 @@ export interface SessionPayload {
   issuedAt: number;
 }
 
+/**
+ * Finds a Care Circle member by matching their unique 4-digit passcode.
+ * Supports multi-patient scoping: matches within the specified patient record,
+ * or falls back to the currently active elder patient in the store.
+ * 
+ * @param {string} passcode - The 4-digit PIN entered by the user (e.g., "1111", "2222")
+ * @param {string} [patientId] - Optional patient ID to scope authentication
+ * @returns {{ member: CareCircleMember; patientId: string } | null} The authenticated member and patient ID, or null if invalid
+ */
 export function findMemberByPasscode(passcode: string, patientId?: string): { member: CareCircleMember; patientId: string } | null {
   const store = getMultiPatientStore();
   const targetPatient = patientId
@@ -26,6 +35,14 @@ export function findMemberByPasscode(passcode: string, patientId?: string): { me
   return null;
 }
 
+/**
+ * Finds a Care Circle member based on their role within a patient record.
+ * Used for 1-click demo logins and quick role switches in the UI.
+ * 
+ * @param {Role} role - The target role ("ELDER" | "FAMILY_ADMIN" | "CARETAKER")
+ * @param {string} [patientId] - Optional patient ID to scope member lookup
+ * @returns {{ member: CareCircleMember; patientId: string } | null} The resolved member and patient ID, or null
+ */
 export function findMemberByRole(role: Role, patientId?: string): { member: CareCircleMember; patientId: string } | null {
   const store = getMultiPatientStore();
   const targetPatient = patientId
@@ -40,11 +57,24 @@ export function findMemberByRole(role: Role, patientId?: string): { member: Care
   return null;
 }
 
+/**
+ * Retrieves a Care Circle member by their unique ID within the active patient state.
+ * 
+ * @param {string} id - The unique member identifier (e.g., "member_elder_01")
+ * @returns {CareCircleMember | null} The member object if found, otherwise null
+ */
 export function findMemberById(id: string): CareCircleMember | null {
   const state = getKinCareState();
   return state.careCircle.find((m) => m.id === id) || null;
 }
 
+/**
+ * Serializes and encodes a session payload into a secure Base64 token for cookie transport.
+ * 
+ * @param {CareCircleMember} member - The authenticated Care Circle member
+ * @param {string} [patientId] - Optional ID of the elder patient associated with this session
+ * @returns {string} The Base64 encoded session token
+ */
 export function encodeSession(member: CareCircleMember, patientId?: string): string {
   const payload: SessionPayload = {
     memberId: member.id,
@@ -57,6 +87,12 @@ export function encodeSession(member: CareCircleMember, patientId?: string): str
   return Buffer.from(JSON.stringify(payload)).toString("base64");
 }
 
+/**
+ * Decodes and validates a session token string, reconstructing the active auth session.
+ * 
+ * @param {string} token - The Base64 encoded token from the session cookie
+ * @returns {AuthSession | null} The verified AuthSession object, or null if invalid/corrupt
+ */
 export function decodeSession(token: string): AuthSession | null {
   try {
     const raw = Buffer.from(token, "base64").toString("utf-8");

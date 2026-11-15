@@ -37,6 +37,13 @@ const STORE_FILE_PATH = path.join(os.tmpdir(), "kincare_multi_patient_store.json
 
 let inMemoryStore: MultiPatientStore | null = null;
 
+/**
+ * Instantiates the default patient records for initial application bootstrap.
+ * Seeds both primary patient Raghavan Iyer and secondary patient Kavita Ramanathan
+ * with realistic clinical histories, timetables, and active Care Circles.
+ * 
+ * @returns {PatientRecord[]} Array of initialized seed patient records
+ */
 function createDefaultSeedPatients(): PatientRecord[] {
   const raghavan: PatientRecord = {
     elderProfile: { ...DEFAULT_ELDER_PROFILE },
@@ -61,6 +68,14 @@ function createDefaultSeedPatients(): PatientRecord[] {
   return [raghavan, kavita];
 }
 
+/**
+ * Validates and repairs patient data integrity across the MultiPatientStore.
+ * Guarantees that default patients exist and that every registered elder profile
+ * contains active medications, dose logs, and appointments.
+ * 
+ * @param {MultiPatientStore} store - The store to validate and auto-repair
+ * @returns {boolean} True if repairs/updates were applied to the store, false otherwise
+ */
 function ensurePatientDataIntegrity(store: MultiPatientStore): boolean {
   let changed = false;
 
@@ -115,6 +130,12 @@ function ensurePatientDataIntegrity(store: MultiPatientStore): boolean {
   return changed;
 }
 
+/**
+ * Retrieves the global multi-patient store from memory or disk persistence.
+ * Initializes default seed patients if no persistence file exists.
+ * 
+ * @returns {MultiPatientStore} The active MultiPatientStore instance
+ */
 export function getMultiPatientStore(): MultiPatientStore {
   if (inMemoryStore && inMemoryStore.patients?.length > 0) {
     const changed = ensurePatientDataIntegrity(inMemoryStore);
@@ -170,6 +191,12 @@ export function getMultiPatientStore(): MultiPatientStore {
   return inMemoryStore;
 }
 
+/**
+ * Persists the entire MultiPatientStore to memory and atomic disk storage.
+ * 
+ * @param {MultiPatientStore} store - The updated store object to write
+ * @returns {void}
+ */
 export function saveMultiPatientStore(store: MultiPatientStore): void {
   inMemoryStore = store;
   try {
@@ -179,6 +206,12 @@ export function saveMultiPatientStore(store: MultiPatientStore): void {
   }
 }
 
+/**
+ * Synthesizes the active KinCareState for the currently selected patient.
+ * Exposes the active patient's profile, medications, doseLogs, and care circle.
+ * 
+ * @returns {KinCareState} The compiled KinCareState object
+ */
 export function getKinCareState(): KinCareState {
   const store = getMultiPatientStore();
   let activeRecord = store.patients.find((p) => p.elderProfile.id === store.activePatientId);
@@ -201,6 +234,12 @@ export function getKinCareState(): KinCareState {
   };
 }
 
+/**
+ * Commits updates from an active KinCareState back into the corresponding patient record.
+ * 
+ * @param {KinCareState} state - The modified state to commit
+ * @returns {void}
+ */
 export function saveKinCareState(state: KinCareState): void {
   const store = getMultiPatientStore();
   const index = store.patients.findIndex((p) => p.elderProfile.id === state.elderProfile.id);
@@ -225,16 +264,33 @@ export function saveKinCareState(state: KinCareState): void {
   saveMultiPatientStore(store);
 }
 
+/**
+ * Retrieves all registered PatientRecord objects across the multi-tenant platform.
+ * 
+ * @returns {PatientRecord[]} Array of all complete patient records
+ */
 export function getAllPatientRecords(): PatientRecord[] {
   const store = getMultiPatientStore();
   return store.patients;
 }
 
+/**
+ * Retrieves a list of all registered ElderProfile metadata objects.
+ * Used for populating patient selection dropdowns without leaking private notes.
+ * 
+ * @returns {ElderProfile[]} Array of elder profile summaries
+ */
 export function getAllElderProfiles(): ElderProfile[] {
   const store = getMultiPatientStore();
   return store.patients.map((p) => p.elderProfile);
 }
 
+/**
+ * Switches the active patient context to a specified patient ID.
+ * 
+ * @param {string} patientId - The unique ID of the elder patient to activate
+ * @returns {KinCareState} The updated state scoped to the newly selected patient
+ */
 export function switchActivePatient(patientId: string): KinCareState {
   const store = getMultiPatientStore();
   const exists = store.patients.some((p) => p.elderProfile.id === patientId);
@@ -245,6 +301,13 @@ export function switchActivePatient(patientId: string): KinCareState {
   return getKinCareState();
 }
 
+/**
+ * Dynamically creates and registers a new elderly patient profile in the platform.
+ * Generates initial Care Circle roles, unique PINs, and starter prescriptions/timetables.
+ * 
+ * @param {PatientOnboardingInput} input - Onboarding form data (name, age, bloodGroup, allergies, PINs)
+ * @returns {{ state: KinCareState; newPatient: PatientRecord }} The updated global state and new patient record
+ */
 export function createElderPatient(input: PatientOnboardingInput): { state: KinCareState; newPatient: PatientRecord } {
   const store = getMultiPatientStore();
   const newId = `elder_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
@@ -344,6 +407,12 @@ export function createElderPatient(input: PatientOnboardingInput): { state: KinC
   };
 }
 
+/**
+ * Resets the entire multi-patient data store back to initial pristine seed states.
+ * Reinstates Raghavan Iyer and Kavita Ramanathan with fresh timetables and dosages.
+ * 
+ * @returns {KinCareState} The reset KinCareState object
+ */
 export function resetToSeedState(): KinCareState {
   const defaultPatients = createDefaultSeedPatients();
   inMemoryStore = {
@@ -354,7 +423,17 @@ export function resetToSeedState(): KinCareState {
   return getKinCareState();
 }
 
-// Helper Domain Mutations
+/**
+ * Records a dose action (TAKEN, SKIPPED_WITH_REASON, MISSED) for a specific medication.
+ * Automatically manages inventory stock levels and triggers refill warnings if low.
+ * 
+ * @param {string} medicationId - The ID of the target medication
+ * @param {DoseStatus} status - The status of the dose ("TAKEN" | "SKIPPED_WITH_REASON" | "MISSED" | "UPCOMING")
+ * @param {Role | "SYSTEM"} loggedByRole - The role of the actor logging this dose
+ * @param {string} [elderNote] - Optional empathy note or reason provided by the elder
+ * @param {string} [customScheduledTime] - Optional specific scheduled time override
+ * @returns {{ success: boolean; doseLog: DoseLog; medication?: Medication; state: KinCareState }} Result payload
+ */
 export function recordDoseAction(
   medicationId: string,
   status: DoseStatus,

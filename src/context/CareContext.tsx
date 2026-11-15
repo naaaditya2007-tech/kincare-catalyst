@@ -48,6 +48,16 @@ interface CareContextType {
 
 const CareContext = createContext<CareContextType | undefined>(undefined);
 
+/**
+ * CareProvider Component
+ * 
+ * Top-level React Context Provider managing global state for the KinCare platform.
+ * Synchronizes real-time dose actions, multi-patient switching, inventory levels,
+ * appointments, and proactive email dispatch across Elder Companion and Care Circle dashboards.
+ * 
+ * @param {{ children: ReactNode }} props - React component children
+ * @returns {React.ReactElement} The rendered Context Provider
+ */
 export const CareProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const router = useRouter();
   const [state, setState] = useState<KinCareState | null>(null);
@@ -433,6 +443,12 @@ export const CareProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 };
 
+/**
+ * Custom React hook to access KinCare global care context.
+ * 
+ * @throws {Error} If called outside of a CareProvider component tree
+ * @returns {CareContextType} The active KinCare context object
+ */
 export const useCare = (): CareContextType => {
   const context = useContext(CareContext);
   if (!context) {
