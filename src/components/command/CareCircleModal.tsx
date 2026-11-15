@@ -13,6 +13,15 @@ interface CareCircleModalProps {
   onAddMember: (member: Partial<CareCircleMember>) => Promise<void>;
 }
 
+/**
+ * CareCircleModal Component
+ * 
+ * Provides management of authenticated Care Circle members, allowing role inspection,
+ * on-demand 4-digit PIN rotation, and adding new authorized family members or caretakers.
+ * 
+ * @param {CareCircleModalProps} props - Component properties
+ * @returns {React.ReactElement | null} The rendered Care Circle modal dialog
+ */
 export const CareCircleModal: React.FC<CareCircleModalProps> = ({
   isOpen,
   onClose,
@@ -41,32 +50,41 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
       return;
     }
     setPinError(null);
-    await onUpdatePasscode(memberId, newPin);
-    setPinSuccessId(memberId);
-    setEditingMemberId(null);
-    setNewPin("");
-    setTimeout(() => setPinSuccessId(null), 3000);
+    try {
+      await onUpdatePasscode(memberId, newPin);
+      setPinSuccessId(memberId);
+      setEditingMemberId(null);
+      setNewPin("");
+      setTimeout(() => setPinSuccessId(null), 3000);
+    } catch (err) {
+      console.error("Failed to update passcode:", err);
+      setPinError("Failed to update passcode. Please try again.");
+    }
   };
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim()) return;
 
-    await onAddMember({
-      name: name.trim(),
-      role,
-      relation: relation.trim() || role,
-      email: email.trim(),
-      passcode: passcode.trim() || "4444",
-      permissions: role === "FAMILY_ADMIN" ? ["ALL"] : ["LOG_DOSE", "VIEW_SCHEDULE"],
-      avatarBg: role === "FAMILY_ADMIN" ? "bg-indigo-700" : "bg-emerald-700",
-    });
+    try {
+      await onAddMember({
+        name: name.trim(),
+        role,
+        relation: relation.trim() || role,
+        email: email.trim(),
+        passcode: passcode.trim() || "4444",
+        permissions: role === "FAMILY_ADMIN" ? ["ALL"] : ["LOG_DOSE", "VIEW_SCHEDULE"],
+        avatarBg: role === "FAMILY_ADMIN" ? "bg-indigo-700" : "bg-emerald-700",
+      });
 
-    setShowAddForm(false);
-    setName("");
-    setRelation("");
-    setEmail("");
-    setPasscode("4444");
+      setShowAddForm(false);
+      setName("");
+      setRelation("");
+      setEmail("");
+      setPasscode("4444");
+    } catch (err) {
+      console.error("Failed to add circle member:", err);
+    }
   };
 
   return (
@@ -79,7 +97,9 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
           className="bg-white rounded-3xl shadow-[0_25px_60px_rgb(0,0,0,0.14)] ring-1 ring-slate-900/5 max-w-xl w-full p-8 sm:p-10 relative max-h-[90vh] overflow-y-auto"
         >
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Close care circle modal"
             className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition"
           >
             <X className="w-5 h-5" />
@@ -154,21 +174,26 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
                           type="text"
                           maxLength={4}
                           placeholder="New 4 digits"
+                          aria-label={`New 4-digit PIN for ${member.name}`}
                           value={newPin}
                           onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ""))}
                           className="w-28 px-3 py-1.5 text-xs border border-slate-900 rounded-full font-mono focus:outline-none"
                         />
                         <button
+                          type="button"
                           onClick={() => handleSavePin(member.id)}
+                          aria-label="Save rotated PIN"
                           className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-full text-xs font-semibold transition"
                         >
                           Save
                         </button>
                         <button
+                          type="button"
                           onClick={() => {
                             setEditingMemberId(null);
                             setNewPin("");
                           }}
+                          aria-label="Cancel PIN rotation"
                           className="px-2.5 py-1.5 text-slate-500 text-xs hover:bg-slate-100 rounded-full"
                         >
                           Cancel
@@ -186,10 +211,12 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
                           )}
                         </span>
                         <button
+                          type="button"
                           onClick={() => {
                             setEditingMemberId(member.id);
                             setNewPin("");
                           }}
+                          aria-label={`Rotate PIN for ${member.name}`}
                           className="text-xs text-slate-700 hover:text-slate-900 font-semibold underline underline-offset-2"
                         >
                           Rotate PIN
@@ -203,7 +230,7 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
           </div>
 
           {pinError && (
-            <div className="text-xs text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-full mb-4 text-center">
+            <div role="alert" className="text-xs text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-full mb-4 text-center">
               {pinError}
             </div>
           )}
@@ -218,6 +245,7 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
                   type="text"
                   required
                   placeholder="e.g. Ramesh Iyer"
+                  aria-label="Member Full Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-full bg-white focus:outline-none"
@@ -229,6 +257,7 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
                   <label className="block text-[11px] font-semibold text-slate-600 mb-1">Role</label>
                   <select
                     value={role}
+                    aria-label="Member Role"
                     onChange={(e) => setRole(e.target.value as Role)}
                     className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-full bg-white focus:outline-none"
                   >
@@ -241,6 +270,7 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
                   <input
                     type="text"
                     placeholder="e.g. Son / Primary"
+                    aria-label="Relationship to Elder"
                     value={relation}
                     onChange={(e) => setRelation(e.target.value)}
                     className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-full bg-white focus:outline-none"
@@ -255,6 +285,7 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
                     type="email"
                     required
                     placeholder="ramesh@example.com"
+                    aria-label="Member Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-full bg-white focus:outline-none"
@@ -266,6 +297,7 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
                     type="text"
                     maxLength={4}
                     value={passcode}
+                    aria-label="Member 4-digit PIN"
                     onChange={(e) => setPasscode(e.target.value.replace(/\D/g, ""))}
                     className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-full bg-white font-mono focus:outline-none"
                   />
@@ -276,12 +308,14 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowAddForm(false)}
+                  aria-label="Cancel adding member"
                   className="px-5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-200/60 rounded-full transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
+                  aria-label="Confirm Add Member"
                   className="px-6 py-2.5 text-xs bg-slate-900 hover:bg-slate-800 text-white rounded-full font-extrabold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/20 active:scale-95"
                 >
                   Add Member
@@ -290,7 +324,9 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
             </form>
           ) : (
             <button
+              type="button"
               onClick={() => setShowAddForm(true)}
+              aria-label="Add Authorized Circle Member"
               className="w-full py-3.5 bg-slate-50 hover:bg-slate-100 ring-1 ring-slate-900/5 rounded-full text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center justify-center gap-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xs active:scale-98"
             >
               <UserPlus className="w-4 h-4 text-teal-600" />

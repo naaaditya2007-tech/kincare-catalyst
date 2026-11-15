@@ -33,6 +33,16 @@ interface ElderDashboardProps {
   onRequestCall?: () => void;
 }
 
+/**
+ * ElderDashboard Component
+ * 
+ * Provides a highly accessible, dignity-preserving companion interface for elderly patients.
+ * Features large typography, high-contrast touch targets, live ticking countdowns,
+ * Web Speech API voice readouts, and autonomous timing guard alerts.
+ * 
+ * @param {ElderDashboardProps} props - Component properties
+ * @returns {React.ReactElement} The rendered Elder Companion Dashboard
+ */
 export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
   const care = useCare();
   const state = props.state || care.state;
@@ -275,7 +285,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
   const nextAppt = state.appointments[0];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-10">
+    <section aria-label="Elder Companion Daily Medication Schedule" className="max-w-4xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-10">
       {/* Elder Greeting Banner (Anti-AI Micro-Border Card) */}
       <div className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-900/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -305,6 +315,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
                 toastFiredForMedIdRef.current = null;
                 setDemoRemainingSeconds(8);
               }}
+              aria-label="Trigger 8-second medication countdown alert demo"
               title="Fast-forward countdown to 8 seconds to demonstrate live ticking, medical teal transition under 5s, and custom toast notification"
               className="h-14 sm:h-16 px-6 rounded-full border border-teal-200 bg-teal-50/70 hover:bg-teal-100 text-teal-900 text-xs sm:text-sm font-extrabold flex items-center gap-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-98"
             >
@@ -356,6 +367,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
         <button
           type="button"
           onClick={handleCallClick}
+          aria-label="Request Phone Call from Family and Nurse"
           disabled={callRequested}
           className={`h-14 px-8 rounded-full font-extrabold text-base flex items-center justify-center gap-2.5 transition-all duration-200 hover:-translate-y-0.5 shrink-0 active:scale-98 ${
             callRequested
@@ -513,7 +525,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
         }}
         onDismiss={() => setToastMed(null)}
       />
-    </div>
+    </section>
   );
 
   // Helper render function for individual medication card
@@ -525,10 +537,11 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
     const isNextDue = nextDueInfo?.medication.id === med.id && !isTaken;
 
     return (
-      <motion.div
+      <motion.article
         layout
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         key={med.id}
+        aria-label={`Medication schedule for ${med.name}`}
         className={`bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-900/5 transition-all duration-300 relative overflow-hidden ${
           isCurrentlyTaking
             ? "ring-2 ring-teal-500/40 scale-[1.01]"
@@ -638,6 +651,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
                   type="button"
                   onClick={() => handleTakeDose(med)}
                   disabled={isCurrentlyTaking}
+                  aria-label={`Confirm you took ${med.name}`}
                   className="py-4 px-8 text-xl rounded-full bg-[#0D9488] hover:bg-[#0F766E] text-white font-extrabold transition shadow-md shadow-teal-900/20 active:scale-98 disabled:opacity-50 flex items-center justify-center gap-2.5"
                 >
                   <Check className="w-6 h-6 stroke-[3]" />
@@ -651,6 +665,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
                   type="button"
                   onClick={() => setSelectedMedForSkip(med)}
                   disabled={isCurrentlyTaking}
+                  aria-label={`Skip or postpone ${med.name} with reason`}
                   className="py-4 px-8 text-xl rounded-full border border-slate-200/80 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-extrabold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-98 disabled:opacity-50"
                 >
                   Not Now / Skip
@@ -661,6 +676,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
                   type="button"
                   onClick={() => handleTakeDose(med)}
                   disabled={isCurrentlyTaking}
+                  aria-label={`Confirm you took ${med.name}`}
                   animate={isCurrentlyTaking ? { scale: [1, 1.05, 1], backgroundColor: "#0F766E" } : {}}
                   transition={{ duration: 0.35 }}
                   className="py-4 px-8 text-xl rounded-full bg-[#0D9488] hover:bg-[#0F766E] text-white font-extrabold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-teal-900/25 flex items-center justify-center gap-3 active:scale-98 disabled:opacity-90"
@@ -686,7 +702,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
             )}
           </div>
         </div>
-      </motion.div>
+      </motion.article>
     );
   }
 };

@@ -7,6 +7,15 @@ import {
   generateDoctorBriefEmail,
 } from "@/services/emailService";
 
+/**
+ * POST /api/send-alert
+ * 
+ * Dispatches a transactional email alert (Upcoming Dose, Missed Dose Escalation,
+ * or Doctor Brief Consultation Reminder) via Resend API or simulated HTML preview engine.
+ * 
+ * @param {NextRequest} req - Incoming Next.js API route request
+ * @returns {Promise<NextResponse>} JSON response with delivery metadata, preview HTML, and state
+ */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

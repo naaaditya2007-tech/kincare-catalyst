@@ -39,6 +39,16 @@ interface CommandCenterDashboardProps {
   onTriggerEscalation?: () => void;
 }
 
+/**
+ * CommandCenterDashboard Component
+ * 
+ * Provides real-time clinical telemetry, prescription scheduling, autonomous timing
+ * guard safety alerts, inventory restocking, and doctor visit briefing for family
+ * administrators and visiting nurses.
+ * 
+ * @param {CommandCenterDashboardProps} props - Component properties
+ * @returns {React.ReactElement | null} The rendered Command Center Dashboard
+ */
 export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (props) => {
   const care = useCare();
   const state = props.state || care.state;
@@ -80,21 +90,29 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
     apptTime > referenceTime ? Math.max(0, Math.ceil((apptTime - referenceTime) / (1000 * 60 * 60 * 24))) : 0;
 
   const handleRestock = async (med: Medication, amount = 30) => {
-    await onUpdateMedication("UPDATE", {
-      id: med.id,
-      stockRemaining: med.stockRemaining + amount,
-    });
+    try {
+      await onUpdateMedication("UPDATE", {
+        id: med.id,
+        stockRemaining: med.stockRemaining + amount,
+      });
+    } catch (err) {
+      console.error("Failed to restock medication:", err);
+    }
   };
 
   const handleQuestionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newQuestionText.trim()) return;
-    await onAddDoctorQuestion(newQuestionText.trim());
-    setNewQuestionText("");
+    try {
+      await onAddDoctorQuestion(newQuestionText.trim());
+      setNewQuestionText("");
+    } catch (err) {
+      console.error("Failed to add doctor question:", err);
+    }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-10">
+    <section aria-label="Care Circle Command Center Telemetry" className="max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-10">
       {/* Title Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
         <div>
@@ -115,7 +133,9 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
 
         <div className="flex items-center gap-3">
           <button
+            type="button"
             onClick={() => setCircleModalOpen(true)}
+            aria-label="Manage Passcodes and Care Circle Members"
             className="px-5 py-2.5 rounded-full bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold flex items-center gap-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ring-1 ring-slate-900/5 active:scale-98"
           >
             <KeyRound className="w-3.5 h-3.5 text-teal-600" />
@@ -123,7 +143,9 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
           </button>
 
           <button
+            type="button"
             onClick={() => setBriefModalOpen(true)}
+            aria-label="Generate Doctor Brief Report"
             className="px-5 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/20 active:scale-98"
           >
             <FileText className="w-3.5 h-3.5" />
@@ -287,8 +309,12 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
       )}
 
       {/* Pill-Shaped Tab Selector */}
-      <div className="flex items-center gap-2 pb-2 overflow-x-auto">
+      <div className="flex items-center gap-2 pb-2 overflow-x-auto" role="tablist" aria-label="Command Center navigation tabs">
         <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "medications"}
+          aria-label={`Medications and Inventory Tab with ${state.medications.length} items`}
           onClick={() => setActiveTab("medications")}
           className={`px-5 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 shrink-0 ${
             activeTab === "medications"
@@ -301,6 +327,10 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
         </button>
 
         <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "adherence"}
+          aria-label={`Adherence and Elder Feed Tab with ${state.doseLogs.length} logs`}
           onClick={() => setActiveTab("adherence")}
           className={`px-5 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 shrink-0 ${
             activeTab === "adherence"
@@ -313,6 +343,10 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
         </button>
 
         <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "appointments"}
+          aria-label="Doctor Prep Checklist Tab"
           onClick={() => setActiveTab("appointments")}
           className={`px-5 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 shrink-0 ${
             activeTab === "appointments"
@@ -327,14 +361,16 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
 
       {/* Tab 1: Medication Schedule & Inventory Manager */}
       {activeTab === "medications" && (
-        <div className="space-y-6">
+        <div className="space-y-6" role="tabpanel" aria-label="Medications & Inventory Panel">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-extrabold tracking-tight text-slate-900">Active Prescriptions</h2>
             <button
+              type="button"
               onClick={() => {
                 setMedToEdit(null);
                 setMedModalOpen(true);
               }}
+              aria-label="Add New Medication"
               className="px-5 py-2.5 rounded-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold flex items-center gap-1.5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-teal-900/20 active:scale-98"
             >
               <Plus className="w-4 h-4" />
@@ -359,6 +395,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
                   setMedToEdit(null);
                   setMedModalOpen(true);
                 }}
+                aria-label="Add First Prescription"
                 className="px-6 py-3 rounded-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold flex items-center gap-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-teal-900/20 active:scale-98"
               >
                 <Plus className="w-4 h-4" />
@@ -370,8 +407,9 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
               {state.medications.map((med) => {
                 const isLow = med.stockRemaining <= med.refillThreshold;
                 return (
-                  <div
+                  <article
                     key={med.id}
+                    aria-label={`Prescription card for ${med.name}`}
                     className={`bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-900/5 transition-all duration-200 flex flex-col justify-between ${
                       !med.active
                         ? "opacity-60 bg-slate-50"
@@ -423,6 +461,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
                         <button
                           type="button"
                           onClick={() => handleRestock(med, 30)}
+                          aria-label={`Add 30 units to ${med.name} inventory`}
                           title="Add 30 units to inventory"
                           className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-full text-xs font-bold transition active:scale-95"
                         >
@@ -434,6 +473,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
                             setMedToEdit(med);
                             setMedModalOpen(true);
                           }}
+                          aria-label={`Edit ${med.name} prescription details`}
                           title="Edit prescription"
                           className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition"
                         >
@@ -442,6 +482,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
                         <button
                           type="button"
                           onClick={() => onUpdateMedication("TOGGLE_ACTIVE", { id: med.id })}
+                          aria-label={med.active ? `Pause ${med.name} prescription` : `Resume ${med.name} prescription`}
                           title={med.active ? "Pause prescription" : "Resume prescription"}
                           className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-full transition"
                         >
@@ -450,6 +491,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
                         <button
                           type="button"
                           onClick={() => onUpdateMedication("DELETE", { id: med.id })}
+                          aria-label={`Delete ${med.name} prescription`}
                           title="Delete prescription"
                           className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition"
                         >
@@ -457,7 +499,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </article>
                 );
               })}
             </div>
@@ -467,13 +509,15 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
 
       {/* Tab 2: Adherence & Elder Notes Feed */}
       {activeTab === "adherence" && (
-        <div className="space-y-6">
+        <div className="space-y-6" role="tabpanel" aria-label="Adherence & Elder Notes Panel">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-extrabold tracking-tight text-slate-900">
               Chronological Adherence Feed
             </h2>
             <button
+              type="button"
               onClick={onTriggerEscalation}
+              aria-label="Simulate Overdue Escalation Alert"
               className="px-5 py-2.5 rounded-full border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-bold flex items-center gap-1.5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:shadow-rose-900/10 active:scale-98"
             >
               <AlertOctagon className="w-3.5 h-3.5 text-rose-600" />
@@ -570,6 +614,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
               <button
                 type="button"
                 onClick={() => setBriefModalOpen(true)}
+                aria-label="View Full Clinical Brief Report"
                 className="px-5 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/20 active:scale-98"
               >
                 <FileText className="w-3.5 h-3.5" />
@@ -599,6 +644,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
                     <button
                       type="button"
                       onClick={() => onDeleteDoctorQuestion(idx)}
+                      aria-label={`Remove question ${idx + 1}`}
                       className="p-1.5 text-slate-400 hover:text-rose-600 rounded-full transition"
                       title="Remove question"
                     >
@@ -615,10 +661,13 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
                   placeholder="Add a new question for Dr. Arvind Swaminathan..."
                   value={newQuestionText}
                   onChange={(e) => setNewQuestionText(e.target.value)}
+                  aria-label="New question for doctor consultation"
+                  name="doctorQuestion"
                   className="flex-1 px-5 py-3 rounded-full text-xs sm:text-sm font-medium focus:outline-none bg-slate-50/70 ring-1 ring-slate-900/10 focus:ring-2 focus:ring-slate-900 transition"
                 />
                 <button
                   type="submit"
+                  aria-label="Add question to doctor consultation checklist"
                   className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-full text-xs font-bold flex items-center gap-1.5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-teal-900/20 active:scale-98"
                 >
                   <Plus className="w-4 h-4" />
@@ -657,6 +706,6 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
         onUpdatePasscode={onUpdatePasscode}
         onAddMember={onAddMember}
       />
-    </div>
+    </section>
   );
 };

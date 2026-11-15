@@ -24,6 +24,13 @@ export interface EmailDispatchResult {
   error?: string;
 }
 
+/**
+ * Dispatches an email notification through the live Resend API or logs a simulated preview
+ * in the KinCare audit trail when operating in evaluation or offline environments.
+ * 
+ * @param {SendEmailParams} params - Email dispatch parameters
+ * @returns {Promise<EmailDispatchResult>} Result containing delivery mode, log metadata, and status
+ */
 export async function dispatchKinCareEmail(params: SendEmailParams): Promise<EmailDispatchResult> {
   const state = getKinCareState();
   const logId = `alert_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
@@ -88,7 +95,13 @@ export async function dispatchKinCareEmail(params: SendEmailParams): Promise<Ema
   };
 }
 
-// HTML Template Generators for the three core workflows
+/**
+ * Generates email content for the daily upcoming dose schedule alert.
+ * 
+ * @param {KinCareState} state - Active patient care state
+ * @param {string} recipientEmail - Email address of the recipient
+ * @returns {SendEmailParams} Constructed email parameters with responsive HTML
+ */
 export function generateUpcomingDoseEmail(state: KinCareState, recipientEmail: string): SendEmailParams {
   const elder = state.elderProfile;
   const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
@@ -173,6 +186,15 @@ export function generateUpcomingDoseEmail(state: KinCareState, recipientEmail: s
   };
 }
 
+/**
+ * Generates email content for missed/postponed dose emergency escalation.
+ * 
+ * @param {KinCareState} state - Active patient care state
+ * @param {string} recipientEmail - Email address of the recipient
+ * @param {string} [overdueMedName] - Name of the overdue medication
+ * @param {string} [elderNote] - Reason note provided by the elder
+ * @returns {SendEmailParams} Constructed email parameters with urgency highlights
+ */
 export function generateMissedDoseEscalationEmail(
   state: KinCareState,
   recipientEmail: string,
@@ -253,6 +275,13 @@ export function generateMissedDoseEscalationEmail(
   };
 }
 
+/**
+ * Generates email content for doctor consultation prep and clinical brief.
+ * 
+ * @param {KinCareState} state - Active patient care state
+ * @param {string} recipientEmail - Email address of the recipient
+ * @returns {SendEmailParams} Constructed email parameters with patient vitals and checklist
+ */
 export function generateDoctorBriefEmail(state: KinCareState, recipientEmail: string): SendEmailParams {
   const elder = state.elderProfile;
   const appt = state.appointments[0];

@@ -25,6 +25,16 @@ interface ProactiveEmailEscalationCenterProps {
   onRefreshState: () => Promise<void>;
 }
 
+/**
+ * ProactiveEmailEscalationCenter Component
+ * 
+ * Provides interactive trigger and testing capabilities for Resend transactional emails,
+ * including Upcoming Dose Reminders, Missed Dose Clinical Escalations, and Doctor Appointment Briefs.
+ * Renders direct sandboxed HTML email previews and inspectable audit logs.
+ * 
+ * @param {ProactiveEmailEscalationCenterProps} props - Component properties
+ * @returns {React.ReactElement | null} The rendered escalation drawer
+ */
 export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCenterProps> = ({
   isOpen,
   onClose,
@@ -87,7 +97,8 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
       } else {
         setFeedbackMsg({ type: "error", text: data.error || "Failed to trigger workflow" });
       }
-    } catch {
+    } catch (err) {
+      console.error("Failed to trigger email workflow:", err);
       setFeedbackMsg({ type: "error", text: "Network error triggering alert engine" });
     } finally {
       setTriggeringWorkflow(null);
@@ -123,6 +134,7 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
             <button
               type="button"
               onClick={onClose}
+              aria-label="Close Email Testing Center"
               className="p-2.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition"
             >
               <X className="w-5 h-5" />
@@ -132,7 +144,7 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
           {/* Tester Recipient Input Box (Pill Input) */}
           <div className="bg-slate-50/70 rounded-3xl p-6 sm:p-8 mb-8 ring-1 ring-slate-900/5 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-slate-700 flex items-center gap-1.5">
+              <label htmlFor="targetEmailInput" className="text-xs font-bold uppercase tracking-widest text-slate-700 flex items-center gap-1.5">
                 <Mail className="w-3.5 h-3.5 text-teal-600" />
                 Enter your email to test live alerts.
               </label>
@@ -140,10 +152,12 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
             </div>
 
             <input
+              id="targetEmailInput"
               type="email"
               value={targetEmail}
               onChange={(e) => setTargetEmail(e.target.value)}
               placeholder="Enter your email to test live alerts."
+              aria-label="Tester Recipient Email Address"
               className="w-full px-5 py-3.5 bg-white ring-1 ring-slate-900/10 rounded-full text-sm font-medium focus:ring-2 focus:ring-slate-900 focus:outline-none shadow-2xs"
             />
             <p className="text-xs text-slate-500 font-medium leading-relaxed mt-2.5">
@@ -156,6 +170,7 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
             <motion.div
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
+              role="alert"
               className={`p-4 rounded-full text-xs font-bold mb-6 flex items-center gap-2 ${
                 feedbackMsg.type === "success"
                   ? "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200 shadow-xs"
@@ -179,6 +194,7 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
               type="button"
               onClick={() => handleTriggerWorkflow("UPCOMING_DOSE")}
               disabled={!!triggeringWorkflow}
+              aria-label="Simulate Upcoming Dose Alert Workflow"
               className="w-full text-left p-6 rounded-3xl bg-white hover:bg-slate-50/80 ring-1 ring-slate-900/5 shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between group"
             >
               <div className="flex items-center gap-4">
@@ -202,6 +218,7 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
               type="button"
               onClick={() => handleTriggerWorkflow("MISSED_DOSE_ESCALATION")}
               disabled={!!triggeringWorkflow}
+              aria-label="Simulate Missed Dose Escalation Workflow"
               className="w-full text-left p-6 rounded-3xl bg-white hover:bg-rose-50/30 ring-1 ring-slate-900/5 shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between group"
             >
               <div className="flex items-center gap-4">
@@ -225,6 +242,7 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
               type="button"
               onClick={() => handleTriggerWorkflow("APPOINTMENT_REMINDER")}
               disabled={!!triggeringWorkflow}
+              aria-label="Simulate Appointment Reminder Workflow"
               className="w-full text-left p-6 rounded-3xl bg-white hover:bg-slate-50/80 ring-1 ring-slate-900/5 shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between group"
             >
               <div className="flex items-center gap-4">
@@ -257,6 +275,7 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
                 <button
                   type="button"
                   onClick={() => setInlinePreview(null)}
+                  aria-label="Close inline HTML email preview"
                   className="text-xs font-bold text-slate-400 hover:text-white uppercase tracking-wider"
                 >
                   Close Preview

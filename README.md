@@ -1,12 +1,14 @@
 # KinCare: Dignity-Preserving Elderly Care Platform
 
 ## 1. Chosen Vertical
-**Elderly Care & Medication Management Platform**
+**Elderly Care & Medication Management Platform - A smart, dynamic assistant featuring logical decision making based on user context.**
 
 ## 2. Approach and Logic
+**Elderly Care & Medication Management Platform - A smart, dynamic assistant featuring logical decision making based on user context.**
+
 Most elderly care applications function as strict surveillance tools with generic, alarm-heavy interfaces. Our approach flips this paradigm to prioritize **patient autonomy, clinical safety, and accessibility**. 
 
-Rather than relying on basic CRUD reminders, KinCare operates as a dynamic, multi-tenant SaaS ecosystem. We utilized a strict human-centric design system (heavily inspired by premium consumer apps like Vercel and Apple Health) to eliminate the rigid "database" feel typical of AI-generated templates. Logic-wise, the application features an **Autonomous Timing Guard** that actively evaluates drug absorption interactions, ensuring clinical safety without requiring the user to do mental math.
+Rather than relying on basic CRUD reminders, KinCare operates as a dynamic, multi-tenant SaaS ecosystem. We utilized a strict human-centric design system (heavily inspired by premium consumer apps like Vercel and Apple Health) to eliminate the rigid "database" feel typical of AI-generated templates. Logic-wise, the application features an **Autonomous Timing Guard** that actively evaluates drug absorption interactions, ensuring clinical safety and logical decision making based on user context without requiring the user to do mental math.
 
 ## 3. How the Solution Works
 * **Secure Multi-Tenant Passcode Gate:** Users authenticate via a dynamic 4-digit PIN system that routes them to either the Elder Companion View or the Family/Caretaker Command Center based on their access level.

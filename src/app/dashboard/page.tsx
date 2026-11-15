@@ -10,6 +10,15 @@ import { ElderOnboardingModal } from "@/components/auth/ElderOnboardingModal";
 import { CareProvider, useCare } from "@/context/CareContext";
 import { CheckCircle2 } from "lucide-react";
 
+/**
+ * DashboardContent Component
+ * 
+ * Internal coordinator for the authenticated session view. Manages switching
+ * between Elder Companion Mode and Care Circle Command Center, handles live notifications,
+ * and mounts modals for patient onboarding and email escalation.
+ * 
+ * @returns {React.ReactElement} The dashboard UI content
+ */
 function DashboardContent() {
   const {
     state,
@@ -157,7 +166,11 @@ function DashboardContent() {
 
       {/* Toast Notification (Pill Shaped) */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs sm:text-sm font-semibold px-5 py-3.5 rounded-full shadow-2xl flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2 duration-150 ring-1 ring-white/10">
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs sm:text-sm font-semibold px-5 py-3.5 rounded-full shadow-2xl flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2 duration-150 ring-1 ring-white/10"
+        >
           <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>
@@ -166,6 +179,14 @@ function DashboardContent() {
   );
 }
 
+/**
+ * DashboardPage Entry Point
+ * 
+ * Top-level route for `/dashboard`. Wraps the dashboard layout and subcomponents
+ * in the root CareProvider context.
+ * 
+ * @returns {React.ReactElement} The rendered Dashboard Page
+ */
 export default function DashboardPage() {
   return (
     <CareProvider>

@@ -11,6 +11,16 @@ interface EmailPreviewModalProps {
   onClose: () => void;
 }
 
+/**
+ * EmailPreviewModal Component
+ * 
+ * Provides an inspection dialog for inspecting dispatched transactional email audit logs.
+ * Displays recipient address, dispatch timestamp, subject line, delivery method,
+ * and rendered responsive HTML content.
+ * 
+ * @param {EmailPreviewModalProps} props - Component properties
+ * @returns {React.ReactElement | null} The rendered audit modal dialog
+ */
 export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
   emailLog,
   isOpen,
@@ -29,7 +39,9 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
         >
           {/* Close */}
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Close email audit preview"
             className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition"
           >
             <X className="w-5 h-5" />

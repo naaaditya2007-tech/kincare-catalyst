@@ -1,5 +1,8 @@
 import { Medication } from "@/types/kincare";
 
+/**
+ * TimingConflict interface defines an autonomous medication interaction warning
+ */
 export interface TimingConflict {
   id: string;
   medicationA: string;
@@ -11,6 +14,14 @@ export interface TimingConflict {
   remedy: string;
 }
 
+/**
+ * Evaluates the active medication timetable against clinical drug-absorption
+ * and pharmacokinetic spacing rules (e.g. Calcium chelation of Levothyroxine,
+ * concurrent antihypertensives causing orthostatic hypotension).
+ * 
+ * @param {Medication[]} medications - List of current patient medications
+ * @returns {TimingConflict[]} Array of detected timing conflicts and clinical remedies
+ */
 export function detectTimingConflicts(medications: Medication[]): TimingConflict[] {
   const activeMeds = medications.filter((m) => m.active);
   const conflicts: TimingConflict[] = [];
@@ -127,6 +138,12 @@ export function detectTimingConflicts(medications: Medication[]): TimingConflict
   return conflicts;
 }
 
+/**
+ * Converts a 24-hour time string "HH:MM" into total minutes from midnight.
+ * 
+ * @param {string} timeStr - Time string formatted as "HH:MM"
+ * @returns {number} Minutes elapsed since 00:00
+ */
 function parseTimeToMinutes(timeStr: string): number {
   if (!timeStr) return 0;
   const [hours, minutes] = timeStr.split(":").map(Number);

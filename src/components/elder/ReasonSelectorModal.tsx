@@ -39,6 +39,16 @@ const PRESET_REASONS = [
   },
 ];
 
+/**
+ * ReasonSelectorModal Component
+ * 
+ * Provides an empathy-driven, dignity-preserving modal for elderly patients to postpone
+ * a medication dose with a valid clinical reason and optional personal note.
+ * Avoids triggering false emergency escalations by keeping family informed.
+ * 
+ * @param {ReasonSelectorModalProps} props - Component properties
+ * @returns {React.ReactElement | null} The rendered modal dialog
+ */
 export const ReasonSelectorModal: React.FC<ReasonSelectorModalProps> = ({
   medication,
   isOpen,
@@ -67,7 +77,9 @@ export const ReasonSelectorModal: React.FC<ReasonSelectorModalProps> = ({
         >
           {/* Close button */}
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Close postpone dose modal"
             className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition"
           >
             <X className="w-5 h-5" />
@@ -96,7 +108,7 @@ export const ReasonSelectorModal: React.FC<ReasonSelectorModalProps> = ({
           </div>
 
           {/* Reason Selector Options (Touch-friendly 1-tap) */}
-          <div className="space-y-2.5 mb-6">
+          <div className="space-y-2.5 mb-6" role="radiogroup" aria-label="Preset reasons for postponing medication">
             {PRESET_REASONS.map((item) => {
               const Icon = item.icon;
               const isSelected = selectedReason === item.title;
@@ -104,6 +116,9 @@ export const ReasonSelectorModal: React.FC<ReasonSelectorModalProps> = ({
                 <button
                   key={item.id}
                   type="button"
+                  role="radio"
+                  aria-checked={isSelected}
+                  aria-label={`Reason: ${item.title}. ${item.desc}`}
                   onClick={() => setSelectedReason(item.title)}
                   className={`w-full text-left p-4 rounded-2xl transition flex items-center justify-between ${
                     isSelected
@@ -134,13 +149,15 @@ export const ReasonSelectorModal: React.FC<ReasonSelectorModalProps> = ({
 
           {/* Optional Note Input */}
           <div className="mb-8">
-            <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-1.5">
+            <label htmlFor="elderCustomNoteInput" className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-1.5">
               <MessageSquare className="w-3.5 h-3.5 text-slate-400" />
               Optional Note for Family
             </label>
             <input
+              id="elderCustomNoteInput"
               type="text"
               placeholder="e.g., Blood pressure was 130/80, taking at 10:30 AM after porridge"
+              aria-label="Optional Note for Family"
               value={customNote}
               onChange={(e) => setCustomNote(e.target.value)}
               className="w-full px-5 py-3 rounded-full text-sm font-medium focus:outline-none bg-slate-50/70 ring-1 ring-slate-900/10 focus:ring-2 focus:ring-slate-900 transition"
@@ -152,6 +169,7 @@ export const ReasonSelectorModal: React.FC<ReasonSelectorModalProps> = ({
             <button
               type="button"
               onClick={onClose}
+              aria-label="Cancel postpone dose"
               className="flex-1 py-3.5 px-5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition active:scale-98"
             >
               Cancel
@@ -159,6 +177,7 @@ export const ReasonSelectorModal: React.FC<ReasonSelectorModalProps> = ({
             <button
               type="button"
               onClick={handleSubmit}
+              aria-label="Confirm postponement and notify family"
               className="flex-1 py-3.5 px-5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/20 active:scale-98"
             >
               Confirm & Notify

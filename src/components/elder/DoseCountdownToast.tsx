@@ -13,6 +13,16 @@ interface DoseCountdownToastProps {
   isTaking?: boolean;
 }
 
+/**
+ * DoseCountdownToast Component
+ * 
+ * High-priority accessible toast notification triggered when a medication countdown reaches zero.
+ * Includes auditory chime and speech synthesis triggers, dosing details, and direct
+ * "I Took This" or "Remind Me Later" action targets.
+ * 
+ * @param {DoseCountdownToastProps} props - Component properties
+ * @returns {React.ReactElement} The rendered dose notification toast
+ */
 export const DoseCountdownToast: React.FC<DoseCountdownToastProps> = ({
   isOpen,
   medication,
@@ -105,6 +115,7 @@ export const DoseCountdownToast: React.FC<DoseCountdownToastProps> = ({
               <button
                 type="button"
                 onClick={onDismiss}
+                aria-label="Remind me later about this medication"
                 className="w-full sm:w-auto px-5 py-3 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-bold transition active:scale-98"
               >
                 Remind Me Later
@@ -117,6 +128,7 @@ export const DoseCountdownToast: React.FC<DoseCountdownToastProps> = ({
                   await onTakeDose(medication);
                   onDismiss();
                 }}
+                aria-label={`Confirm taking ${medication.name}`}
                 className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#0D9488] hover:bg-[#0F766E] text-white font-extrabold text-base transition shadow-lg shadow-teal-900/25 flex items-center justify-center gap-2.5 active:scale-98 disabled:opacity-70"
               >
                 {isTaking ? (

@@ -17,6 +17,15 @@ export const metadata: Metadata = {
   description: "Autonomous Geriatric Telemetry, Prescription Timing Guard, and Dual-Interface Caregiving Platform",
 };
 
+/**
+ * RootLayout Component
+ * 
+ * Root HTML structure and font variable configuration for the KinCare platform.
+ * Sets document language to English and provisions anti-aliased base typography.
+ * 
+ * @param {LayoutProps<"/">} props - Layout component properties with children
+ * @returns {React.ReactElement} The root HTML document wrapper
+ */
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html

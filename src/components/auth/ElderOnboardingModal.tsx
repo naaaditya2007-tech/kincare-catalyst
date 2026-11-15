@@ -11,6 +11,16 @@ interface ElderOnboardingModalProps {
   onSubmit: (input: PatientOnboardingInput) => Promise<void>;
 }
 
+/**
+ * ElderOnboardingModal Component
+ * 
+ * Provides an accessible registration modal for onboarding a new elderly patient
+ * into the KinCare multi-tenant ecosystem. Configures profile details, clinical vitals,
+ * custom 4-digit security PINs, and prescription starter templates.
+ * 
+ * @param {ElderOnboardingModalProps} props - Component properties
+ * @returns {React.ReactElement | null} The rendered onboarding modal dialog
+ */
 export const ElderOnboardingModal: React.FC<ElderOnboardingModalProps> = ({
   isOpen,
   onClose,
@@ -68,7 +78,8 @@ export const ElderOnboardingModal: React.FC<ElderOnboardingModalProps> = ({
         seedSamplePrescriptions,
       });
       onClose();
-    } catch {
+    } catch (err) {
+      console.error("Failed to onboard new patient:", err);
       setErrorMsg("Failed to onboard new patient. Please try again.");
     } finally {
       setSubmitting(false);
@@ -105,6 +116,7 @@ export const ElderOnboardingModal: React.FC<ElderOnboardingModalProps> = ({
             <button
               type="button"
               onClick={onClose}
+              aria-label="Close registration dialog"
               className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition"
             >
               <X className="w-5 h-5" />
@@ -114,20 +126,22 @@ export const ElderOnboardingModal: React.FC<ElderOnboardingModalProps> = ({
           {/* Form */}
           <form onSubmit={handleSubmit} className="overflow-y-auto py-5 space-y-4 flex-1 pr-1">
             {errorMsg && (
-              <div className="p-3 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold text-center">
+              <div role="alert" className="p-3 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold text-center">
                 {errorMsg}
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+              <label htmlFor="elderNameInput" className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
                 Elder Full Name *
               </label>
               <input
+                id="elderNameInput"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Kavita Ramanathan or Judge Test Patient"
+                aria-label="Elder Full Name"
                 required
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-slate-900 focus:outline-none"
               />
@@ -135,14 +149,16 @@ export const ElderOnboardingModal: React.FC<ElderOnboardingModalProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                <label htmlFor="elderAgeInput" className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
                   Age *
                 </label>
                 <input
+                  id="elderAgeInput"
                   type="number"
                   value={age}
                   onChange={(e) => setAge(e.target.value ? parseInt(e.target.value) : "")}
                   placeholder="e.g. 76"
+                  aria-label="Elder Age"
                   required
                   min={50}
                   max={120}
@@ -151,12 +167,14 @@ export const ElderOnboardingModal: React.FC<ElderOnboardingModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                <label htmlFor="bloodGroupSelect" className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
                   Blood Group
                 </label>
                 <select
+                  id="bloodGroupSelect"
                   value={bloodGroup}
                   onChange={(e) => setBloodGroup(e.target.value)}
+                  aria-label="Blood Group"
                   className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-slate-900 focus:outline-none"
                 >
                   {["O+", "A+", "B+", "AB+", "O-", "A-", "B-", "AB-"].map((bg) => (
@@ -169,27 +187,31 @@ export const ElderOnboardingModal: React.FC<ElderOnboardingModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+              <label htmlFor="allergiesInput" className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
                 Known Drug Allergies (Comma-separated)
               </label>
               <input
+                id="allergiesInput"
                 type="text"
                 value={allergiesText}
                 onChange={(e) => setAllergiesText(e.target.value)}
                 placeholder="e.g. Penicillin, NSAIDs, Sulfa drugs"
+                aria-label="Known Drug Allergies"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-slate-900 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+              <label htmlFor="physicianInput" className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
                 Primary Physician / Hospital
               </label>
               <input
+                id="physicianInput"
                 type="text"
                 value={primaryDoctor}
                 onChange={(e) => setPrimaryDoctor(e.target.value)}
                 placeholder="e.g. Dr. Arvind Swaminathan (Cardiology)"
+                aria-label="Primary Physician and Hospital"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:border-slate-900 focus:outline-none"
               />
             </div>
@@ -206,29 +228,33 @@ export const ElderOnboardingModal: React.FC<ElderOnboardingModalProps> = ({
 
               <div className="grid grid-cols-2 gap-3 pt-1">
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                  <label htmlFor="elderPinInput" className="block text-[11px] font-bold text-slate-700 mb-1">
                     Elder PIN (for Companion Mode)
                   </label>
                   <input
+                    id="elderPinInput"
                     type="text"
                     maxLength={4}
                     value={elderPin}
                     onChange={(e) => setElderPin(e.target.value.replace(/\D/g, ""))}
                     placeholder="4444"
+                    aria-label="Elder 4-digit PIN"
                     className="w-full px-3 py-2 bg-white border border-teal-200 rounded-xl font-mono font-bold text-base text-center tracking-widest text-slate-900 focus:outline-none focus:border-teal-600"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                  <label htmlFor="familyPinInput" className="block text-[11px] font-bold text-slate-700 mb-1">
                     Family Admin PIN (Full Control)
                   </label>
                   <input
+                    id="familyPinInput"
                     type="text"
                     maxLength={4}
                     value={familyPin}
                     onChange={(e) => setFamilyPin(e.target.value.replace(/\D/g, ""))}
                     placeholder="8888"
+                    aria-label="Family Admin 4-digit PIN"
                     className="w-full px-3 py-2 bg-white border border-teal-200 rounded-xl font-mono font-bold text-base text-center tracking-widest text-slate-900 focus:outline-none focus:border-teal-600"
                   />
                 </div>
@@ -242,6 +268,7 @@ export const ElderOnboardingModal: React.FC<ElderOnboardingModalProps> = ({
                 id="seedStarterMeds"
                 checked={seedSamplePrescriptions}
                 onChange={(e) => setSeedSamplePrescriptions(e.target.checked)}
+                aria-label="Pre-populate starter medication timetable"
                 className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500"
               />
               <label
@@ -257,6 +284,7 @@ export const ElderOnboardingModal: React.FC<ElderOnboardingModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
+                aria-label="Cancel registration"
                 className="px-5 py-2.5 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition"
               >
                 Cancel
@@ -264,6 +292,7 @@ export const ElderOnboardingModal: React.FC<ElderOnboardingModalProps> = ({
               <button
                 type="submit"
                 disabled={submitting}
+                aria-label="Create and activate new patient profile"
                 className="px-6 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-2 transition shadow-xs disabled:opacity-50"
               >
                 <Check className="w-4 h-4" />
