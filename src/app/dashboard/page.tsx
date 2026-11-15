@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/common/Navbar";
 import { ElderDashboard } from "@/components/elder/ElderDashboard";
 import { CommandCenterDashboard } from "@/components/command/CommandCenterDashboard";
 import { ProactiveEmailEscalationCenter } from "@/components/email/ProactiveEmailEscalationCenter";
 import type { KinCareState, Role, Medication, CareCircleMember } from "@/types/kincare";
-import { Heart, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -22,7 +23,6 @@ export default function DashboardPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Fetch full state from backend
   const refreshState = useCallback(async () => {
     try {
       const res = await fetch("/api/kincare");
@@ -35,7 +35,6 @@ export default function DashboardPage() {
     }
   }, []);
 
-  // Initialize session and state
   useEffect(() => {
     async function init() {
       try {
@@ -45,8 +44,6 @@ export default function DashboardPage() {
         if (authData.authenticated && authData.session?.member) {
           setCurrentRole(authData.session.member.role);
         } else {
-          // If no active cookie, default to Elder or redirect to home gate
-          // But to be judge-friendly, we can default to ELDER view if they load /dashboard directly
           setCurrentRole("ELDER");
         }
 
@@ -65,7 +62,6 @@ export default function DashboardPage() {
     init();
   }, [router]);
 
-  // Handle instant role switch from top navbar
   const handleRoleSwitch = async (newRole: Role) => {
     setCurrentRole(newRole);
     try {
@@ -83,7 +79,6 @@ export default function DashboardPage() {
     }
   };
 
-  // Reset data to seed state
   const handleResetData = async () => {
     if (confirm("Reset all KinCare medication, adherence logs, and email history to default seed state?")) {
       try {
@@ -103,13 +98,11 @@ export default function DashboardPage() {
     }
   };
 
-  // Logout
   const handleLogout = async () => {
     await fetch("/api/auth", { method: "DELETE" });
     router.push("/");
   };
 
-  // Dose action (Elder companion mode)
   const handleDoseAction = async (
     medicationId: string,
     status: "TAKEN" | "SKIPPED_WITH_REASON",
@@ -142,12 +135,10 @@ export default function DashboardPage() {
     }
   };
 
-  // Request call action
   const handleRequestCall = () => {
     showToast("Urgent call ping sent to Anita Iyer and Nurse Priya!");
   };
 
-  // Medication CRUD (Command center)
   const handleUpdateMedication = async (
     action: "ADD" | "UPDATE" | "TOGGLE_ACTIVE" | "DELETE",
     med: Partial<Medication>
@@ -174,7 +165,6 @@ export default function DashboardPage() {
     }
   };
 
-  // Add doctor question
   const handleAddDoctorQuestion = async (question: string) => {
     try {
       const res = await fetch("/api/appointments", {
@@ -192,7 +182,6 @@ export default function DashboardPage() {
     }
   };
 
-  // Delete doctor question
   const handleDeleteDoctorQuestion = async (index: number) => {
     try {
       const res = await fetch("/api/appointments", {
@@ -210,7 +199,6 @@ export default function DashboardPage() {
     }
   };
 
-  // Update passcode
   const handleUpdatePasscode = async (memberId: string, newPasscode: string) => {
     try {
       const res = await fetch("/api/care-circle", {
@@ -228,7 +216,6 @@ export default function DashboardPage() {
     }
   };
 
-  // Add Care Circle Member
   const handleAddMember = async (member: Partial<CareCircleMember>) => {
     try {
       const res = await fetch("/api/care-circle", {
@@ -246,14 +233,57 @@ export default function DashboardPage() {
     }
   };
 
+  // Skeleton Loading State (Apple Health Geometry)
   if (loading || !state) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center animate-pulse shadow-xs">
-            <Heart className="w-5 h-5 fill-white" />
+      <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
+        {/* Navbar Skeleton */}
+        <div className="w-full h-16 bg-white border-b border-slate-200/60 px-8 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-slate-200 animate-pulse" />
+            <div className="w-24 h-4 bg-slate-200 rounded-full animate-pulse" />
           </div>
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Loading KinCare Platform...</span>
+          <div className="flex items-center gap-3">
+            <div className="w-32 h-8 bg-slate-200 rounded-full animate-pulse" />
+            <div className="w-28 h-8 bg-slate-200 rounded-full animate-pulse" />
+          </div>
+        </div>
+
+        {/* Dashboard Content Skeleton */}
+        <div className="max-w-7xl w-full mx-auto px-8 py-10 space-y-8 flex-1">
+          {/* Greeting Skeleton */}
+          <div className="h-32 w-full bg-white rounded-3xl ring-1 ring-slate-900/5 p-8 flex items-center justify-between">
+            <div className="space-y-3 w-1/2">
+              <div className="w-36 h-3 bg-slate-200 rounded-full animate-pulse" />
+              <div className="w-64 h-6 bg-slate-200 rounded-full animate-pulse" />
+            </div>
+            <div className="w-48 h-12 bg-slate-200 rounded-full animate-pulse" />
+          </div>
+
+          {/* Cards Skeleton Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-40 bg-white rounded-3xl ring-1 ring-slate-900/5 p-7 flex flex-col justify-between">
+                <div className="w-28 h-3 bg-slate-200 rounded-full animate-pulse" />
+                <div className="w-20 h-10 bg-slate-200 rounded-full animate-pulse" />
+                <div className="w-32 h-2.5 bg-slate-200 rounded-full animate-pulse" />
+              </div>
+            ))}
+          </div>
+
+          {/* Timeline Cards Skeleton */}
+          <div className="space-y-4 pt-4">
+            <div className="w-48 h-4 bg-slate-200 rounded-full animate-pulse" />
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-36 bg-white rounded-3xl ring-1 ring-slate-900/5 p-8 flex items-center justify-between">
+                <div className="space-y-3 w-1/2">
+                  <div className="w-32 h-3 bg-slate-200 rounded-full animate-pulse" />
+                  <div className="w-48 h-5 bg-slate-200 rounded-full animate-pulse" />
+                </div>
+                <div className="w-36 h-12 bg-slate-200 rounded-full animate-pulse" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -272,26 +302,36 @@ export default function DashboardPage() {
         emailLogCount={state.emailLogs.length}
       />
 
-      {/* Main Mode View */}
-      <main className="flex-1 pb-20">
-        {currentRole === "ELDER" ? (
-          <ElderDashboard
-            state={state}
-            onDoseAction={handleDoseAction}
-            onRequestCall={handleRequestCall}
-          />
-        ) : (
-          <CommandCenterDashboard
-            state={state}
-            currentRole={currentRole}
-            onUpdateMedication={handleUpdateMedication}
-            onAddDoctorQuestion={handleAddDoctorQuestion}
-            onDeleteDoctorQuestion={handleDeleteDoctorQuestion}
-            onUpdatePasscode={handleUpdatePasscode}
-            onAddMember={handleAddMember}
-            onTriggerEscalation={() => setEmailCenterOpen(true)}
-          />
-        )}
+      {/* Main Mode View with Smooth Framer Motion Transition */}
+      <main className="flex-1 pb-20 overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentRole}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.28, ease: "easeOut" }}
+          >
+            {currentRole === "ELDER" ? (
+              <ElderDashboard
+                state={state}
+                onDoseAction={handleDoseAction}
+                onRequestCall={handleRequestCall}
+              />
+            ) : (
+              <CommandCenterDashboard
+                state={state}
+                currentRole={currentRole}
+                onUpdateMedication={handleUpdateMedication}
+                onAddDoctorQuestion={handleAddDoctorQuestion}
+                onDeleteDoctorQuestion={handleDeleteDoctorQuestion}
+                onUpdatePasscode={handleUpdatePasscode}
+                onAddMember={handleAddMember}
+                onTriggerEscalation={() => setEmailCenterOpen(true)}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Proactive Email & Escalation Center Drawer */}

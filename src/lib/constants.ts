@@ -144,7 +144,24 @@ export function getTodayDateString(): string {
   return now.toISOString().split("T")[0];
 }
 
+export function getYesterdayDateString(): string {
+  const yesterday = new Date(Date.now() - 86400 * 1000);
+  return yesterday.toISOString().split("T")[0];
+}
+
 export const DEFAULT_DOSE_LOGS: DoseLog[] = [
+  {
+    id: "dose_log_yesterday_01",
+    medicationId: "med_calcium",
+    medicationName: "Shelcal-HD (Calcium + Vit D3)",
+    date: getYesterdayDateString(),
+    scheduledTime: "13:30",
+    status: "SKIPPED_WITH_REASON",
+    takenAt: undefined,
+    elderNote: "Stomach felt upset, resting.",
+    loggedByRole: "ELDER",
+    loggedByName: "Raghavan Iyer",
+  },
   {
     id: "dose_log_01",
     medicationId: "med_thyronorm",
@@ -153,7 +170,7 @@ export const DEFAULT_DOSE_LOGS: DoseLog[] = [
     scheduledTime: "07:00",
     status: "TAKEN",
     takenAt: new Date(Date.now() - 3 * 3600 * 1000).toISOString(),
-    elderNote: "Took with full glass of lukewarm water as instructed.",
+    elderNote: "Took with full glass of lukewarm water on empty stomach as instructed.",
     loggedByRole: "ELDER",
     loggedByName: "Raghavan Iyer",
   },

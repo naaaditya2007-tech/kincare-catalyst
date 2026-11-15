@@ -40,6 +40,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
   const [selectedMedForSkip, setSelectedMedForSkip] = useState<Medication | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [callRequested, setCallRequested] = useState(false);
+  const [takingMedId, setTakingMedId] = useState<string | null>(null);
 
   const elder = state.elderProfile;
   const todayStr = new Date().toISOString().split("T")[0];
@@ -130,7 +131,11 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
   };
 
   const handleTakeDose = async (med: Medication) => {
+    setTakingMedId(med.id);
+    // Subtle satisfying pause to allow the checkmark green flash animation to play
+    await new Promise((resolve) => setTimeout(resolve, 550));
     await onDoseAction(med.id, "TAKEN", "Taken with lukewarm water");
+    setTakingMedId(null);
   };
 
   const handleCallClick = () => {
@@ -345,16 +350,21 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
     const doseLog = getMedDoseLog(med.id);
     const isTaken = doseLog?.status === "TAKEN";
     const isSkipped = doseLog?.status === "SKIPPED_WITH_REASON";
+    const isCurrentlyTaking = takingMedId === med.id;
 
     return (
-      <div
+      <motion.div
+        layout
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         key={med.id}
-        className={`bg-white rounded-3xl p-7 sm:p-9 shadow-xs ring-1 transition-all duration-200 ${
-          isTaken
-            ? "ring-emerald-500/20 bg-emerald-50/15"
+        className={`rounded-3xl p-7 sm:p-9 shadow-xs ring-1 transition-all duration-300 relative overflow-hidden ${
+          isCurrentlyTaking
+            ? "bg-emerald-50/50 ring-4 ring-emerald-500/40 scale-[1.01]"
+            : isTaken
+            ? "bg-emerald-50/15 ring-emerald-500/20"
             : isSkipped
-            ? "ring-amber-500/20 bg-amber-50/15"
-            : "ring-slate-900/5 hover:ring-slate-900/10"
+            ? "bg-amber-50/15 ring-amber-500/20"
+            : "bg-white ring-slate-900/5 hover:ring-slate-900/15"
         }`}
       >
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -412,8 +422,9 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
             {isTaken ? (
               <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
+                initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 className="h-14 px-8 rounded-full bg-emerald-600 text-white font-bold text-base flex items-center justify-center gap-2 shadow-xs"
               >
                 <CheckCircle2 className="w-5 h-5" />
@@ -429,7 +440,8 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
                 </div>
                 <button
                   onClick={() => handleTakeDose(med)}
-                  className="h-14 px-6 rounded-full bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm transition shadow-xs active:scale-98"
+                  disabled={isCurrentlyTaking}
+                  className="h-14 px-6 rounded-full bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm transition shadow-xs active:scale-98 disabled:opacity-50"
                 >
                   Take Now Instead
                 </button>
@@ -440,25 +452,43 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
                 <button
                   type="button"
                   onClick={() => setSelectedMedForSkip(med)}
-                  className="h-14 px-7 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-base transition active:scale-98"
+                  disabled={isCurrentlyTaking}
+                  className="h-14 px-7 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-base transition active:scale-98 disabled:opacity-50"
                 >
                   Not Now / Skip
                 </button>
 
-                {/* Primary Pill Button: I Took This (Solid Teal / Black) */}
-                <button
+                {/* Primary Pill Button: I Took This with satisfying checkmark animation */}
+                <motion.button
                   type="button"
                   onClick={() => handleTakeDose(med)}
-                  className="h-14 px-8 rounded-full bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-base transition shadow-sm flex items-center justify-center gap-2.5 active:scale-98"
+                  disabled={isCurrentlyTaking}
+                  animate={isCurrentlyTaking ? { scale: [1, 1.05, 1], backgroundColor: "#059669" } : {}}
+                  transition={{ duration: 0.35 }}
+                  className="h-14 px-8 rounded-full bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-base transition shadow-sm flex items-center justify-center gap-2.5 active:scale-98 disabled:opacity-90"
                 >
-                  <Check className="w-5 h-5 stroke-[3]" />
-                  <span>I Took This</span>
-                </button>
+                  {isCurrentlyTaking ? (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 20 }}
+                      className="flex items-center gap-2"
+                    >
+                      <Check className="w-6 h-6 stroke-[3.5] text-white" />
+                      <span>Logging...</span>
+                    </motion.div>
+                  ) : (
+                    <>
+                      <Check className="w-5 h-5 stroke-[3]" />
+                      <span>I Took This</span>
+                    </>
+                  )}
+                </motion.button>
               </>
             )}
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 };

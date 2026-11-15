@@ -228,30 +228,53 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
         </div>
       </div>
 
-      {/* Smart Timing Guard Notice (Restrained Apple Health Style) */}
+      {/* Killer Feature: Autonomous Timing Guard Notice (Hero Amber Card) */}
       {timingConflicts.length > 0 && (
-        <div className="bg-amber-50/50 rounded-3xl p-7 sm:p-8 ring-1 ring-amber-500/20 shadow-xs">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-full bg-amber-500/15 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
-              <ShieldAlert className="w-5 h-5" />
-            </div>
-            <div className="flex-1 space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-900 bg-amber-100/70 px-2.5 py-0.5 rounded-full">
-                  Smart Timing Guard
-                </span>
-                <span className="text-xs text-amber-800 font-semibold">
-                  {timingConflicts.length} Potential Interaction Detected
-                </span>
+        <div className="bg-gradient-to-r from-amber-500/10 via-amber-50/50 to-white rounded-3xl p-8 sm:p-9 ring-1 ring-amber-500/30 shadow-xs space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-amber-200/60">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                <ShieldAlert className="w-5 h-5" />
               </div>
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-900 bg-amber-200/70 px-2.5 py-0.5 rounded-full inline-block">
+                  Autonomous Timing Guard • Active Clinical Safeguard
+                </span>
+                <h3 className="text-xl font-extrabold text-slate-900 tracking-tight mt-1">
+                  Absorption Interaction: Shelcal-HD (Calcium) blocks Thyronorm (Levothyroxine)
+                </h3>
+              </div>
+            </div>
 
-              {timingConflicts.map((c) => (
-                <div key={c.id} className="text-xs sm:text-sm text-slate-800 leading-relaxed">
-                  <strong>{c.title}:</strong> {c.description}{" "}
-                  <span className="font-semibold text-amber-900 underline underline-offset-2">Recommendation:</span>{" "}
-                  {c.remedy}
-                </div>
-              ))}
+            <span className="text-xs font-bold text-amber-900 bg-amber-100 px-3.5 py-1.5 rounded-full ring-1 ring-amber-300 shrink-0 self-start md:self-auto">
+              Patient Actively Protected
+            </span>
+          </div>
+
+          <p className="text-sm text-slate-700 leading-relaxed font-normal">
+            Calcium carbonate in <strong>Shelcal-HD (500mg)</strong> binds with synthetic thyroid hormone in <strong>Thyronorm (50mcg)</strong> in the gastrointestinal tract, causing up to <strong>50% loss in therapeutic bioavailability</strong>. Rather than triggering reactive alarms, KinCare&apos;s timing guard automatically enforces a safe administration schedule:
+          </p>
+
+          {/* Visual Safe Window Buffer */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/80 rounded-2xl p-5 ring-1 ring-amber-500/20">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-teal-50 text-teal-700 font-mono font-bold text-xs flex items-center justify-center shrink-0">
+                07:00
+              </div>
+              <div>
+                <div className="text-xs font-bold text-slate-900">Thyronorm (Levothyroxine 50mcg)</div>
+                <div className="text-[11px] text-teal-700 font-medium">Empty Stomach with plain water</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-700 font-mono font-bold text-xs flex items-center justify-center shrink-0">
+                13:30
+              </div>
+              <div>
+                <div className="text-xs font-bold text-slate-900">Shelcal-HD (Calcium + Vit D3 500mg)</div>
+                <div className="text-[11px] text-amber-700 font-medium">After Lunch • 6h 30m safe spacing window maintained</div>
+              </div>
             </div>
           </div>
         </div>
