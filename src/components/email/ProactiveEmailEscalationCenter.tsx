@@ -95,9 +95,9 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
               </div>
               <div>
                 <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  Proactive Email & Escalation Center
+                  Email Testing Center
                 </h2>
-                <p className="text-xs text-slate-500">Autonomous alert dispatch & live audit engine</p>
+                <p className="text-xs text-slate-500">Live preview & Resend transactional delivery simulator</p>
               </div>
             </div>
 
@@ -166,18 +166,18 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
                   <Send className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900 text-sm">Send Upcoming Dose Reminder</div>
+                  <div className="font-bold text-slate-900 text-sm">Simulate Upcoming Dose</div>
                   <div className="text-xs text-slate-500">
                     Dispatches today&apos;s full medication schedule and spacing precautions to Care Circle
                   </div>
                 </div>
               </div>
               <span className="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200 group-hover:bg-teal-600 group-hover:text-white transition">
-                {triggeringWorkflow === "UPCOMING_DOSE" ? "Sending..." : "Dispatch"}
+                {triggeringWorkflow === "UPCOMING_DOSE" ? "Sending..." : "Simulate"}
               </span>
             </button>
 
-            {/* Workflow 2: Simulate Missed Dose Escalation */}
+            {/* Workflow 2: Simulate Missed Dose */}
             <button
               onClick={() => handleTriggerWorkflow("MISSED_DOSE_ESCALATION")}
               disabled={!!triggeringWorkflow}
@@ -188,18 +188,18 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
                   <AlertOctagon className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="font-bold text-rose-950 text-sm">Simulate Missed Dose Escalation</div>
+                  <div className="font-bold text-rose-950 text-sm">Simulate Missed Dose</div>
                   <div className="text-xs text-rose-800/80">
                     Marks overdue dose, bundles Raghavan&apos;s last note (&ldquo;Feeling dizzy&rdquo;) and notifies family
                   </div>
                 </div>
               </div>
               <span className="text-xs font-bold text-rose-700 bg-white px-2.5 py-1 rounded-lg border border-rose-200 group-hover:bg-rose-600 group-hover:text-white transition">
-                {triggeringWorkflow === "MISSED_DOSE_ESCALATION" ? "Escalating..." : "Trigger"}
+                {triggeringWorkflow === "MISSED_DOSE_ESCALATION" ? "Escalating..." : "Simulate"}
               </span>
             </button>
 
-            {/* Workflow 3: Doctor Appointment Brief */}
+            {/* Workflow 3: Simulate Appointment */}
             <button
               onClick={() => handleTriggerWorkflow("DOCTOR_BRIEF")}
               disabled={!!triggeringWorkflow}
@@ -210,14 +210,14 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
                   <FileCheck2 className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900 text-sm">Send Doctor Appointment Brief</div>
+                  <div className="font-bold text-slate-900 text-sm">Simulate Appointment</div>
                   <div className="text-xs text-slate-500">
                     Compiles patient history, active meds, and discussion checklist for Dr. Arvind Swaminathan
                   </div>
                 </div>
               </div>
               <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200 group-hover:bg-indigo-600 group-hover:text-white transition">
-                {triggeringWorkflow === "DOCTOR_BRIEF" ? "Compiling..." : "Dispatch"}
+                {triggeringWorkflow === "DOCTOR_BRIEF" ? "Compiling..." : "Simulate"}
               </span>
             </button>
           </div>

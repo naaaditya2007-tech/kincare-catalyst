@@ -65,14 +65,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Right Actions: Role Switcher, Email Center, Reset, Logout */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Email / Escalation Drawer Trigger */}
+          {/* Email Testing Center Trigger */}
           <button
             onClick={onOpenEmailCenter}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 hover:border-teal-500 bg-white text-slate-700 hover:text-teal-700 text-xs sm:text-sm font-medium transition shadow-xs group"
-            title="Proactive Email & Escalation Center"
+            title="Email Testing Center"
           >
             <Bell className="w-4 h-4 text-slate-500 group-hover:text-teal-600" />
-            <span className="hidden sm:inline">Escalation Center</span>
+            <span className="hidden sm:inline">Email Testing Center</span>
             {emailLogCount > 0 && (
               <span className="bg-teal-600 text-white text-[11px] font-bold px-1.5 py-0.2 rounded-full min-w-4 text-center">
                 {emailLogCount}

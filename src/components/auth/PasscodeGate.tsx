@@ -218,14 +218,14 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({ elderProfile, onSucc
           </button>
         </div>
 
-        {/* Quick Judge Access Bar */}
+        {/* Demo / Judge Quick Access Box */}
         <div className="border-t border-slate-200 pt-5 mt-2">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5 text-teal-600" />
-              Quick Judge Access (1-Click)
+              Demo / Judge Quick Access (1-Click Auto-Login)
             </span>
-            <span className="text-[11px] text-teal-600 font-medium">Instant Unlock</span>
+            <span className="text-[11px] text-teal-600 font-semibold">1-Click PINs</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
