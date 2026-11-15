@@ -47,7 +47,7 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
   onAddMember,
   onTriggerEscalation,
 }) => {
-  const [activeTab, setActiveTab] = useState<"medications" | "adherence" | "appointments" | "careCircle">("medications");
+  const [activeTab, setActiveTab] = useState<"medications" | "adherence" | "appointments">("medications");
   const [medModalOpen, setMedModalOpen] = useState(false);
   const [medToEdit, setMedToEdit] = useState<Medication | null>(null);
   const [briefModalOpen, setBriefModalOpen] = useState(false);
@@ -89,56 +89,62 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
-      {/* Command Center Title Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-10">
+      {/* Title Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
         <div>
-          <div className="text-xs font-bold text-teal-700 uppercase tracking-wider flex items-center gap-1.5 mb-1">
+          <div className="text-xs font-semibold uppercase tracking-wider text-teal-700 flex items-center gap-1.5 mb-2">
             <Sparkles className="w-4 h-4 text-teal-600" />
-            Care Circle Command Center • {currentRole === "FAMILY_ADMIN" ? "Family Administrator" : "Caretaker View"}
+            Care Circle Command Center • {currentRole === "FAMILY_ADMIN" ? "Family Administrator" : "Caretaker"}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
             Patient Oversight: {elder.name}
           </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Real-time adherence telemetry, prescription safety guard, and collaborative doctor prep
+          <p className="text-sm sm:text-base text-slate-500 mt-1 font-normal">
+            Real-time adherence telemetry, prescription safety guard, and doctor visit briefing
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => setCircleModalOpen(true)}
-            className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition shadow-xs"
+            className="px-5 py-2.5 rounded-full border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold flex items-center gap-2 transition shadow-2xs"
           >
-            <KeyRound className="w-4 h-4 text-teal-600" />
+            <KeyRound className="w-3.5 h-3.5 text-teal-600" />
             <span>Passcode & Circle</span>
           </button>
 
           <button
             onClick={() => setBriefModalOpen(true)}
-            className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold flex items-center gap-1.5 transition shadow-sm"
+            className="px-5 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-2 transition shadow-xs"
           >
-            <FileText className="w-4 h-4" />
+            <FileText className="w-3.5 h-3.5" />
             <span>Generate Doctor Brief</span>
           </button>
         </div>
       </div>
 
-      {/* Top KPI Strip */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Top KPI Strip (Apple Health Massive Bold Numbers & Whitespace) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* KPI 1: Adherence % */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Today&apos;s Adherence</span>
-            <Activity className="w-4 h-4 text-teal-600" />
+        <div className="bg-white rounded-3xl p-7 sm:p-8 shadow-xs ring-1 ring-slate-900/5 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between text-slate-400 mb-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Today&apos;s Adherence
+              </span>
+              <Activity className="w-4 h-4 text-teal-600" />
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
+                {adherencePercent}%
+              </span>
+              <span className="text-xs font-medium text-slate-500">
+                ({takenCount}/{activeMedsCount} taken)
+              </span>
+            </div>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-slate-900">{adherencePercent}%</span>
-            <span className="text-xs text-slate-500">
-              ({takenCount}/{activeMedsCount} taken)
-            </span>
-          </div>
-          <div className="w-full bg-slate-100 h-2 rounded-full mt-3 overflow-hidden">
+          <div className="w-full bg-slate-100 h-2 rounded-full mt-5 overflow-hidden">
             <div
               className="bg-teal-600 h-full rounded-full transition-all duration-500"
               style={{ width: `${adherencePercent}%` }}
@@ -148,23 +154,29 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
 
         {/* KPI 2: Pill Stock Alerts */}
         <div
-          className={`border rounded-2xl p-5 shadow-xs transition ${
+          className={`rounded-3xl p-7 sm:p-8 shadow-xs ring-1 transition flex flex-col justify-between ${
             lowStockMeds.length > 0
-              ? "bg-amber-50/40 border-amber-300"
-              : "bg-white border-slate-200"
+              ? "bg-amber-50/30 ring-amber-500/20"
+              : "bg-white ring-slate-900/5"
           }`}
         >
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Refill Alerts</span>
-            <AlertTriangle className={`w-4 h-4 ${lowStockMeds.length > 0 ? "text-amber-600" : "text-slate-400"}`} />
+          <div>
+            <div className="flex items-center justify-between text-slate-400 mb-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Refill Alerts
+              </span>
+              <AlertTriangle className={`w-4 h-4 ${lowStockMeds.length > 0 ? "text-amber-600" : "text-slate-400"}`} />
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
+                {lowStockMeds.length}
+              </span>
+              <span className="text-xs font-medium text-slate-500">
+                {lowStockMeds.length === 1 ? "med low" : "meds low"}
+              </span>
+            </div>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-slate-900">{lowStockMeds.length}</span>
-            <span className="text-xs text-slate-500">
-              {lowStockMeds.length === 1 ? "medication low" : "medications low"}
-            </span>
-          </div>
-          <div className="text-[11px] text-amber-800 font-medium mt-2 truncate">
+          <div className="text-xs font-medium text-slate-600 mt-4 truncate">
             {lowStockMeds.length > 0
               ? lowStockMeds.map((m) => `${m.name} (${m.stockRemaining} left)`).join(", ")
               : "All stock levels adequate"}
@@ -172,51 +184,61 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
         </div>
 
         {/* KPI 3: Next Appointment Countdown */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Doctor Visit</span>
-            <Calendar className="w-4 h-4 text-indigo-600" />
+        <div className="bg-white rounded-3xl p-7 sm:p-8 shadow-xs ring-1 ring-slate-900/5 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between text-slate-400 mb-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Doctor Visit
+              </span>
+              <Calendar className="w-4 h-4 text-teal-600" />
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
+                {daysUntilAppt > 0 ? `In ${daysUntilAppt}d` : "Today"}
+              </span>
+              <span className="text-xs font-medium text-slate-500 truncate max-w-[120px]">
+                {nextAppt ? nextAppt.doctorName.split(" ").slice(-1)[0] : "None"}
+              </span>
+            </div>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-slate-900">
-              {daysUntilAppt > 0 ? `In ${daysUntilAppt}d` : "Today"}
-            </span>
-            <span className="text-xs text-slate-500 truncate max-w-[120px]">
-              {nextAppt ? nextAppt.doctorName.split(" ").slice(-1)[0] : "None"}
-            </span>
-          </div>
-          <div className="text-[11px] text-slate-500 mt-2 truncate">
-            {nextAppt ? nextAppt.hospital : "No upcoming review scheduled"}
+          <div className="text-xs text-slate-500 mt-4 truncate">
+            {nextAppt ? nextAppt.hospital : "No consultation scheduled"}
           </div>
         </div>
 
         {/* KPI 4: Active Care Circle */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Care Circle</span>
-            <Users className="w-4 h-4 text-emerald-600" />
+        <div className="bg-white rounded-3xl p-7 sm:p-8 shadow-xs ring-1 ring-slate-900/5 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between text-slate-400 mb-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Care Circle
+              </span>
+              <Users className="w-4 h-4 text-teal-600" />
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
+                {state.careCircle.length}
+              </span>
+              <span className="text-xs font-medium text-slate-500">members</span>
+            </div>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-slate-900">{state.careCircle.length}</span>
-            <span className="text-xs text-slate-500">connected members</span>
-          </div>
-          <div className="text-[11px] text-emerald-700 font-medium mt-2">
+          <div className="text-xs text-slate-500 mt-4">
             1 Elder, 1 Family, 1 Visiting Nurse
           </div>
         </div>
       </div>
 
-      {/* Smart Timing Guard Banner */}
+      {/* Smart Timing Guard Notice (Restrained Apple Health Style) */}
       {timingConflicts.length > 0 && (
-        <div className="bg-amber-50/80 border border-amber-300 rounded-2xl p-4 sm:p-5 shadow-xs">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0">
+        <div className="bg-amber-50/50 rounded-3xl p-7 sm:p-8 ring-1 ring-amber-500/20 shadow-xs">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-full bg-amber-500/15 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
               <ShieldAlert className="w-5 h-5" />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 space-y-2">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded">
-                  Autonomous Timing Guard Notice
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-900 bg-amber-100/70 px-2.5 py-0.5 rounded-full">
+                  Smart Timing Guard
                 </span>
                 <span className="text-xs text-amber-800 font-semibold">
                   {timingConflicts.length} Potential Interaction Detected
@@ -224,9 +246,10 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
               </div>
 
               {timingConflicts.map((c) => (
-                <div key={c.id} className="mt-2 text-xs sm:text-sm text-amber-950">
+                <div key={c.id} className="text-xs sm:text-sm text-slate-800 leading-relaxed">
                   <strong>{c.title}:</strong> {c.description}{" "}
-                  <span className="font-semibold underline underline-offset-2">Recommendation:</span> {c.remedy}
+                  <span className="font-semibold text-amber-900 underline underline-offset-2">Recommendation:</span>{" "}
+                  {c.remedy}
                 </div>
               ))}
             </div>
@@ -234,120 +257,122 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
         </div>
       )}
 
-      {/* Tab Controls */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
+      {/* Pill-Shaped Tab Selector */}
+      <div className="flex items-center gap-2 pb-2 overflow-x-auto">
         <button
           onClick={() => setActiveTab("medications")}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 shrink-0 ${
+          className={`px-5 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 shrink-0 ${
             activeTab === "medications"
               ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
           }`}
         >
-          <Pill className="w-4 h-4" />
+          <Pill className="w-3.5 h-3.5" />
           <span>Medications & Inventory ({state.medications.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab("adherence")}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 shrink-0 ${
+          className={`px-5 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 shrink-0 ${
             activeTab === "adherence"
               ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
           }`}
         >
-          <Clock className="w-4 h-4" />
+          <Clock className="w-3.5 h-3.5" />
           <span>Adherence & Elder Feed ({state.doseLogs.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab("appointments")}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 shrink-0 ${
+          className={`px-5 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 shrink-0 ${
             activeTab === "appointments"
               ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
           }`}
         >
-          <Calendar className="w-4 h-4" />
+          <Calendar className="w-3.5 h-3.5" />
           <span>Doctor Prep Checklist</span>
         </button>
       </div>
 
       {/* Tab 1: Medication Schedule & Inventory Manager */}
       {activeTab === "medications" && (
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-slate-900">Active Prescriptions & Stock Telemetry</h2>
+            <h2 className="text-xl font-bold tracking-tight text-slate-900">Active Prescriptions</h2>
             <button
               onClick={() => {
                 setMedToEdit(null);
                 setMedModalOpen(true);
               }}
-              className="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold flex items-center gap-1.5 transition shadow-sm"
+              className="px-5 py-2.5 rounded-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold flex items-center gap-1.5 transition shadow-xs"
             >
               <Plus className="w-4 h-4" />
               <span>Add Medication</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {state.medications.map((med) => {
               const isLow = med.stockRemaining <= med.refillThreshold;
               return (
                 <div
                   key={med.id}
-                  className={`bg-white rounded-2xl border p-5 shadow-xs transition flex flex-col justify-between ${
+                  className={`bg-white rounded-3xl p-7 sm:p-8 shadow-xs ring-1 transition flex flex-col justify-between ${
                     !med.active
-                      ? "opacity-60 border-slate-200 bg-slate-50"
+                      ? "opacity-60 ring-slate-900/5 bg-slate-50"
                       : isLow
-                      ? "border-amber-300"
-                      : "border-slate-200 hover:border-slate-300"
+                      ? "ring-amber-500/20"
+                      : "ring-slate-900/5 hover:ring-slate-900/15"
                   }`}
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-teal-800 bg-teal-50 px-3 py-1 rounded-full border border-teal-200/60">
                         {med.instructions}
                       </span>
-                      <span className="text-xs font-mono font-semibold text-slate-500">
+                      <span className="text-xs font-mono font-medium text-slate-400">
                         {med.scheduledTimes.join(", ")}
                       </span>
                     </div>
 
-                    <h3 className="text-base font-bold text-slate-900 flex items-center gap-1.5">
-                      {med.name}
-                    </h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      {med.dosage} • {med.form} {med.purpose ? `(${med.purpose})` : ""}
-                    </p>
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+                        {med.name}
+                      </h3>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        {med.dosage} • {med.form} {med.purpose ? `(${med.purpose})` : ""}
+                      </p>
+                    </div>
 
                     {med.conflictNote && (
-                      <div className="text-[11px] bg-amber-50 text-amber-900 border border-amber-200 rounded-lg p-2 mt-2">
+                      <div className="text-[11px] bg-amber-50 text-amber-900 rounded-2xl p-3 border border-amber-200/60 leading-relaxed">
                         {med.conflictNote}
                       </div>
                     )}
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                  <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
                     <div>
-                      <div className="text-[10px] uppercase font-bold text-slate-400">Inventory Stock</div>
-                      <div className="text-sm font-extrabold flex items-center gap-1.5">
+                      <div className="text-[10px] uppercase font-bold text-slate-400">Inventory</div>
+                      <div className="text-base font-extrabold text-slate-900 flex items-center gap-1.5">
                         <span className={isLow ? "text-amber-600" : "text-slate-900"}>
                           {med.stockRemaining} units
                         </span>
                         {isLow && (
-                          <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded">
-                            REFILL
+                          <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded-full">
+                            LOW
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => handleRestock(med, 30)}
                         title="Add 30 units to inventory"
-                        className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold"
+                        className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-full text-xs font-semibold transition"
                       >
                         +30
                       </button>
@@ -357,21 +382,21 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
                           setMedModalOpen(true);
                         }}
                         title="Edit prescription"
-                        className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg"
+                        className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => onUpdateMedication("TOGGLE_ACTIVE", { id: med.id })}
                         title={med.active ? "Pause prescription" : "Resume prescription"}
-                        className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg"
+                        className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-full transition"
                       >
                         {med.active ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
                       </button>
                       <button
                         onClick={() => onUpdateMedication("DELETE", { id: med.id })}
                         title="Delete prescription"
-                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg"
+                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -386,30 +411,32 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
 
       {/* Tab 2: Adherence & Elder Notes Feed */}
       {activeTab === "adherence" && (
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-slate-900">Chronological Adherence & Elder Feedback</h2>
+            <h2 className="text-xl font-bold tracking-tight text-slate-900">
+              Chronological Adherence Feed
+            </h2>
             <button
               onClick={onTriggerEscalation}
-              className="px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-bold flex items-center gap-1.5 transition"
+              className="px-4 py-2 rounded-full border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-bold flex items-center gap-1.5 transition"
             >
-              <AlertOctagon className="w-4 h-4 text-rose-600" />
+              <AlertOctagon className="w-3.5 h-3.5 text-rose-600" />
               <span>Simulate Overdue Escalation</span>
             </button>
           </div>
 
-          <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white divide-y divide-slate-100">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xs ring-1 ring-slate-900/5 divide-y divide-slate-100">
             {state.doseLogs.map((log) => {
               const isTaken = log.status === "TAKEN";
               const isSkipped = log.status === "SKIPPED_WITH_REASON";
               const isMissed = log.status === "MISSED";
 
               return (
-                <div key={log.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="space-y-1">
+                <div key={log.id} className="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1.5">
                     <div className="flex items-center gap-2">
                       <span
-                        className={`text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
                           isTaken
                             ? "bg-emerald-100 text-emerald-800"
                             : isSkipped
@@ -422,15 +449,15 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
                         {log.status.replace(/_/g, " ")}
                       </span>
                       <span className="text-xs font-mono text-slate-400">{log.scheduledTime}</span>
-                      <span className="text-xs text-slate-400">•</span>
-                      <span className="text-xs font-medium text-slate-500">{log.date}</span>
+                      <span className="text-slate-300">•</span>
+                      <span className="text-xs text-slate-500">{log.date}</span>
                     </div>
 
                     <div className="text-base font-bold text-slate-900">{log.medicationName}</div>
 
                     {/* Empathy-driven Elder Note callout */}
                     {log.elderNote && (
-                      <div className="text-xs sm:text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-xl p-2.5 mt-1.5 flex items-start gap-2">
+                      <div className="text-xs sm:text-sm text-slate-700 bg-slate-50 rounded-2xl p-3 flex items-start gap-2 ring-1 ring-slate-900/5">
                         <MessageSquare className="w-3.5 h-3.5 text-teal-600 shrink-0 mt-0.5" />
                         <div>
                           <strong className="text-slate-900">Elder Comment:</strong> &ldquo;{log.elderNote}&rdquo;
@@ -440,8 +467,8 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
                   </div>
 
                   <div className="text-left sm:text-right shrink-0">
-                    <div className="text-xs text-slate-400">Logged by</div>
-                    <div className="text-xs font-semibold text-slate-700">{log.loggedByName || log.loggedByRole}</div>
+                    <div className="text-[11px] text-slate-400">Logged by</div>
+                    <div className="text-xs font-semibold text-slate-800">{log.loggedByName || log.loggedByRole}</div>
                     {log.takenAt && (
                       <div className="text-[11px] text-emerald-700 font-mono">
                         {new Date(log.takenAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
@@ -458,49 +485,49 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
       {/* Tab 3: Appointments & Doctor Prep */}
       {activeTab === "appointments" && (
         <div className="space-y-6">
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-4 border-b border-slate-100">
+          <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-xs ring-1 ring-slate-900/5 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-teal-700">Next Consultation</span>
-                <h3 className="text-xl font-bold text-slate-900 mt-0.5">
+                <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight mt-1">
                   {nextAppt?.doctorName || "Dr. Arvind Swaminathan"}
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-sm text-slate-500 font-normal">
                   {nextAppt?.specialty} • {nextAppt?.hospital}
                 </p>
               </div>
 
               <button
                 onClick={() => setBriefModalOpen(true)}
-                className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5"
+                className="px-5 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-2"
               >
-                <FileText className="w-4 h-4" />
+                <FileText className="w-3.5 h-3.5" />
                 <span>View Full Clinical Brief</span>
               </button>
             </div>
 
-            <div className="mb-6">
+            <div>
               <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-                Collaborative Discussion Checklist ({nextAppt?.checklistQuestions?.length || 0} Questions)
+                Discussion Checklist ({nextAppt?.checklistQuestions?.length || 0} Questions)
               </div>
-              <p className="text-xs text-slate-500 mb-4">
-                Both Anita and Nurse Priya can add questions here to ensure everything is addressed during the OPD visit.
+              <p className="text-xs text-slate-500 mb-5">
+                Care circle members can add discussion points to ensure complete clinical coverage during the OPD visit.
               </p>
 
-              <div className="space-y-2 mb-4">
+              <div className="space-y-3 mb-5">
                 {(nextAppt?.checklistQuestions || []).map((q, idx) => (
                   <div
                     key={idx}
-                    className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-3 text-xs sm:text-sm"
+                    className="p-4 bg-slate-50 rounded-2xl flex items-center justify-between gap-3 text-xs sm:text-sm ring-1 ring-slate-900/5"
                   >
-                    <div className="flex items-start gap-2.5">
+                    <div className="flex items-start gap-3">
                       <span className="font-bold text-teal-700">Q{idx + 1}.</span>
                       <span className="text-slate-800">{q}</span>
                     </div>
 
                     <button
                       onClick={() => onDeleteDoctorQuestion(idx)}
-                      className="p-1 text-slate-400 hover:text-rose-600 rounded transition"
+                      className="p-1.5 text-slate-400 hover:text-rose-600 rounded-full transition"
                       title="Remove question"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -509,18 +536,18 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = ({
                 ))}
               </div>
 
-              {/* Add Question Input */}
-              <form onSubmit={handleQuestionSubmit} className="flex gap-2">
+              {/* Add Question Input (Pill Shaped) */}
+              <form onSubmit={handleQuestionSubmit} className="flex gap-2.5">
                 <input
                   type="text"
-                  placeholder="Add a new question for Dr. Arvind Swaminathan (e.g. check HbA1c target)..."
+                  placeholder="Add a new question for Dr. Arvind Swaminathan..."
                   value={newQuestionText}
                   onChange={(e) => setNewQuestionText(e.target.value)}
-                  className="flex-1 px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm focus:border-teal-500 focus:outline-none"
+                  className="flex-1 px-4 py-3 border border-slate-200 rounded-full text-xs sm:text-sm focus:border-slate-900 focus:outline-none bg-slate-50/50"
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition"
+                  className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-full text-xs font-bold flex items-center gap-1.5 transition shadow-2xs"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Add Question</span>

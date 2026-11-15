@@ -63,9 +63,9 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
           Medication Brand / Generic Name *
         </label>
         <input
@@ -74,13 +74,13 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
           placeholder="e.g., Amlodipine Besylate"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-teal-500 focus:outline-none"
+          className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none"
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3.5">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
             Dosage *
           </label>
           <input
@@ -89,18 +89,18 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
             placeholder="e.g., 5 mg or 50 mcg"
             value={dosage}
             onChange={(e) => setDosage(e.target.value)}
-            className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-teal-500 focus:outline-none"
+            className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
             Dosage Form
           </label>
           <select
             value={form}
             onChange={(e) => setForm(e.target.value as MedicationForm)}
-            className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-teal-500 focus:outline-none bg-white"
+            className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none bg-white"
           >
             {FORM_OPTIONS.map((f) => (
               <option key={f} value={f}>
@@ -111,15 +111,15 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3.5">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
             Meal Instruction
           </label>
           <select
             value={instructions}
             onChange={(e) => setInstructions(e.target.value as MealInstruction)}
-            className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-teal-500 focus:outline-none bg-white"
+            className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none bg-white"
           >
             {INSTRUCTION_OPTIONS.map((inst) => (
               <option key={inst} value={inst}>
@@ -130,7 +130,7 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
             Daily Intake Time
           </label>
           <input
@@ -138,14 +138,14 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
             required
             value={time}
             onChange={(e) => setTime(e.target.value)}
-            className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-teal-500 focus:outline-none"
+            className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none"
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3.5">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
             Stock Units Remaining
           </label>
           <input
@@ -153,12 +153,12 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
             min="0"
             value={stock}
             onChange={(e) => setStock(Number(e.target.value))}
-            className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-teal-500 focus:outline-none"
+            className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
             Refill Alert Threshold
           </label>
           <input
@@ -166,13 +166,13 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
             min="1"
             value={refillThreshold}
             onChange={(e) => setRefillThreshold(Number(e.target.value))}
-            className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-teal-500 focus:outline-none"
+            className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
           Clinical Purpose / Condition
         </label>
         <input
@@ -180,12 +180,12 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
           placeholder="e.g., Blood pressure control"
           value={purpose}
           onChange={(e) => setPurpose(e.target.value)}
-          className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-teal-500 focus:outline-none"
+          className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none"
         />
       </div>
 
       <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1 flex items-center gap-1.5">
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5 flex items-center gap-1.5">
           <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
           Timing Guard & Spacing Precaution Note
         </label>
@@ -194,21 +194,21 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
           placeholder="e.g., Space 2 hours apart from Calcium or antacids"
           value={conflictNote}
           onChange={(e) => setConflictNote(e.target.value)}
-          className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-teal-500 focus:outline-none"
+          className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none"
         />
       </div>
 
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-semibold text-sm hover:bg-slate-50 transition"
+          className="px-5 py-3 rounded-full border border-slate-200 text-slate-700 font-semibold text-xs hover:bg-slate-50 transition"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm transition shadow-sm"
+          className="px-6 py-3 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition shadow-xs"
         >
           {medicationToEdit ? "Update Medication" : "Save Prescription"}
         </button>
@@ -229,27 +229,27 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          initial={{ opacity: 0, scale: 0.96, y: 8 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 sm:p-7 relative max-h-[90vh] overflow-y-auto"
+          exit={{ opacity: 0, scale: 0.96, y: 8 }}
+          className="bg-white rounded-3xl border border-slate-100 shadow-2xl max-w-lg w-full p-8 sm:p-10 relative max-h-[90vh] overflow-y-auto"
         >
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition"
+            className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition"
           >
             <X className="w-5 h-5" />
           </button>
 
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-11 h-11 rounded-xl bg-teal-50 text-teal-600 border border-teal-200 flex items-center justify-center">
+          <div className="flex items-center gap-3.5 mb-6">
+            <div className="w-11 h-11 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center">
               <Pill className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-slate-900">
-                {medicationToEdit ? "Edit Prescription" : "Add New Medication"}
+              <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+                {medicationToEdit ? "Edit Prescription" : "Add Medication"}
               </h3>
-              <p className="text-xs text-slate-500">Configure dosage, timing rules, and inventory count</p>
+              <p className="text-xs text-slate-500 font-normal">Configure dosage, timing rules, and inventory count</p>
             </div>
           </div>
 

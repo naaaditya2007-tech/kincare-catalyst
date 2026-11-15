@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { PasscodeGate } from "@/components/auth/PasscodeGate";
 import { DEFAULT_ELDER_PROFILE } from "@/lib/constants";
 import { ElderProfile } from "@/types/kincare";
-import { Heart, ShieldCheck, Activity, Users, Clock, Sparkles } from "lucide-react";
+import { Heart, Sparkles } from "lucide-react";
 
 export default function HomePage() {
   const router = useRouter();
@@ -13,7 +13,6 @@ export default function HomePage() {
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    // Check if session already exists
     fetch("/api/auth")
       .then((res) => res.json())
       .then((data) => {
@@ -25,7 +24,6 @@ export default function HomePage() {
       })
       .catch(() => setCheckingAuth(false));
 
-    // Also fetch latest state profile if available
     fetch("/api/kincare")
       .then((res) => res.json())
       .then((data) => {
@@ -42,93 +40,74 @@ export default function HomePage() {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center animate-pulse">
-            <Heart className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center animate-pulse shadow-sm">
+            <Heart className="w-5 h-5 fill-white" />
           </div>
-          <span className="text-xs font-semibold text-slate-500">Securing Care Vault...</span>
+          <span className="text-xs font-medium text-slate-500 tracking-wider uppercase">Loading KinCare...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#fafafa] text-slate-900 flex flex-col justify-between selection:bg-teal-100 selection:text-teal-900">
-      {/* Top Subtle Announcement */}
-      <header className="border-b border-slate-200/80 bg-white/80 backdrop-blur-xs py-3 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-teal-600 text-white flex items-center justify-center">
-              <Heart className="w-4 h-4" />
-            </div>
-            <span className="font-bold text-base tracking-tight text-slate-900">KinCare</span>
-            <span className="text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200 px-1.5 py-0.2 rounded uppercase">
-              Geriatric Telemetry
-            </span>
-          </div>
+    <main className="min-h-screen w-full bg-white grid grid-cols-1 lg:grid-cols-2">
+      {/* Left Column: Full-Height Raw Image with Human Connection */}
+      <div className="relative hidden lg:block h-full w-full overflow-hidden bg-slate-900">
+        {/* Calming, warm human connection / care scene */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?q=80&w=1600&auto=format&fit=crop"
+          alt="Gentle caring hands in warm natural sunlight"
+          className="absolute inset-0 h-full w-full object-cover object-center filter brightness-[0.92] contrast-[1.02]"
+        />
 
-          <div className="text-xs text-slate-500 hidden sm:flex items-center gap-4">
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-teal-600" /> End-to-End Care Circle Security
-            </span>
-            <span>•</span>
-            <span className="text-teal-700 font-medium">Apple Health & Linear Precision</span>
+        {/* Ambient Gradient Overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-slate-950/30" />
+
+        {/* Top Floating Logo Pill */}
+        <div className="absolute top-10 left-10 z-10 flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white">
+          <div className="w-6 h-6 rounded-full bg-teal-500 text-white flex items-center justify-center">
+            <Heart className="w-3.5 h-3.5 fill-white" />
           </div>
+          <span className="font-semibold text-sm tracking-tight text-white">KinCare</span>
+          <span className="text-white/60 text-xs">•</span>
+          <span className="text-xs font-medium text-white/90">Elder Companion & Telemetry</span>
         </div>
-      </header>
 
-      {/* Main Content Area: Hero + Passcode Vault Gate */}
-      <div className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-14">
-        {/* Left Side: Editorial Pitch & System Pillars */}
-        <div className="max-w-xl space-y-6 text-center lg:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-semibold">
-            <Sparkles className="w-3.5 h-3.5 text-teal-600" />
-            <span>Autonomous Elderly Care & Medication Management</span>
+        {/* Bottom Editorial Caption */}
+        <div className="absolute bottom-12 left-12 right-12 z-10 max-w-lg space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-300/30 text-teal-200 text-xs font-medium">
+            <Sparkles className="w-3.5 h-3.5 text-teal-300" />
+            <span>Dignity-Preserving Care Technology</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
-            Dignity for Elders. <br />
-            <span className="text-teal-600">Peace of mind</span> for Families.
-          </h1>
+          <h2 className="text-2xl xl:text-3xl font-medium tracking-tight text-white leading-snug">
+            &ldquo;Autonomy is not about managing alone. It is about staying in control of every decision.&rdquo;
+          </h2>
 
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-            KinCare bridges the generational divide with dual-interface design: high-accessibility,
-            audio-guided companion for seniors, paired with a command center for family caregivers and visiting nurses.
+          <p className="text-sm text-slate-300 font-light leading-relaxed">
+            Protecting Raghavan Iyer with verified dosage timing, proactive family alerts, and gentle audio reminders.
           </p>
-
-          {/* Three Key Pillar Badges */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-            <div className="p-3.5 bg-white border border-slate-200 rounded-xl shadow-2xs">
-              <Activity className="w-5 h-5 text-teal-600 mb-1.5" />
-              <div className="text-xs font-bold text-slate-900">Smart Timing Guard</div>
-              <div className="text-[11px] text-slate-500 mt-0.5">Detects drug interactions (e.g., Calcium vs Thyroid)</div>
-            </div>
-
-            <div className="p-3.5 bg-white border border-slate-200 rounded-xl shadow-2xs">
-              <Users className="w-5 h-5 text-indigo-600 mb-1.5" />
-              <div className="text-xs font-bold text-slate-900">Autonomy First</div>
-              <div className="text-[11px] text-slate-500 mt-0.5">1-tap reason explanations eliminate false alarms</div>
-            </div>
-
-            <div className="p-3.5 bg-white border border-slate-200 rounded-xl shadow-2xs">
-              <Clock className="w-5 h-5 text-emerald-600 mb-1.5" />
-              <div className="text-xs font-bold text-slate-900">Resend Alerts</div>
-              <div className="text-[11px] text-slate-500 mt-0.5">Proactive emails and missed-dose escalation</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side: Passcode Gate with Quick Judge Access */}
-        <div className="w-full max-w-md">
-          <PasscodeGate elderProfile={elderProfile} onSuccess={handleUnlockSuccess} />
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white/50 py-4 px-4 sm:px-6 text-center text-xs text-slate-500">
-        KinCare Geriatric Care Protocol • Raghavan Iyer Care Circle (Bengaluru, India) • Hackathon Edition
-      </footer>
+      {/* Right Column: Pure White Canvas with Massive Whitespace */}
+      <div className="min-h-screen bg-white p-8 sm:p-12 lg:p-20 xl:p-24 flex flex-col justify-center items-center">
+        <div className="w-full max-w-md mx-auto">
+          {/* Mobile Brand Header */}
+          <div className="flex lg:hidden items-center gap-2.5 mb-8 justify-center">
+            <div className="w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center shadow-xs">
+              <Heart className="w-4 h-4 fill-white" />
+            </div>
+            <span className="font-bold text-lg tracking-tight text-slate-900">KinCare</span>
+          </div>
+
+          {/* Passcode Gate Component */}
+          <PasscodeGate elderProfile={elderProfile} onSuccess={handleUnlockSuccess} />
+        </div>
+      </div>
     </main>
   );
 }

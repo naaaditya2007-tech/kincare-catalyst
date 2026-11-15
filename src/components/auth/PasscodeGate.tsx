@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, Shield, Delete, Sparkles } from "lucide-react";
+import { Shield, Delete, Sparkles, ArrowRight } from "lucide-react";
 import { Role, ElderProfile } from "@/types/kincare";
 
 interface PasscodeGateProps {
@@ -16,42 +16,48 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({ elderProfile, onSucc
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [shakeKey, setShakeKey] = useState(0);
 
-  const verifyPin = useCallback(async (passcodeToTest: string) => {
-    setLoading(true);
-    setErrorMsg(null);
-    try {
-      const res = await fetch("/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ passcode: passcodeToTest }),
-      });
-      const data = await res.json();
-      if (data.success && data.member) {
-        onSuccess(data.member.role);
-      } else {
-        setErrorMsg(data.error || "Incorrect 4-digit passcode");
+  const verifyPin = useCallback(
+    async (passcodeToTest: string) => {
+      setLoading(true);
+      setErrorMsg(null);
+      try {
+        const res = await fetch("/api/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ passcode: passcodeToTest }),
+        });
+        const data = await res.json();
+        if (data.success && data.member) {
+          onSuccess(data.member.role);
+        } else {
+          setErrorMsg(data.error || "Incorrect 4-digit passcode");
+          setShakeKey((prev) => prev + 1);
+          setPin("");
+        }
+      } catch {
+        setErrorMsg("Failed to authenticate. Please try again.");
         setShakeKey((prev) => prev + 1);
         setPin("");
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      setErrorMsg("Failed to authenticate. Please try again.");
-      setShakeKey((prev) => prev + 1);
-      setPin("");
-    } finally {
-      setLoading(false);
-    }
-  }, [onSuccess]);
+    },
+    [onSuccess]
+  );
 
-  const handleDigit = useCallback((digit: string) => {
-    if (pin.length < 4) {
-      const nextPin = pin + digit;
-      setPin(nextPin);
-      setErrorMsg(null);
-      if (nextPin.length === 4) {
-        verifyPin(nextPin);
+  const handleDigit = useCallback(
+    (digit: string) => {
+      if (pin.length < 4) {
+        const nextPin = pin + digit;
+        setPin(nextPin);
+        setErrorMsg(null);
+        if (nextPin.length === 4) {
+          verifyPin(nextPin);
+        }
       }
-    }
-  }, [pin, verifyPin]);
+    },
+    [pin, verifyPin]
+  );
 
   const handleBackspace = useCallback(() => {
     setPin((prev) => prev.slice(0, -1));
@@ -103,170 +109,157 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({ elderProfile, onSucc
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      {/* Vault Card */}
+    <div className="w-full">
+      {/* Header Typography */}
+      <div className="text-left mb-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold mb-3">
+          <Shield className="w-3.5 h-3.5 text-teal-600" />
+          <span>Care Vault Access</span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">
+          Welcome back
+        </h1>
+        <p className="text-sm sm:text-base text-slate-500 mt-2 font-normal">
+          Enter your 4-digit passkey to access Raghavan Iyer&apos;s care circle.
+        </p>
+      </div>
+
+      {/* Selected Patient Pill (Clean Minimalist) */}
+      <div className="flex items-center justify-between p-3.5 px-5 rounded-full bg-slate-50 border border-slate-200/80 mb-8 text-xs">
+        <div className="flex items-center gap-3">
+          <div className="w-7 h-7 rounded-full bg-teal-600 text-white font-bold text-xs flex items-center justify-center">
+            RI
+          </div>
+          <span className="font-semibold text-slate-900 text-sm">{elderProfile.name}</span>
+          <span className="text-slate-400">•</span>
+          <span className="text-slate-600">Age {elderProfile.age}</span>
+          <span className="text-slate-400">•</span>
+          <span className="font-bold text-teal-700">{elderProfile.bloodGroup}</span>
+        </div>
+        <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Active Patient</span>
+      </div>
+
+      {/* Tactile 4-PIN Circles */}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: "easeOut" }}
-        className="bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-900/5 p-6 sm:p-8"
+        key={shakeKey}
+        animate={shakeKey > 0 ? { x: [-8, 8, -6, 6, -3, 3, 0] } : {}}
+        transition={{ duration: 0.35 }}
+        className="flex justify-center items-center gap-4 my-8"
       >
-        {/* Header Icon & Title */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-teal-50 border border-teal-100 text-teal-600 mb-3 shadow-inner">
-            <Lock className="w-6 h-6 stroke-[2.2]" />
-          </div>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
-            Care Vault Passcode Gate
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Secure, encrypted access for Elder, Family, and Caretakers
-          </p>
-        </div>
-
-        {/* Selected Elder Card */}
-        <div className="bg-slate-50/80 border border-slate-200/80 rounded-xl p-3.5 mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-teal-600 text-white font-bold text-sm flex items-center justify-center">
-              RI
-            </div>
-            <div>
-              <div className="font-semibold text-slate-900 text-sm flex items-center gap-1.5">
-                {elderProfile.name}
-                <span className="text-[10px] bg-teal-100 text-teal-800 font-bold px-1.5 py-0.2 rounded">
-                  {elderProfile.bloodGroup}
-                </span>
-              </div>
-              <div className="text-xs text-slate-500">
-                Age {elderProfile.age} • Allergies: {elderProfile.allergies.join(", ")}
-              </div>
-            </div>
-          </div>
-          <Shield className="w-4 h-4 text-teal-600" />
-        </div>
-
-        {/* PIN Indicators with Shake */}
-        <motion.div
-          key={shakeKey}
-          animate={shakeKey > 0 ? { x: [-10, 10, -8, 8, -4, 4, 0] } : {}}
-          transition={{ duration: 0.4 }}
-          className="flex justify-center items-center gap-4 my-6"
-        >
-          {[0, 1, 2, 3].map((index) => {
-            const isFilled = pin.length > index;
-            return (
-              <motion.div
-                key={index}
-                animate={{ scale: isFilled ? 1.15 : 1 }}
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className={`w-4 h-4 rounded-full border-2 transition-all duration-150 ${
-                  isFilled
-                    ? "bg-teal-600 border-teal-600 shadow-sm shadow-teal-600/30"
-                    : "border-slate-300 bg-slate-50"
-                }`}
-              />
-            );
-          })}
-        </motion.div>
-
-        {/* Error Notice */}
-        <AnimatePresence>
-          {errorMsg && (
+        {[0, 1, 2, 3].map((index) => {
+          const isFilled = pin.length > index;
+          return (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="text-center text-xs font-medium text-rose-600 mb-4 bg-rose-50 border border-rose-200 py-1.5 px-3 rounded-lg"
-            >
-              {errorMsg}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Tactile Keypad */}
-        <div className="grid grid-cols-3 gap-2.5 max-w-[280px] mx-auto mb-6">
-          {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((digit) => (
-            <button
-              key={digit}
-              onClick={() => handleDigit(digit)}
-              disabled={loading || pin.length >= 4}
-              className="h-13 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-800 font-semibold text-lg transition duration-75 flex items-center justify-center shadow-xs active:scale-95 disabled:opacity-50"
-            >
-              {digit}
-            </button>
-          ))}
-          <button
-            onClick={handleClear}
-            disabled={loading || pin.length === 0}
-            className="h-13 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold tracking-wider transition active:scale-95 disabled:opacity-40"
-          >
-            CLEAR
-          </button>
-          <button
-            onClick={() => handleDigit("0")}
-            disabled={loading || pin.length >= 4}
-            className="h-13 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-800 font-semibold text-lg transition duration-75 flex items-center justify-center shadow-xs active:scale-95 disabled:opacity-50"
-          >
-            0
-          </button>
-          <button
-            onClick={handleBackspace}
-            disabled={loading || pin.length === 0}
-            className="h-13 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 transition flex items-center justify-center active:scale-95 disabled:opacity-40"
-          >
-            <Delete className="w-5 h-5 stroke-[1.8]" />
-          </button>
-        </div>
-
-        {/* Demo / Judge Quick Access Box */}
-        <div className="border-t border-slate-200 pt-5 mt-2">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-teal-600" />
-              Demo / Judge Quick Access (1-Click Auto-Login)
-            </span>
-            <span className="text-[11px] text-teal-600 font-semibold">1-Click PINs</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <button
-              onClick={() => handleQuickUnlock("ELDER", "1111")}
-              disabled={loading}
-              className="px-3 py-2.5 rounded-xl border border-teal-200 bg-teal-50/60 hover:bg-teal-100/70 text-teal-900 text-xs font-semibold text-left transition flex flex-col justify-between group active:scale-98"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-bold">Elder View</span>
-                <span className="text-[10px] bg-teal-200/80 px-1.5 py-0.2 rounded font-mono font-bold">1111</span>
-              </div>
-              <span className="text-[11px] text-teal-700 font-normal mt-0.5">Raghavan (74)</span>
-            </button>
-
-            <button
-              onClick={() => handleQuickUnlock("FAMILY_ADMIN", "2222")}
-              disabled={loading}
-              className="px-3 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50/60 hover:bg-indigo-100/70 text-indigo-900 text-xs font-semibold text-left transition flex flex-col justify-between group active:scale-98"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-bold">Family Admin</span>
-                <span className="text-[10px] bg-indigo-200/80 px-1.5 py-0.2 rounded font-mono font-bold">2222</span>
-              </div>
-              <span className="text-[11px] text-indigo-700 font-normal mt-0.5">Anita (Daughter)</span>
-            </button>
-
-            <button
-              onClick={() => handleQuickUnlock("CARETAKER", "3333")}
-              disabled={loading}
-              className="px-3 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50/60 hover:bg-emerald-100/70 text-emerald-900 text-xs font-semibold text-left transition flex flex-col justify-between group active:scale-98"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-bold">Caretaker</span>
-                <span className="text-[10px] bg-emerald-200/80 px-1.5 py-0.2 rounded font-mono font-bold">3333</span>
-              </div>
-              <span className="text-[11px] text-emerald-700 font-normal mt-0.5">Nurse Priya</span>
-            </button>
-          </div>
-        </div>
+              key={index}
+              animate={{ scale: isFilled ? 1.15 : 1 }}
+              transition={{ type: "spring", stiffness: 450, damping: 28 }}
+              className={`w-4 h-4 rounded-full border-2 transition-all duration-150 ${
+                isFilled
+                  ? "bg-slate-900 border-slate-900 shadow-sm"
+                  : "border-slate-300 bg-white"
+              }`}
+            />
+          );
+        })}
       </motion.div>
+
+      {/* Error Message */}
+      <AnimatePresence>
+        {errorMsg && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="text-center text-xs font-semibold text-rose-600 mb-6 bg-rose-50 border border-rose-200 py-2 px-4 rounded-full"
+          >
+            {errorMsg}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Fully Rounded Circular Keypad (Human Designed / Apple Elegance) */}
+      <div className="grid grid-cols-3 gap-3.5 max-w-[260px] mx-auto mb-10">
+        {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((digit) => (
+          <button
+            key={digit}
+            onClick={() => handleDigit(digit)}
+            disabled={loading || pin.length >= 4}
+            className="w-16 h-16 mx-auto rounded-full border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-800 font-medium text-2xl transition duration-100 flex items-center justify-center shadow-2xs active:scale-95 disabled:opacity-40"
+          >
+            {digit}
+          </button>
+        ))}
+        <button
+          onClick={handleClear}
+          disabled={loading || pin.length === 0}
+          className="w-16 h-16 mx-auto rounded-full border border-transparent hover:bg-slate-100 text-slate-500 text-xs font-semibold tracking-wider transition active:scale-95 disabled:opacity-30 flex items-center justify-center"
+        >
+          CLEAR
+        </button>
+        <button
+          onClick={() => handleDigit("0")}
+          disabled={loading || pin.length >= 4}
+          className="w-16 h-16 mx-auto rounded-full border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-800 font-medium text-2xl transition duration-100 flex items-center justify-center shadow-2xs active:scale-95 disabled:opacity-40"
+        >
+          0
+        </button>
+        <button
+          onClick={handleBackspace}
+          disabled={loading || pin.length === 0}
+          className="w-16 h-16 mx-auto rounded-full border border-transparent hover:bg-slate-100 text-slate-500 transition flex items-center justify-center active:scale-95 disabled:opacity-30"
+        >
+          <Delete className="w-5 h-5 stroke-[1.8]" />
+        </button>
+      </div>
+
+      {/* Demo / Judge Quick Access Box (Sleek Minimalist Pills) */}
+      <div className="border-t border-slate-100 pt-6">
+        <div className="flex items-center justify-between mb-3.5">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+            Demo / Judge Quick Access
+          </span>
+          <span className="text-[11px] text-teal-700 font-semibold">1-Click Auto Login</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <button
+            onClick={() => handleQuickUnlock("ELDER", "1111")}
+            disabled={loading}
+            className="px-4 py-2.5 rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100/80 text-slate-800 text-xs font-semibold text-left transition flex items-center justify-between group active:scale-98 shadow-2xs"
+          >
+            <div>
+              <div className="font-bold text-slate-900">Elder View</div>
+              <div className="text-[10px] text-slate-500 font-mono">PIN: 1111</div>
+            </div>
+            <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition" />
+          </button>
+
+          <button
+            onClick={() => handleQuickUnlock("FAMILY_ADMIN", "2222")}
+            disabled={loading}
+            className="px-4 py-2.5 rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100/80 text-slate-800 text-xs font-semibold text-left transition flex items-center justify-between group active:scale-98 shadow-2xs"
+          >
+            <div>
+              <div className="font-bold text-slate-900">Family Admin</div>
+              <div className="text-[10px] text-slate-500 font-mono">PIN: 2222</div>
+            </div>
+            <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition" />
+          </button>
+
+          <button
+            onClick={() => handleQuickUnlock("CARETAKER", "3333")}
+            disabled={loading}
+            className="px-4 py-2.5 rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100/80 text-slate-800 text-xs font-semibold text-left transition flex items-center justify-between group active:scale-98 shadow-2xs"
+          >
+            <div>
+              <div className="font-bold text-slate-900">Caretaker</div>
+              <div className="text-[10px] text-slate-500 font-mono">PIN: 3333</div>
+            </div>
+            <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition" />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

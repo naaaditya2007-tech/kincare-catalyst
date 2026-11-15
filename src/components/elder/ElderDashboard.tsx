@@ -44,7 +44,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
   const elder = state.elderProfile;
   const todayStr = new Date().toISOString().split("T")[0];
 
-  // Group medications by time periods (Morning, Afternoon, Night)
+  // Group medications by time periods
   const getTimelineBuckets = () => {
     const morning: Medication[] = [];
     const afternoon: Medication[] = [];
@@ -69,12 +69,11 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
 
   const { morning, afternoon, night } = getTimelineBuckets();
 
-  // Find status for a medication today
   const getMedDoseLog = (medId: string): DoseLog | undefined => {
     return state.doseLogs.find((l) => l.medicationId === medId && l.date === todayStr);
   };
 
-  // Speech Synthesis: Read schedule aloud
+  // Speech Synthesis
   const handleReadScheduleAloud = () => {
     if (!("speechSynthesis" in window)) {
       alert("Text-to-speech is not supported on this browser.");
@@ -121,7 +120,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
     lines.push("Take your time, drink plenty of water, and have a peaceful day.");
 
     const utterance = new SpeechSynthesisUtterance(lines.join(" "));
-    utterance.rate = 0.88; // gentle, deliberate cadence for elders
+    utterance.rate = 0.88;
     utterance.pitch = 1.0;
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
@@ -148,61 +147,61 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
   const nextAppt = state.appointments[0];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8">
-      {/* Elder Greeting Banner */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="max-w-4xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-10">
+      {/* Elder Greeting Banner (Apple Health Pure Card) */}
+      <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-xs ring-1 ring-slate-900/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <div className="text-xs sm:text-sm font-semibold text-teal-700 tracking-wide uppercase flex items-center gap-1.5 mb-1">
+          <div className="text-xs font-semibold uppercase tracking-wider text-teal-700 flex items-center gap-1.5 mb-2">
             <Sparkles className="w-4 h-4 text-teal-600" />
-            Elder Dignity Companion Mode
+            Elder Companion Mode
           </div>
-          <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
             Good day, {elder.name}
           </h1>
-          <p className="text-base sm:text-lg text-slate-600 mt-1">
+          <p className="text-base sm:text-lg text-slate-500 mt-1 font-normal">
             Today is{" "}
             {new Date().toLocaleDateString("en-US", {
               weekday: "long",
               month: "long",
               day: "numeric",
             })}
-            . Let&apos;s keep you healthy and comfortable.
+            . Let&apos;s keep you healthy and peaceful.
           </p>
         </div>
 
-        {/* Read Schedule Aloud Button (56px+ target, high accessibility) */}
+        {/* Read Schedule Aloud Button (Full Pill) */}
         <button
           onClick={handleReadScheduleAloud}
-          className={`h-14 sm:h-16 px-6 sm:px-8 rounded-2xl font-bold text-base sm:text-lg flex items-center justify-center gap-3 transition-all duration-150 shadow-md ${
+          className={`h-14 sm:h-16 px-8 rounded-full font-bold text-base flex items-center justify-center gap-3 transition shadow-xs active:scale-98 shrink-0 ${
             isSpeaking
-              ? "bg-rose-600 text-white hover:bg-rose-700 ring-4 ring-rose-200"
-              : "bg-teal-700 text-white hover:bg-teal-800 ring-4 ring-teal-100"
+              ? "bg-rose-600 text-white hover:bg-rose-700"
+              : "bg-slate-900 text-white hover:bg-slate-800"
           }`}
         >
           {isSpeaking ? (
             <>
-              <VolumeX className="w-6 h-6 stroke-[2.5] animate-pulse" />
+              <VolumeX className="w-5 h-5 stroke-[2.5] animate-pulse" />
               <span>Stop Reading</span>
             </>
           ) : (
             <>
-              <Volume2 className="w-6 h-6 stroke-[2.5]" />
+              <Volume2 className="w-5 h-5 stroke-[2.5]" />
               <span>Read Schedule Aloud</span>
             </>
           )}
         </button>
       </div>
 
-      {/* Quick Action Strip: Request Family Call */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-teal-50/60 border border-teal-200 rounded-2xl p-5 sm:p-6">
+      {/* Quick Ping: Request Family Call (Pure Card) */}
+      <div className="bg-white rounded-3xl p-7 sm:p-8 shadow-xs ring-1 ring-slate-900/5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-5">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0">
-            <PhoneCall className="w-6 h-6" />
+          <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+            <PhoneCall className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-slate-900 text-lg sm:text-xl">Need Help or Want to Chat?</h3>
-            <p className="text-sm sm:text-base text-slate-600">
-              One tap will send a direct request to your daughter Anita and Nurse Priya.
+            <h3 className="font-bold text-slate-900 text-lg sm:text-xl">Need Assistance or Want to Talk?</h3>
+            <p className="text-sm sm:text-base text-slate-500">
+              One tap will send an instant phone request to Anita and Nurse Priya.
             </p>
           </div>
         </div>
@@ -210,10 +209,10 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
         <button
           onClick={handleCallClick}
           disabled={callRequested}
-          className={`h-14 px-7 rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-2.5 transition shrink-0 ${
+          className={`h-14 px-8 rounded-full font-bold text-base flex items-center justify-center gap-2.5 transition shrink-0 active:scale-98 shadow-xs ${
             callRequested
-              ? "bg-emerald-600 text-white ring-2 ring-emerald-300"
-              : "bg-slate-900 text-white hover:bg-slate-800"
+              ? "bg-emerald-600 text-white"
+              : "bg-slate-100 text-slate-900 hover:bg-slate-200"
           }`}
         >
           {callRequested ? (
@@ -223,7 +222,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
             </>
           ) : (
             <>
-              <PhoneCall className="w-5 h-5" />
+              <PhoneCall className="w-4 h-4" />
               <span>Request Family Call</span>
             </>
           )}
@@ -231,12 +230,12 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
       </div>
 
       {/* Medication Timeline Section */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+      <div className="space-y-8">
+        <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Today&apos;s Medication Timeline
           </h2>
-          <span className="text-sm font-semibold text-slate-500">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
             {state.medications.filter((m) => m.active).length} Prescribed Pills Today
           </span>
         </div>
@@ -244,9 +243,9 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
         {/* Morning Dose Group */}
         {morning.length > 0 && (
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-amber-700 font-bold text-lg sm:text-xl border-b border-amber-200 pb-2">
-              <Sun className="w-6 h-6 text-amber-600" />
-              <span>Morning Doses (Before 12:00 PM)</span>
+            <div className="flex items-center gap-2 text-slate-700 font-bold text-lg">
+              <Sun className="w-5 h-5 text-amber-500" />
+              <span>Morning (Before 12:00 PM)</span>
             </div>
             <div className="space-y-4">
               {morning.map((med) => renderMedicationCard(med))}
@@ -257,9 +256,9 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
         {/* Afternoon Dose Group */}
         {afternoon.length > 0 && (
           <div className="space-y-4 pt-4">
-            <div className="flex items-center gap-2 text-teal-800 font-bold text-lg sm:text-xl border-b border-teal-200 pb-2">
-              <Sunset className="w-6 h-6 text-teal-600" />
-              <span>Afternoon Doses (12:00 PM – 5:00 PM)</span>
+            <div className="flex items-center gap-2 text-slate-700 font-bold text-lg">
+              <Sunset className="w-5 h-5 text-teal-600" />
+              <span>Afternoon (12:00 PM – 5:00 PM)</span>
             </div>
             <div className="space-y-4">
               {afternoon.map((med) => renderMedicationCard(med))}
@@ -270,9 +269,9 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
         {/* Night Dose Group */}
         {night.length > 0 && (
           <div className="space-y-4 pt-4">
-            <div className="flex items-center gap-2 text-indigo-900 font-bold text-lg sm:text-xl border-b border-indigo-200 pb-2">
-              <Moon className="w-6 h-6 text-indigo-600" />
-              <span>Night Doses (Evening & Before Sleep)</span>
+            <div className="flex items-center gap-2 text-slate-700 font-bold text-lg">
+              <Moon className="w-5 h-5 text-indigo-600" />
+              <span>Night (Before Sleep)</span>
             </div>
             <div className="space-y-4">
               {night.map((med) => renderMedicationCard(med))}
@@ -281,39 +280,41 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
         )}
       </div>
 
-      {/* Upcoming Doctor Visit Card */}
+      {/* Upcoming Doctor Visit Card (Apple Health Pure Card) */}
       {nextAppt && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 shadow-sm">
-          <div className="flex items-center gap-3 text-teal-700 font-bold text-sm uppercase tracking-wider mb-2">
-            <Calendar className="w-5 h-5 text-teal-600" />
-            Upcoming Doctor Visit
+        <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-xs ring-1 ring-slate-900/5 space-y-4">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-teal-700">
+            <Calendar className="w-4 h-4 text-teal-600" />
+            <span>Upcoming Doctor Consultation</span>
           </div>
 
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <h3 className="text-xl sm:text-2xl font-bold text-slate-900">
+              <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">
                 {nextAppt.doctorName}
               </h3>
-              <p className="text-base text-slate-600 mt-0.5">
+              <p className="text-base text-slate-500 mt-1 font-normal">
                 {nextAppt.specialty} • {nextAppt.hospital}
               </p>
-              <p className="text-sm font-medium text-teal-700 mt-2 bg-teal-50 px-3 py-1 rounded-lg inline-block">
-                Scheduled:{" "}
-                {new Date(nextAppt.dateTime).toLocaleDateString("en-US", {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </p>
+              <div className="mt-3 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 text-xs font-semibold text-slate-800">
+                <Clock className="w-3.5 h-3.5 text-teal-600" />
+                <span>
+                  {new Date(nextAppt.dateTime).toLocaleDateString("en-US", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </div>
             </div>
 
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 max-w-sm">
-              <div className="text-xs font-semibold uppercase text-slate-500 mb-1">
+            <div className="bg-slate-50 rounded-2xl p-4.5 max-w-sm ring-1 ring-slate-900/5">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
                 Clinical Focus Note:
               </div>
-              <p className="text-sm text-slate-700 leading-relaxed italic">
+              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic">
                 &ldquo;{nextAppt.notes}&rdquo;
               </p>
             </div>
@@ -348,29 +349,29 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
     return (
       <div
         key={med.id}
-        className={`bg-white rounded-2xl border transition-all duration-200 p-5 sm:p-7 shadow-xs ${
+        className={`bg-white rounded-3xl p-7 sm:p-9 shadow-xs ring-1 transition-all duration-200 ${
           isTaken
-            ? "border-emerald-300 bg-emerald-50/20"
+            ? "ring-emerald-500/20 bg-emerald-50/15"
             : isSkipped
-            ? "border-amber-300 bg-amber-50/20"
-            : "border-slate-200 hover:border-slate-300"
+            ? "ring-amber-500/20 bg-amber-50/15"
+            : "ring-slate-900/5 hover:ring-slate-900/10"
         }`}
       >
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           {/* Left Details */}
           <div className="space-y-3 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs sm:text-sm font-bold bg-slate-100 text-slate-800 px-3 py-1 rounded-full flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-teal-600" />
+              <span className="text-xs font-bold bg-slate-100 text-slate-700 px-3 py-1 rounded-full flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-teal-600" />
                 {med.scheduledTimes.join(", ")}
               </span>
 
-              <span className="text-xs sm:text-sm font-semibold bg-teal-50 text-teal-800 border border-teal-200 px-3 py-1 rounded-full">
+              <span className="text-xs font-semibold bg-teal-50 text-teal-800 px-3 py-1 rounded-full border border-teal-200/80">
                 {med.instructions}
               </span>
 
               {med.conflictNote && (
-                <span className="text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1 rounded-full flex items-center gap-1">
+                <span className="text-xs font-semibold bg-amber-50 text-amber-800 px-3 py-1 rounded-full border border-amber-200 flex items-center gap-1">
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
                   Spacing Guard
                 </span>
@@ -378,27 +379,27 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
             </div>
 
             <div>
-              <h3 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
                 <Pill className="w-6 h-6 text-teal-600 shrink-0" />
                 {med.name}
               </h3>
-              <p className="text-base sm:text-lg text-slate-600 mt-1">
+              <p className="text-base sm:text-lg text-slate-600 mt-1 font-normal">
                 Dosage: <strong>{med.dosage}</strong> ({med.form})
-                {med.purpose ? ` • For ${med.purpose}` : ""}
+                {med.purpose ? ` • ${med.purpose}` : ""}
               </p>
             </div>
 
-            {/* Conflict Note if present */}
+            {/* Spacing Caution Note if present */}
             {med.conflictNote && (
-              <div className="text-sm bg-amber-50/80 border border-amber-200/80 rounded-xl p-3 text-amber-900 flex items-start gap-2.5">
+              <div className="text-xs sm:text-sm bg-amber-50/70 border border-amber-200/70 rounded-2xl p-3.5 text-amber-900 flex items-start gap-2.5">
                 <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <span>{med.conflictNote}</span>
               </div>
             )}
 
-            {/* Elder's Note if skipped/postponed */}
+            {/* Elder's Reason Note if postponed */}
             {isSkipped && doseLog?.elderNote && (
-              <div className="text-sm bg-amber-100/70 border border-amber-300 rounded-xl p-3 text-amber-950 flex items-start gap-2">
+              <div className="text-xs sm:text-sm bg-amber-50 border border-amber-200 rounded-2xl p-3.5 text-amber-950 flex items-start gap-2">
                 <Clock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
                 <div>
                   <strong>Postponed with reason:</strong> &ldquo;{doseLog.elderNote}&rdquo;
@@ -407,50 +408,50 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = ({
             )}
           </div>
 
-          {/* Right Action Buttons (56px+ touch target) */}
+          {/* Right Action Buttons (Pill-shaped, 56px+ target) */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
             {isTaken ? (
               <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
+                initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="h-14 px-6 rounded-xl bg-emerald-600 text-white font-bold text-base flex items-center justify-center gap-2 shadow-sm"
+                className="h-14 px-8 rounded-full bg-emerald-600 text-white font-bold text-base flex items-center justify-center gap-2 shadow-xs"
               >
-                <CheckCircle2 className="w-6 h-6" />
+                <CheckCircle2 className="w-5 h-5" />
                 <span>
                   Taken {doseLog?.takenAt ? `at ${new Date(doseLog.takenAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "Today"}
                 </span>
               </motion.div>
             ) : isSkipped ? (
               <div className="flex flex-col sm:flex-row gap-2">
-                <div className="h-14 px-5 rounded-xl bg-amber-100 border border-amber-300 text-amber-900 font-bold text-sm flex items-center justify-center gap-2">
-                  <Clock className="w-5 h-5 text-amber-700" />
+                <div className="h-14 px-6 rounded-full bg-amber-100 text-amber-900 font-bold text-sm flex items-center justify-center gap-2">
+                  <Clock className="w-4 h-4 text-amber-700" />
                   <span>Postponed / Reason Logged</span>
                 </div>
                 <button
                   onClick={() => handleTakeDose(med)}
-                  className="h-14 px-5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm transition shadow-sm"
+                  className="h-14 px-6 rounded-full bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm transition shadow-xs active:scale-98"
                 >
                   Take Now Instead
                 </button>
               </div>
             ) : (
               <>
-                {/* Secondary Button: Not Now / Skip */}
+                {/* Secondary Pill Button: Not Now / Skip */}
                 <button
                   type="button"
                   onClick={() => setSelectedMedForSkip(med)}
-                  className="h-14 px-6 rounded-xl border-2 border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 font-bold text-base sm:text-lg transition active:scale-98"
+                  className="h-14 px-7 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-base transition active:scale-98"
                 >
                   Not Now / Skip
                 </button>
 
-                {/* Primary Button: I Took This (56px+ target) */}
+                {/* Primary Pill Button: I Took This (Solid Teal / Black) */}
                 <button
                   type="button"
                   onClick={() => handleTakeDose(med)}
-                  className="h-14 px-8 rounded-xl bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-extrabold text-base sm:text-lg transition shadow-md flex items-center justify-center gap-2.5 active:scale-98"
+                  className="h-14 px-8 rounded-full bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-base transition shadow-sm flex items-center justify-center gap-2.5 active:scale-98"
                 >
-                  <Check className="w-6 h-6 stroke-[3]" />
+                  <Check className="w-5 h-5 stroke-[3]" />
                   <span>I Took This</span>
                 </button>
               </>

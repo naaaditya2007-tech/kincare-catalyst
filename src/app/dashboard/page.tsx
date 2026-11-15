@@ -248,19 +248,19 @@ export default function DashboardPage() {
 
   if (loading || !state) {
     return (
-      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center animate-pulse">
-            <Heart className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center animate-pulse shadow-xs">
+            <Heart className="w-5 h-5 fill-white" />
           </div>
-          <span className="text-xs font-semibold text-slate-500">Loading KinCare Platform...</span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Loading KinCare Platform...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa] text-slate-900 flex flex-col selection:bg-teal-100 selection:text-teal-900">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col selection:bg-teal-100 selection:text-teal-900">
       {/* Top Navbar */}
       <Navbar
         currentRole={currentRole}
@@ -273,7 +273,7 @@ export default function DashboardPage() {
       />
 
       {/* Main Mode View */}
-      <main className="flex-1 pb-16">
+      <main className="flex-1 pb-20">
         {currentRole === "ELDER" ? (
           <ElderDashboard
             state={state}
@@ -302,9 +302,9 @@ export default function DashboardPage() {
         onRefreshState={refreshState}
       />
 
-      {/* Toast Notification */}
+      {/* Toast Notification (Pill Shaped) */}
       {toastMessage && (
-        <div className="fixed bottom-5 right-5 z-50 bg-slate-900 text-white text-xs sm:text-sm font-semibold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2 duration-150">
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs sm:text-sm font-semibold px-5 py-3.5 rounded-full shadow-2xl flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2 duration-150 ring-1 ring-white/10">
           <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>

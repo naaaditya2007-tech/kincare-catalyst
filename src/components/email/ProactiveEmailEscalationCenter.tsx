@@ -79,44 +79,44 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-end bg-slate-900/40 backdrop-blur-xs">
+      <div className="fixed inset-0 z-50 flex items-center justify-end bg-slate-900/30 backdrop-blur-xs">
         <motion.div
           initial={{ x: "100%", opacity: 0.8 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: "100%", opacity: 0 }}
-          transition={{ type: "spring", damping: 28, stiffness: 280 }}
-          className="bg-white border-l border-slate-200 shadow-2xl w-full max-w-2xl h-full flex flex-col p-6 sm:p-8 overflow-y-auto"
+          transition={{ type: "spring", damping: 30, stiffness: 300 }}
+          className="bg-white shadow-2xl w-full max-w-2xl h-full flex flex-col p-8 sm:p-10 overflow-y-auto"
         >
           {/* Top Bar */}
-          <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shadow-xs">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-5 mb-8">
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-full bg-slate-100 text-slate-800 flex items-center justify-center">
                 <BellRing className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
                   Email Testing Center
                 </h2>
-                <p className="text-xs text-slate-500">Live preview & Resend transactional delivery simulator</p>
+                <p className="text-xs text-slate-500 font-normal">Live preview & Resend transactional delivery simulator</p>
               </div>
             </div>
 
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition"
+              className="p-2.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Tester Recipient Input Box */}
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 mb-6">
+          {/* Tester Recipient Input Box (Pill Input) */}
+          <div className="bg-slate-50 rounded-3xl p-6 sm:p-7 mb-8 ring-1 ring-slate-900/5">
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                 <Mail className="w-3.5 h-3.5 text-teal-600" />
                 Target Recipient Email (Judge Live Test)
               </label>
-              <span className="text-[11px] text-teal-700 font-medium">Type any address to test</span>
+              <span className="text-[11px] text-teal-700 font-semibold">Test with your address</span>
             </div>
 
             <input
@@ -124,9 +124,9 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
               value={targetEmail}
               onChange={(e) => setTargetEmail(e.target.value)}
               placeholder="Enter your personal or judge email to test live delivery"
-              className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-sm font-medium focus:border-teal-600 focus:outline-none shadow-inner"
+              className="w-full px-5 py-3 bg-white border border-slate-200 rounded-full text-sm font-medium focus:border-slate-900 focus:outline-none shadow-2xs"
             />
-            <p className="text-[11px] text-slate-500 mt-2">
+            <p className="text-[11px] text-slate-500 mt-2.5 leading-relaxed">
               If <code>RESEND_API_KEY</code> is present in environment, dispatches live email. Otherwise,
               instant fallback records the dispatch in the Audit Log below with fully rendered HTML preview!
             </p>
@@ -137,42 +137,42 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
             <motion.div
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`p-3 rounded-xl text-xs font-semibold mb-6 flex items-center gap-2 ${
+              className={`p-3.5 rounded-full text-xs font-semibold mb-6 flex items-center gap-2 ${
                 feedbackMsg.type === "success"
                   ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
                   : "bg-rose-50 text-rose-800 border border-rose-200"
               }`}
             >
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
               <span>{feedbackMsg.text}</span>
             </motion.div>
           )}
 
-          {/* 3 Real Workflow Action Buttons */}
-          <div className="space-y-3 mb-8">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1 flex items-center gap-1">
+          {/* 3 Real Workflow Action Buttons (Human Designed / High Polish) */}
+          <div className="space-y-3.5 mb-10">
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1 flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5 text-amber-500" />
               Trigger One-Click Autonomous Workflows
             </div>
 
-            {/* Workflow 1: Upcoming Dose Reminder */}
+            {/* Workflow 1: Simulate Upcoming Dose */}
             <button
               onClick={() => handleTriggerWorkflow("UPCOMING_DOSE")}
               disabled={!!triggeringWorkflow}
-              className="w-full text-left p-4 rounded-xl border border-slate-200 hover:border-teal-500 bg-white hover:bg-teal-50/20 transition flex items-center justify-between group shadow-xs active:scale-99"
+              className="w-full text-left p-5 rounded-2xl bg-white hover:bg-slate-50/80 ring-1 ring-slate-900/5 hover:ring-slate-900/15 transition flex items-center justify-between group shadow-2xs active:scale-99"
             >
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center shrink-0 group-hover:bg-teal-600 group-hover:text-white transition">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 group-hover:bg-teal-600 group-hover:text-white transition">
                   <Send className="w-4 h-4" />
                 </div>
                 <div>
                   <div className="font-bold text-slate-900 text-sm">Simulate Upcoming Dose</div>
-                  <div className="text-xs text-slate-500">
+                  <div className="text-xs text-slate-500 mt-0.5">
                     Dispatches today&apos;s full medication schedule and spacing precautions to Care Circle
                   </div>
                 </div>
               </div>
-              <span className="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200 group-hover:bg-teal-600 group-hover:text-white transition">
+              <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3.5 py-1.5 rounded-full group-hover:bg-slate-900 group-hover:text-white transition">
                 {triggeringWorkflow === "UPCOMING_DOSE" ? "Sending..." : "Simulate"}
               </span>
             </button>
@@ -181,20 +181,20 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
             <button
               onClick={() => handleTriggerWorkflow("MISSED_DOSE_ESCALATION")}
               disabled={!!triggeringWorkflow}
-              className="w-full text-left p-4 rounded-xl border border-rose-200 bg-rose-50/30 hover:bg-rose-50/70 transition flex items-center justify-between group shadow-xs active:scale-99"
+              className="w-full text-left p-5 rounded-2xl bg-white hover:bg-rose-50/30 ring-1 ring-slate-900/5 hover:ring-rose-500/20 transition flex items-center justify-between group shadow-2xs active:scale-99"
             >
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 border border-rose-200 flex items-center justify-center shrink-0 group-hover:bg-rose-600 group-hover:text-white transition">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 group-hover:bg-rose-600 group-hover:text-white transition">
                   <AlertOctagon className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="font-bold text-rose-950 text-sm">Simulate Missed Dose</div>
-                  <div className="text-xs text-rose-800/80">
+                  <div className="font-bold text-slate-900 text-sm">Simulate Missed Dose</div>
+                  <div className="text-xs text-slate-500 mt-0.5">
                     Marks overdue dose, bundles Raghavan&apos;s last note (&ldquo;Feeling dizzy&rdquo;) and notifies family
                   </div>
                 </div>
               </div>
-              <span className="text-xs font-bold text-rose-700 bg-white px-2.5 py-1 rounded-lg border border-rose-200 group-hover:bg-rose-600 group-hover:text-white transition">
+              <span className="text-xs font-bold text-rose-700 bg-rose-50 px-3.5 py-1.5 rounded-full group-hover:bg-rose-600 group-hover:text-white transition">
                 {triggeringWorkflow === "MISSED_DOSE_ESCALATION" ? "Escalating..." : "Simulate"}
               </span>
             </button>
@@ -203,20 +203,20 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
             <button
               onClick={() => handleTriggerWorkflow("DOCTOR_BRIEF")}
               disabled={!!triggeringWorkflow}
-              className="w-full text-left p-4 rounded-xl border border-slate-200 hover:border-indigo-500 bg-white hover:bg-indigo-50/20 transition flex items-center justify-between group shadow-xs active:scale-99"
+              className="w-full text-left p-5 rounded-2xl bg-white hover:bg-slate-50/80 ring-1 ring-slate-900/5 hover:ring-slate-900/15 transition flex items-center justify-between group shadow-2xs active:scale-99"
             >
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center justify-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 group-hover:bg-slate-900 group-hover:text-white transition">
                   <FileCheck2 className="w-4 h-4" />
                 </div>
                 <div>
                   <div className="font-bold text-slate-900 text-sm">Simulate Appointment</div>
-                  <div className="text-xs text-slate-500">
+                  <div className="text-xs text-slate-500 mt-0.5">
                     Compiles patient history, active meds, and discussion checklist for Dr. Arvind Swaminathan
                   </div>
                 </div>
               </div>
-              <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200 group-hover:bg-indigo-600 group-hover:text-white transition">
+              <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3.5 py-1.5 rounded-full group-hover:bg-slate-900 group-hover:text-white transition">
                 {triggeringWorkflow === "DOCTOR_BRIEF" ? "Compiling..." : "Simulate"}
               </span>
             </button>
@@ -224,15 +224,15 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
 
           {/* Live Email Dispatch Audit Log */}
           <div className="flex-1 flex flex-col">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <div className="flex items-center justify-between mb-3.5">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-slate-400" />
                 Live Email Dispatch Audit Trail ({state.emailLogs.length})
               </span>
               <span className="text-[11px] text-slate-400">Click any row to inspect HTML</span>
             </div>
 
-            <div className="border border-slate-200 rounded-xl overflow-hidden divide-y divide-slate-100 flex-1 overflow-y-auto">
+            <div className="rounded-2xl overflow-hidden ring-1 ring-slate-900/5 divide-y divide-slate-100 flex-1 overflow-y-auto">
               {state.emailLogs.length === 0 ? (
                 <div className="p-8 text-center text-xs text-slate-400">
                   No email alerts logged yet. Trigger one above!
@@ -242,26 +242,26 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
                   <div
                     key={log.id}
                     onClick={() => setPreviewLog(log)}
-                    className="p-3.5 hover:bg-slate-50 cursor-pointer transition flex items-center justify-between gap-3 text-xs"
+                    className="p-4 hover:bg-slate-50 cursor-pointer transition flex items-center justify-between gap-3 text-xs"
                   >
                     <div className="min-w-0">
-                      <div className="font-semibold text-slate-900 truncate">{log.subject}</div>
-                      <div className="text-slate-500 text-[11px] truncate mt-0.5">
+                      <div className="font-bold text-slate-900 truncate">{log.subject}</div>
+                      <div className="text-slate-400 text-[11px] truncate mt-0.5">
                         To: {log.recipientEmail} • {new Date(log.sentAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
                       <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
                           log.deliveryMode === "LIVE_RESEND"
                             ? "bg-emerald-100 text-emerald-800"
-                            : "bg-amber-100 text-amber-800"
+                            : "bg-slate-100 text-slate-700"
                         }`}
                       >
                         {log.deliveryMode}
                       </span>
-                      <Eye className="w-4 h-4 text-slate-400 hover:text-slate-700" />
+                      <Eye className="w-4 h-4 text-slate-400 hover:text-slate-900" />
                     </div>
                   </div>
                 ))
