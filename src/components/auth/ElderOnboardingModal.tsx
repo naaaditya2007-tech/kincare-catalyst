@@ -23,6 +23,7 @@ export const ElderOnboardingModal: React.FC<ElderOnboardingModalProps> = ({
   const [primaryDoctor, setPrimaryDoctor] = useState("Dr. Arvind Swaminathan (Cardiology)");
   const [elderPin, setElderPin] = useState("4444");
   const [familyPin, setFamilyPin] = useState("8888");
+  const [seedSamplePrescriptions, setSeedSamplePrescriptions] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -64,6 +65,7 @@ export const ElderOnboardingModal: React.FC<ElderOnboardingModalProps> = ({
         primaryDoctor,
         elderPin,
         familyPin,
+        seedSamplePrescriptions,
       });
       onClose();
     } catch {
@@ -231,6 +233,23 @@ export const ElderOnboardingModal: React.FC<ElderOnboardingModalProps> = ({
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Starter Prescriptions Option */}
+            <div className="flex items-center gap-2.5 pt-1 px-1">
+              <input
+                type="checkbox"
+                id="seedStarterMeds"
+                checked={seedSamplePrescriptions}
+                onChange={(e) => setSeedSamplePrescriptions(e.target.checked)}
+                className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500"
+              />
+              <label
+                htmlFor="seedStarterMeds"
+                className="text-xs font-semibold text-slate-700 select-none cursor-pointer"
+              >
+                Pre-populate starter medication timetable & schedule (Recommended)
+              </label>
             </div>
 
             {/* Submit Buttons */}

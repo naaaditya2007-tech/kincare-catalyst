@@ -120,6 +120,7 @@ export interface PatientOnboardingInput {
   elderPin: string;
   familyPin: string;
   caretakerPin?: string;
+  seedSamplePrescriptions?: boolean;
 }
 
 export interface KinCareState {

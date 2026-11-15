@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Volume2,
@@ -21,6 +21,7 @@ import {
 import { KinCareState, Medication, DoseLog } from "@/types/kincare";
 import { useCare } from "@/context/CareContext";
 import { ReasonSelectorModal } from "./ReasonSelectorModal";
+import { DoseCountdownToast } from "./DoseCountdownToast";
 
 interface ElderDashboardProps {
   state?: KinCareState;
@@ -44,9 +45,26 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
   const [callRequested, setCallRequested] = useState(false);
   const [takingMedId, setTakingMedId] = useState<string | null>(null);
 
-  if (!state) return null;
+  // Live Countdown Engine states
+  const [currentTime, setCurrentTime] = useState<Date>(() => new Date());
+  const [demoRemainingSeconds, setDemoRemainingSeconds] = useState<number | null>(null);
+  const [toastMed, setToastMed] = useState<Medication | null>(null);
+  const toastFiredForMedIdRef = useRef<string | null>(null);
 
-  const elder = state.elderProfile;
+  // Live 1-second interval ticking engine with memory-safe cleanup
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+      setDemoRemainingSeconds((prev) => {
+        if (prev === null) return null;
+        if (prev <= 1) return 0;
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   const todayStr = new Date().toISOString().split("T")[0];
 
   // Group medications by time periods
@@ -55,19 +73,21 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
     const afternoon: Medication[] = [];
     const night: Medication[] = [];
 
-    state.medications
-      .filter((m) => m.active)
-      .forEach((med) => {
-        const time = med.scheduledTimes[0] || "08:00";
-        const hour = parseInt(time.split(":")[0], 10);
-        if (hour < 12) {
-          morning.push(med);
-        } else if (hour < 17) {
-          afternoon.push(med);
-        } else {
-          night.push(med);
-        }
-      });
+    if (state?.medications) {
+      state.medications
+        .filter((m) => m.active)
+        .forEach((med) => {
+          const time = med.scheduledTimes[0] || "08:00";
+          const hour = parseInt(time.split(":")[0], 10);
+          if (hour < 12) {
+            morning.push(med);
+          } else if (hour < 17) {
+            afternoon.push(med);
+          } else {
+            night.push(med);
+          }
+        });
+    }
 
     return { morning, afternoon, night };
   };
@@ -75,8 +95,113 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
   const { morning, afternoon, night } = getTimelineBuckets();
 
   const getMedDoseLog = (medId: string): DoseLog | undefined => {
-    return state.doseLogs.find((l) => l.medicationId === medId && l.date === todayStr);
+    return state?.doseLogs?.find((l) => l.medicationId === medId && l.date === todayStr);
   };
+
+  // Determine the next immediate medication due today that has NOT been taken yet
+  const nextDueInfo = useMemo(() => {
+    if (!state?.medications) return null;
+
+    const untakenMeds = state.medications.filter((m) => {
+      if (!m.active) return false;
+      const log = state.doseLogs.find((l) => l.medicationId === m.id && l.date === todayStr);
+      return log?.status !== "TAKEN";
+    });
+
+    if (untakenMeds.length === 0) return null;
+
+    // Fast-Forward Demo override mode for testing live alert & zero toast
+    if (demoRemainingSeconds !== null) {
+      const targetMed = untakenMeds[0];
+      return {
+        medication: targetMed,
+        remainingSeconds: demoRemainingSeconds,
+        isUnder5Minutes: demoRemainingSeconds <= 300,
+      };
+    }
+
+    const nowH = currentTime.getHours();
+    const nowM = currentTime.getMinutes();
+    const nowS = currentTime.getSeconds();
+    const currentTotalSec = nowH * 3600 + nowM * 60 + nowS;
+
+    let bestMed: Medication | null = null;
+    let smallestPositiveDiff = Infinity;
+    let fallbackMed: Medication | null = null;
+    let smallestOverdueDiff = -Infinity;
+
+    for (const med of untakenMeds) {
+      for (const timeStr of med.scheduledTimes) {
+        const [h, m] = timeStr.split(":").map(Number);
+        const schedSec = h * 3600 + (m || 0) * 60;
+        const diff = schedSec - currentTotalSec;
+
+        if (diff >= 0 && diff < smallestPositiveDiff) {
+          smallestPositiveDiff = diff;
+          bestMed = med;
+        } else if (diff < 0 && diff > smallestOverdueDiff) {
+          smallestOverdueDiff = diff;
+          fallbackMed = med;
+        }
+      }
+    }
+
+    if (bestMed && smallestPositiveDiff !== Infinity) {
+      return {
+        medication: bestMed,
+        remainingSeconds: smallestPositiveDiff,
+        isUnder5Minutes: smallestPositiveDiff <= 300,
+      };
+    }
+
+    if (fallbackMed) {
+      return {
+        medication: fallbackMed,
+        remainingSeconds: 0,
+        isUnder5Minutes: true,
+      };
+    }
+
+    return null;
+  }, [state, todayStr, currentTime, demoRemainingSeconds]);
+
+  // Format seconds into live countdown string (e.g. "Due in 00:14:59" or "Due Now")
+  const formatCountdown = (totalSec: number) => {
+    if (totalSec <= 0) return "Due Now";
+    const hours = Math.floor(totalSec / 3600);
+    const minutes = Math.floor((totalSec % 3600) / 60);
+    const seconds = totalSec % 60;
+
+    const pad = (n: number) => n.toString().padStart(2, "0");
+
+    if (hours > 0) {
+      return `Due in ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    }
+    return `Due in ${pad(minutes)}:${pad(seconds)}`;
+  };
+
+  // Automatically trigger custom toast notification when countdown hits 00:00:00
+  useEffect(() => {
+    if (!nextDueInfo) return;
+    if (nextDueInfo.remainingSeconds === 0) {
+      if (toastFiredForMedIdRef.current !== nextDueInfo.medication.id) {
+        toastFiredForMedIdRef.current = nextDueInfo.medication.id;
+        setToastMed(nextDueInfo.medication);
+
+        if ("speechSynthesis" in window) {
+          const u = new SpeechSynthesisUtterance(
+            `Time for your ${nextDueInfo.medication.name}. Please take it with water.`
+          );
+          u.rate = 0.9;
+          window.speechSynthesis.speak(u);
+        }
+      }
+    }
+  }, [nextDueInfo]);
+
+  if (!state) return null;
+
+  const elder = state.elderProfile;
 
   // Speech Synthesis
   const handleReadScheduleAloud = () => {
@@ -178,28 +303,45 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
           </p>
         </div>
 
-        {/* Read Schedule Aloud Button (Full Pill) */}
-        <button
-          type="button"
-          onClick={handleReadScheduleAloud}
-          className={`h-14 sm:h-16 px-8 rounded-full font-bold text-base flex items-center justify-center gap-3 transition shadow-xs active:scale-98 shrink-0 ${
-            isSpeaking
-              ? "bg-rose-600 text-white hover:bg-rose-700"
-              : "bg-slate-900 text-white hover:bg-slate-800"
-          }`}
-        >
-          {isSpeaking ? (
-            <>
-              <VolumeX className="w-5 h-5 stroke-[2.5] animate-pulse" />
-              <span>Stop Reading</span>
-            </>
-          ) : (
-            <>
-              <Volume2 className="w-5 h-5 stroke-[2.5]" />
-              <span>Read Schedule Aloud</span>
-            </>
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          {nextDueInfo && (
+            <button
+              type="button"
+              onClick={() => {
+                toastFiredForMedIdRef.current = null;
+                setDemoRemainingSeconds(8);
+              }}
+              title="Fast-forward countdown to 8 seconds to demonstrate live ticking, medical teal transition under 5s, and custom toast notification"
+              className="h-14 sm:h-16 px-6 rounded-full border border-teal-200 bg-teal-50/70 hover:bg-teal-100 text-teal-900 text-xs sm:text-sm font-extrabold flex items-center gap-2 transition active:scale-98 shadow-xs"
+            >
+              <Sparkles className="w-4 h-4 text-teal-600" />
+              <span>⚡ Test 8s Alert Demo</span>
+            </button>
           )}
-        </button>
+
+          {/* Read Schedule Aloud Button (Full Pill) */}
+          <button
+            type="button"
+            onClick={handleReadScheduleAloud}
+            className={`h-14 sm:h-16 px-8 rounded-full font-bold text-base flex items-center justify-center gap-3 transition shadow-xs active:scale-98 shrink-0 ${
+              isSpeaking
+                ? "bg-rose-600 text-white hover:bg-rose-700"
+                : "bg-slate-900 text-white hover:bg-slate-800"
+            }`}
+          >
+            {isSpeaking ? (
+              <>
+                <VolumeX className="w-5 h-5 stroke-[2.5] animate-pulse" />
+                <span>Stop Reading</span>
+              </>
+            ) : (
+              <>
+                <Volume2 className="w-5 h-5 stroke-[2.5]" />
+                <span>Read Schedule Aloud</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Quick Ping: Request Family Call (Pure Card) */}
@@ -364,6 +506,18 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
           }
         }}
       />
+
+      {/* Real-time Dose Countdown Toast */}
+      <DoseCountdownToast
+        isOpen={!!toastMed}
+        medication={toastMed}
+        isTaking={takingMedId === toastMed?.id}
+        onTakeDose={async (med) => {
+          await handleTakeDose(med);
+          setToastMed(null);
+        }}
+        onDismiss={() => setToastMed(null)}
+      />
     </div>
   );
 
@@ -373,6 +527,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
     const isTaken = doseLog?.status === "TAKEN";
     const isSkipped = doseLog?.status === "SKIPPED_WITH_REASON";
     const isCurrentlyTaking = takingMedId === med.id;
+    const isNextDue = nextDueInfo?.medication.id === med.id && !isTaken;
 
     return (
       <motion.div
@@ -397,6 +552,26 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
                 <Clock className="w-4 h-4 text-[#0D9488]" />
                 {med.scheduledTimes.join(", ")}
               </span>
+
+              {/* Live Ticking Countdown Pill Badge */}
+              {isNextDue && nextDueInfo && (
+                <motion.span
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className={`text-sm sm:text-base font-extrabold px-4 py-1.5 rounded-full flex items-center gap-2 transition-colors duration-500 shadow-2xs ${
+                    nextDueInfo.isUnder5Minutes
+                      ? "bg-teal-100 text-teal-900 border border-teal-300 ring-2 ring-teal-500/20"
+                      : "bg-slate-100 text-slate-700 border border-slate-200"
+                  }`}
+                >
+                  <span
+                    className={`w-2.5 h-2.5 rounded-full ${
+                      nextDueInfo.isUnder5Minutes ? "bg-teal-600 animate-pulse" : "bg-slate-400"
+                    }`}
+                  />
+                  <span>{formatCountdown(nextDueInfo.remainingSeconds)}</span>
+                </motion.span>
+              )}
 
               <span className="text-sm sm:text-base font-bold bg-teal-50 text-teal-900 px-4 py-1.5 rounded-full border border-teal-200/60">
                 {med.instructions}

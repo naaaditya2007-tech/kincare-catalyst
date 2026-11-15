@@ -19,6 +19,10 @@ import {
   DEFAULT_DOSE_LOGS,
   DEFAULT_APPOINTMENTS,
   DEFAULT_EMAIL_LOGS,
+  KAVITA_SAMPLE_MEDICATIONS,
+  KAVITA_SAMPLE_DOSE_LOGS,
+  KAVITA_SAMPLE_APPOINTMENTS,
+  generateStarterMedications,
   getTodayDateString,
 } from "@/lib/constants";
 
@@ -54,7 +58,23 @@ export function getMultiPatientStore(): MultiPatientStore {
       if (raw && raw.trim().length > 0) {
         const parsed = JSON.parse(raw);
         if (parsed.patients && Array.isArray(parsed.patients) && parsed.patients.length > 0) {
+          // Auto-populate Kavita Ramanathan if she currently has empty prescriptions
+          let changed = false;
+          parsed.patients.forEach((p: PatientRecord) => {
+            if (
+              p.elderProfile.name.toLowerCase().includes("kavita") &&
+              (!p.medications || p.medications.length === 0)
+            ) {
+              p.medications = [...KAVITA_SAMPLE_MEDICATIONS];
+              p.doseLogs = [...KAVITA_SAMPLE_DOSE_LOGS];
+              p.appointments = [...KAVITA_SAMPLE_APPOINTMENTS];
+              changed = true;
+            }
+          });
           inMemoryStore = parsed;
+          if (changed) {
+            saveMultiPatientStore(inMemoryStore!);
+          }
           return inMemoryStore!;
         } else if (parsed.elderProfile && parsed.careCircle) {
           // Backward compatibility: wrap single-patient legacy format
@@ -213,12 +233,42 @@ export function createElderPatient(input: PatientOnboardingInput): { state: KinC
     },
   ];
 
+  const starterMeds =
+    input.seedSamplePrescriptions !== false ? generateStarterMedications(newId) : [];
+  const starterLogs: DoseLog[] = starterMeds.map((med, idx) => ({
+    id: `dose_log_${newId}_${idx}`,
+    medicationId: med.id,
+    medicationName: med.name,
+    date: getTodayDateString(),
+    scheduledTime: med.scheduledTimes[0] || "08:00",
+    status: idx === 0 ? "TAKEN" : "UPCOMING",
+    takenAt: idx === 0 ? new Date(Date.now() - 2 * 3600 * 1000).toISOString() : undefined,
+    elderNote: idx === 0 ? "Taken on schedule with water." : undefined,
+    loggedByRole: "ELDER",
+    loggedByName: input.name.trim(),
+  }));
+
   const newPatientRecord: PatientRecord = {
     elderProfile: newElderProfile,
     careCircle: newCareCircle,
-    medications: [], // Clean empty state for new patients
-    doseLogs: [], // Clean empty state
-    appointments: [],
+    medications: starterMeds,
+    doseLogs: starterLogs,
+    appointments: [
+      {
+        id: `appt_${newId}_01`,
+        doctorName: input.primaryDoctor || "Dr. Arvind Swaminathan",
+        specialty: "Geriatric & Family Health",
+        hospital: "City Care Specialty Hospital",
+        dateTime: new Date(Date.now() + 7 * 86400 * 1000).toISOString(),
+        notes: "Initial geriatric onboarding health check & medication schedule calibration.",
+        checklistQuestions: [
+          "Confirm dosage frequency and compatibility with existing allergies.",
+          "Check home blood pressure and resting pulse ranges.",
+        ],
+        reminderSent: false,
+        location: "OPD Consultation Room 12",
+      },
+    ],
     emailLogs: [],
     lastUpdated: new Date().toISOString(),
   };
