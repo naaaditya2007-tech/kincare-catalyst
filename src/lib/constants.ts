@@ -272,8 +272,11 @@ export const DEFAULT_EMAIL_LOGS: EmailAlertLog[] = [
 ];
 
 export function createDefaultState(): KinCareState {
+  const defaultProfile = { ...DEFAULT_ELDER_PROFILE };
   return {
-    elderProfile: { ...DEFAULT_ELDER_PROFILE },
+    activePatientId: defaultProfile.id,
+    allPatients: [defaultProfile],
+    elderProfile: defaultProfile,
     careCircle: [...DEFAULT_CARE_CIRCLE],
     medications: [...DEFAULT_MEDICATIONS],
     doseLogs: [...DEFAULT_DOSE_LOGS],

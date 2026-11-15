@@ -3,23 +3,49 @@ import path from "path";
 import os from "os";
 import {
   KinCareState,
+  PatientRecord,
+  ElderProfile,
   Medication,
   DoseLog,
   DoseStatus,
   Role,
+  PatientOnboardingInput,
+  CareCircleMember,
 } from "@/types/kincare";
 import {
-  createDefaultState,
+  DEFAULT_ELDER_PROFILE,
+  DEFAULT_CARE_CIRCLE,
+  DEFAULT_MEDICATIONS,
+  DEFAULT_DOSE_LOGS,
+  DEFAULT_APPOINTMENTS,
+  DEFAULT_EMAIL_LOGS,
   getTodayDateString,
 } from "@/lib/constants";
 
-const STORE_FILE_PATH = path.join(os.tmpdir(), "kincare_eldercare_store.json");
+export interface MultiPatientStore {
+  activePatientId: string;
+  patients: PatientRecord[];
+}
 
-let inMemoryState: KinCareState | null = null;
+const STORE_FILE_PATH = path.join(os.tmpdir(), "kincare_multi_patient_store.json");
 
-export function getKinCareState(): KinCareState {
-  if (inMemoryState) {
-    return inMemoryState;
+let inMemoryStore: MultiPatientStore | null = null;
+
+function createDefaultSeedPatient(): PatientRecord {
+  return {
+    elderProfile: { ...DEFAULT_ELDER_PROFILE },
+    careCircle: [...DEFAULT_CARE_CIRCLE],
+    medications: [...DEFAULT_MEDICATIONS],
+    doseLogs: [...DEFAULT_DOSE_LOGS],
+    appointments: [...DEFAULT_APPOINTMENTS],
+    emailLogs: [...DEFAULT_EMAIL_LOGS],
+    lastUpdated: new Date().toISOString(),
+  };
+}
+
+export function getMultiPatientStore(): MultiPatientStore {
+  if (inMemoryStore && inMemoryStore.patients?.length > 0) {
+    return inMemoryStore;
   }
 
   try {
@@ -27,35 +53,194 @@ export function getKinCareState(): KinCareState {
       const raw = fs.readFileSync(STORE_FILE_PATH, "utf-8");
       if (raw && raw.trim().length > 0) {
         const parsed = JSON.parse(raw);
-        if (parsed.elderProfile && parsed.careCircle && parsed.medications) {
-          inMemoryState = parsed;
-          return inMemoryState!;
+        if (parsed.patients && Array.isArray(parsed.patients) && parsed.patients.length > 0) {
+          inMemoryStore = parsed;
+          return inMemoryStore!;
+        } else if (parsed.elderProfile && parsed.careCircle) {
+          // Backward compatibility: wrap single-patient legacy format
+          const legacyPatient: PatientRecord = {
+            elderProfile: parsed.elderProfile,
+            careCircle: parsed.careCircle,
+            medications: parsed.medications || [],
+            doseLogs: parsed.doseLogs || [],
+            appointments: parsed.appointments || [],
+            emailLogs: parsed.emailLogs || [],
+            lastUpdated: parsed.lastUpdated || new Date().toISOString(),
+          };
+          inMemoryStore = {
+            activePatientId: legacyPatient.elderProfile.id,
+            patients: [legacyPatient],
+          };
+          saveMultiPatientStore(inMemoryStore);
+          return inMemoryStore;
         }
       }
     }
   } catch (err) {
-    console.warn("Could not read persistence file, initializing fallback memory store:", err);
+    console.warn("Could not read multi-patient persistence file, initializing fallback store:", err);
   }
 
-  inMemoryState = createDefaultState();
-  saveKinCareState(inMemoryState);
-  return inMemoryState;
+  const defaultPatient = createDefaultSeedPatient();
+  inMemoryStore = {
+    activePatientId: defaultPatient.elderProfile.id,
+    patients: [defaultPatient],
+  };
+  saveMultiPatientStore(inMemoryStore);
+  return inMemoryStore;
+}
+
+export function saveMultiPatientStore(store: MultiPatientStore): void {
+  inMemoryStore = store;
+  try {
+    fs.writeFileSync(STORE_FILE_PATH, JSON.stringify(store, null, 2), "utf-8");
+  } catch (err) {
+    console.warn("Failed to persist multi-patient store to disk (/tmp):", err);
+  }
+}
+
+export function getKinCareState(): KinCareState {
+  const store = getMultiPatientStore();
+  let activeRecord = store.patients.find((p) => p.elderProfile.id === store.activePatientId);
+
+  if (!activeRecord) {
+    activeRecord = store.patients[0];
+    store.activePatientId = activeRecord.elderProfile.id;
+  }
+
+  return {
+    activePatientId: store.activePatientId,
+    allPatients: store.patients.map((p) => p.elderProfile),
+    elderProfile: activeRecord.elderProfile,
+    careCircle: activeRecord.careCircle,
+    medications: activeRecord.medications,
+    doseLogs: activeRecord.doseLogs,
+    appointments: activeRecord.appointments,
+    emailLogs: activeRecord.emailLogs,
+    lastUpdated: activeRecord.lastUpdated,
+  };
 }
 
 export function saveKinCareState(state: KinCareState): void {
-  state.lastUpdated = new Date().toISOString();
-  inMemoryState = state;
-  try {
-    fs.writeFileSync(STORE_FILE_PATH, JSON.stringify(state, null, 2), "utf-8");
-  } catch (err) {
-    console.warn("Failed to persist state to disk (/tmp):", err);
+  const store = getMultiPatientStore();
+  const index = store.patients.findIndex((p) => p.elderProfile.id === state.elderProfile.id);
+
+  const updatedRecord: PatientRecord = {
+    elderProfile: state.elderProfile,
+    careCircle: state.careCircle,
+    medications: state.medications,
+    doseLogs: state.doseLogs,
+    appointments: state.appointments,
+    emailLogs: state.emailLogs,
+    lastUpdated: new Date().toISOString(),
+  };
+
+  if (index !== -1) {
+    store.patients[index] = updatedRecord;
+  } else {
+    store.patients.push(updatedRecord);
   }
+
+  store.activePatientId = state.elderProfile.id;
+  saveMultiPatientStore(store);
+}
+
+export function getAllPatientRecords(): PatientRecord[] {
+  const store = getMultiPatientStore();
+  return store.patients;
+}
+
+export function getAllElderProfiles(): ElderProfile[] {
+  const store = getMultiPatientStore();
+  return store.patients.map((p) => p.elderProfile);
+}
+
+export function switchActivePatient(patientId: string): KinCareState {
+  const store = getMultiPatientStore();
+  const exists = store.patients.some((p) => p.elderProfile.id === patientId);
+  if (exists) {
+    store.activePatientId = patientId;
+    saveMultiPatientStore(store);
+  }
+  return getKinCareState();
+}
+
+export function createElderPatient(input: PatientOnboardingInput): { state: KinCareState; newPatient: PatientRecord } {
+  const store = getMultiPatientStore();
+  const newId = `elder_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+
+  const newElderProfile: ElderProfile = {
+    id: newId,
+    name: input.name.trim(),
+    age: Number(input.age),
+    bloodGroup: input.bloodGroup || "O+",
+    allergies: input.allergies && input.allergies.length > 0 ? input.allergies : ["No Known Allergies"],
+    primaryDoctor: input.primaryDoctor || "Dr. Arvind Swaminathan (Cardiology)",
+    conditions: input.conditions || ["Under General Geriatric Observation"],
+    residence: input.residence || "Care Home Suite 101, Bengaluru",
+    emergencyPhone: input.emergencyPhone || "+91 98450 99999",
+  };
+
+  const newCareCircle: CareCircleMember[] = [
+    {
+      id: `member_elder_${newId}`,
+      name: input.name.trim(),
+      role: "ELDER",
+      relation: "Self (Elder)",
+      email: `${input.name.toLowerCase().replace(/[^a-z0-9]/g, "")}.care@gmail.com`,
+      passcode: input.elderPin || "1111",
+      permissions: ["LOG_DOSE", "VIEW_SCHEDULE", "REQUEST_CALL"],
+      avatarBg: "bg-teal-700",
+    },
+    {
+      id: `member_family_${newId}`,
+      name: `Family Admin (${input.name.split(" ")[0]})`,
+      role: "FAMILY_ADMIN",
+      relation: "Primary Family Administrator",
+      email: `family.${input.name.toLowerCase().replace(/[^a-z0-9]/g, "")}@gmail.com`,
+      passcode: input.familyPin || "2222",
+      permissions: ["ALL"],
+      avatarBg: "bg-indigo-700",
+    },
+    {
+      id: `member_caretaker_${newId}`,
+      name: "Visiting Nurse",
+      role: "CARETAKER",
+      relation: "Assisting Caregiver",
+      email: `caretaker.${input.name.toLowerCase().replace(/[^a-z0-9]/g, "")}@gmail.com`,
+      passcode: input.caretakerPin || "3333",
+      permissions: ["LOG_DOSE", "UPDATE_INVENTORY", "DOCTOR_PREP"],
+      avatarBg: "bg-emerald-700",
+    },
+  ];
+
+  const newPatientRecord: PatientRecord = {
+    elderProfile: newElderProfile,
+    careCircle: newCareCircle,
+    medications: [], // Clean empty state for new patients
+    doseLogs: [], // Clean empty state
+    appointments: [],
+    emailLogs: [],
+    lastUpdated: new Date().toISOString(),
+  };
+
+  store.patients.push(newPatientRecord);
+  store.activePatientId = newId;
+  saveMultiPatientStore(store);
+
+  return {
+    state: getKinCareState(),
+    newPatient: newPatientRecord,
+  };
 }
 
 export function resetToSeedState(): KinCareState {
-  inMemoryState = createDefaultState();
-  saveKinCareState(inMemoryState);
-  return inMemoryState;
+  const defaultPatient = createDefaultSeedPatient();
+  inMemoryStore = {
+    activePatientId: defaultPatient.elderProfile.id,
+    patients: [defaultPatient],
+  };
+  saveMultiPatientStore(inMemoryStore);
+  return getKinCareState();
 }
 
 // Helper Domain Mutations

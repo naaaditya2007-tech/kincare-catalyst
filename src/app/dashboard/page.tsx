@@ -6,6 +6,7 @@ import { Navbar } from "@/components/common/Navbar";
 import { ElderDashboard } from "@/components/elder/ElderDashboard";
 import { CommandCenterDashboard } from "@/components/command/CommandCenterDashboard";
 import { ProactiveEmailEscalationCenter } from "@/components/email/ProactiveEmailEscalationCenter";
+import { ElderOnboardingModal } from "@/components/auth/ElderOnboardingModal";
 import { CareProvider, useCare } from "@/context/CareContext";
 import { CheckCircle2 } from "lucide-react";
 
@@ -14,7 +15,10 @@ function DashboardContent() {
     state,
     loading,
     currentRole,
+    allPatients,
     setCurrentRole,
+    switchPatient,
+    createPatient,
     refreshState,
     logDoseAction,
     updateMedication,
@@ -27,6 +31,8 @@ function DashboardContent() {
     toastMessage,
     emailCenterOpen,
     setEmailCenterOpen,
+    onboardingModalOpen,
+    setOnboardingModalOpen,
     handleLogout,
   } = useCare();
 
@@ -88,11 +94,14 @@ function DashboardContent() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col selection:bg-teal-100 selection:text-teal-900">
-      {/* Top Navbar */}
+      {/* Top Navbar with Dynamic Multi-Patient Switcher */}
       <Navbar
         currentRole={currentRole}
         elderProfile={state.elderProfile}
+        allPatients={allPatients}
         onRoleSwitch={setCurrentRole}
+        onSwitchPatient={switchPatient}
+        onOpenOnboarding={() => setOnboardingModalOpen(true)}
         onOpenEmailCenter={() => setEmailCenterOpen(true)}
         onResetData={resetToSeedData}
         onLogout={handleLogout}
@@ -103,7 +112,7 @@ function DashboardContent() {
       <main className="flex-1 pb-20 overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentRole}
+            key={`${state.elderProfile.id}-${currentRole}`}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -137,6 +146,13 @@ function DashboardContent() {
         onClose={() => setEmailCenterOpen(false)}
         state={state}
         onRefreshState={refreshState}
+      />
+
+      {/* Patient Onboarding Modal */}
+      <ElderOnboardingModal
+        isOpen={onboardingModalOpen}
+        onClose={() => setOnboardingModalOpen(false)}
+        onSubmit={createPatient}
       />
 
       {/* Toast Notification (Pill Shaped) */}

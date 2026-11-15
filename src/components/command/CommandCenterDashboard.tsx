@@ -145,10 +145,10 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900">
-                {adherencePercent}%
+                {activeMedsCount > 0 ? `${adherencePercent}%` : "—"}
               </span>
               <span className="text-xs font-medium text-slate-500">
-                ({takenCount}/{activeMedsCount} taken)
+                {activeMedsCount > 0 ? `(${takenCount}/${activeMedsCount} taken)` : "No active meds"}
               </span>
             </div>
           </div>
@@ -342,101 +342,126 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {state.medications.map((med) => {
-              const isLow = med.stockRemaining <= med.refillThreshold;
-              return (
-                <div
-                  key={med.id}
-                  className={`bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition flex flex-col justify-between ${
-                    !med.active
-                      ? "opacity-60 bg-slate-50"
-                      : ""
-                  }`}
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-teal-800 bg-teal-50 px-3 py-1 rounded-full">
-                        {med.instructions}
-                      </span>
-                      <span className="text-xs font-mono font-medium text-slate-400">
-                        {med.scheduledTimes.join(", ")}
-                      </span>
-                    </div>
-
-                    <div>
-                      <h3 className="text-lg font-bold text-slate-900 tracking-tight">
-                        {med.name}
-                      </h3>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        {med.dosage} • {med.form} {med.purpose ? `(${med.purpose})` : ""}
-                      </p>
-                    </div>
-
-                    {med.conflictNote && (
-                      <div className="text-[11px] bg-amber-50 text-amber-900 rounded-xl p-3 leading-relaxed">
-                        {med.conflictNote}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between">
-                    <div>
-                      <div className="text-[10px] uppercase font-bold text-slate-400">Inventory</div>
-                      <div className="text-base font-bold text-slate-900 flex items-center gap-1.5">
-                        <span className={isLow ? "text-amber-600" : "text-slate-900"}>
-                          {med.stockRemaining} units
+          {state.medications.length === 0 ? (
+            <div className="border-2 border-dashed border-slate-200/90 rounded-3xl p-12 text-center bg-white shadow-xs flex flex-col items-center justify-center space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600">
+                <Pill className="w-7 h-7" />
+              </div>
+              <div className="max-w-md space-y-1">
+                <h3 className="text-lg font-bold text-slate-900">No Active Prescriptions</h3>
+                <p className="text-sm text-slate-500">
+                  There are currently no active medications registered for {elder.name}. Add prescriptions to establish dosage intervals, inventory tracking, and autonomous timing guards.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setMedToEdit(null);
+                  setMedModalOpen(true);
+                }}
+                className="px-6 py-3 rounded-full bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold flex items-center gap-2 transition shadow-xs"
+              >
+                <Plus className="w-4 h-4" />
+                <span>+ Add First Prescription</span>
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {state.medications.map((med) => {
+                const isLow = med.stockRemaining <= med.refillThreshold;
+                return (
+                  <div
+                    key={med.id}
+                    className={`bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition flex flex-col justify-between ${
+                      !med.active
+                        ? "opacity-60 bg-slate-50"
+                        : ""
+                    }`}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-teal-800 bg-teal-50 px-3 py-1 rounded-full">
+                          {med.instructions}
                         </span>
-                        {isLow && (
-                          <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded-full">
-                            LOW
-                          </span>
-                        )}
+                        <span className="text-xs font-mono font-medium text-slate-400">
+                          {med.scheduledTimes.join(", ")}
+                        </span>
                       </div>
+
+                      <div>
+                        <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+                          {med.name}
+                        </h3>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          {med.dosage} • {med.form} {med.purpose ? `(${med.purpose})` : ""}
+                        </p>
+                      </div>
+
+                      {med.conflictNote && (
+                        <div className="text-[11px] bg-amber-50 text-amber-900 rounded-xl p-3 leading-relaxed">
+                          {med.conflictNote}
+                        </div>
+                      )}
                     </div>
 
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => handleRestock(med, 30)}
-                        title="Add 30 units to inventory"
-                        className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-full text-xs font-semibold transition"
-                      >
-                        +30
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setMedToEdit(med);
-                          setMedModalOpen(true);
-                        }}
-                        title="Edit prescription"
-                        className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => onUpdateMedication("TOGGLE_ACTIVE", { id: med.id })}
-                        title={med.active ? "Pause prescription" : "Resume prescription"}
-                        className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-full transition"
-                      >
-                        {med.active ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => onUpdateMedication("DELETE", { id: med.id })}
-                        title="Delete prescription"
-                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                    <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between">
+                      <div>
+                        <div className="text-[10px] uppercase font-bold text-slate-400">Inventory</div>
+                        <div className="text-base font-bold text-slate-900 flex items-center gap-1.5">
+                          <span className={isLow ? "text-amber-600" : "text-slate-900"}>
+                            {med.stockRemaining} units
+                          </span>
+                          {isLow && (
+                            <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded-full">
+                              LOW
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleRestock(med, 30)}
+                          title="Add 30 units to inventory"
+                          className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-full text-xs font-semibold transition"
+                        >
+                          +30
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMedToEdit(med);
+                            setMedModalOpen(true);
+                          }}
+                          title="Edit prescription"
+                          className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onUpdateMedication("TOGGLE_ACTIVE", { id: med.id })}
+                          title={med.active ? "Pause prescription" : "Resume prescription"}
+                          className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-full transition"
+                        >
+                          {med.active ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onUpdateMedication("DELETE", { id: med.id })}
+                          title="Delete prescription"
+                          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
@@ -456,60 +481,74 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
             </button>
           </div>
 
-          <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] divide-y divide-slate-100">
-            {state.doseLogs.map((log) => {
-              const isTaken = log.status === "TAKEN";
-              const isSkipped = log.status === "SKIPPED_WITH_REASON";
-              const isMissed = log.status === "MISSED";
+          {state.doseLogs.length === 0 ? (
+            <div className="border-2 border-dashed border-slate-200/90 rounded-3xl p-12 text-center bg-white shadow-xs flex flex-col items-center justify-center space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400">
+                <Clock className="w-7 h-7" />
+              </div>
+              <div className="max-w-md space-y-1">
+                <h3 className="text-lg font-bold text-slate-900">No Dose Activity Recorded Yet</h3>
+                <p className="text-sm text-slate-500">
+                  As medications are taken or postponed in Elder Companion mode, real-time activity and elder notes will populate here.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] divide-y divide-slate-100">
+              {state.doseLogs.map((log) => {
+                const isTaken = log.status === "TAKEN";
+                const isSkipped = log.status === "SKIPPED_WITH_REASON";
+                const isMissed = log.status === "MISSED";
 
-              return (
-                <div key={log.id} className="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
-                          isTaken
-                            ? "bg-emerald-100 text-emerald-800"
-                            : isSkipped
-                            ? "bg-amber-100 text-amber-800"
-                            : isMissed
-                            ? "bg-rose-100 text-rose-800"
-                            : "bg-slate-100 text-slate-700"
-                        }`}
-                      >
-                        {log.status.replace(/_/g, " ")}
-                      </span>
-                      <span className="text-xs font-mono text-slate-400">{log.scheduledTime}</span>
-                      <span className="text-slate-300">•</span>
-                      <span className="text-xs text-slate-500">{log.date}</span>
+                return (
+                  <div key={log.id} className="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
+                            isTaken
+                              ? "bg-emerald-100 text-emerald-800"
+                              : isSkipped
+                              ? "bg-amber-100 text-amber-800"
+                              : isMissed
+                              ? "bg-rose-100 text-rose-800"
+                              : "bg-slate-100 text-slate-700"
+                          }`}
+                        >
+                          {log.status.replace(/_/g, " ")}
+                        </span>
+                        <span className="text-xs font-mono text-slate-400">{log.scheduledTime}</span>
+                        <span className="text-slate-300">•</span>
+                        <span className="text-xs text-slate-500">{log.date}</span>
+                      </div>
+
+                      <div className="text-base font-bold text-slate-900">{log.medicationName}</div>
+
+                      {/* Empathy-driven Elder Note callout */}
+                      {log.elderNote && (
+                        <div className="text-xs sm:text-sm text-slate-700 bg-slate-50 rounded-xl p-3.5 flex items-start gap-2">
+                          <MessageSquare className="w-3.5 h-3.5 text-teal-600 shrink-0 mt-0.5" />
+                          <div>
+                            <strong className="text-slate-900">Elder Comment:</strong> &ldquo;{log.elderNote}&rdquo;
+                          </div>
+                        </div>
+                      )}
                     </div>
 
-                    <div className="text-base font-bold text-slate-900">{log.medicationName}</div>
-
-                    {/* Empathy-driven Elder Note callout */}
-                    {log.elderNote && (
-                      <div className="text-xs sm:text-sm text-slate-700 bg-slate-50 rounded-xl p-3.5 flex items-start gap-2">
-                        <MessageSquare className="w-3.5 h-3.5 text-teal-600 shrink-0 mt-0.5" />
-                        <div>
-                          <strong className="text-slate-900">Elder Comment:</strong> &ldquo;{log.elderNote}&rdquo;
+                    <div className="text-left sm:text-right shrink-0">
+                      <div className="text-[11px] text-slate-400">Logged by</div>
+                      <div className="text-xs font-semibold text-slate-800">{log.loggedByName || log.loggedByRole}</div>
+                      {log.takenAt && (
+                        <div className="text-[11px] text-emerald-700 font-mono">
+                          {new Date(log.takenAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-
-                  <div className="text-left sm:text-right shrink-0">
-                    <div className="text-[11px] text-slate-400">Logged by</div>
-                    <div className="text-xs font-semibold text-slate-800">{log.loggedByName || log.loggedByRole}</div>
-                    {log.takenAt && (
-                      <div className="text-[11px] text-emerald-700 font-mono">
-                        {new Date(log.takenAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 

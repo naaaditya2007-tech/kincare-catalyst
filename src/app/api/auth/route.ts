@@ -1,42 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findMemberByPasscode, findMemberByRole, encodeSession, decodeSession, SESSION_COOKIE_NAME } from "@/lib/auth";
-import { getKinCareState, resetToSeedState } from "@/lib/store";
-import { Role } from "@/types/kincare";
+import { getKinCareState, resetToSeedState, switchActivePatient } from "@/lib/store";
+import { Role, CareCircleMember } from "@/types/kincare";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { passcode, role, action } = body;
+    const { passcode, role, patientId, action } = body;
 
     if (action === "RESET_SEED") {
       const freshState = resetToSeedState();
       return NextResponse.json({ success: true, state: freshState });
     }
 
-    let member = null;
+    let authResult: { member: CareCircleMember; patientId: string } | null = null;
 
     if (passcode) {
-      member = findMemberByPasscode(passcode);
+      authResult = findMemberByPasscode(passcode, patientId);
     } else if (role) {
-      member = findMemberByRole(role as Role);
+      authResult = findMemberByRole(role as Role, patientId);
     }
 
-    if (!member) {
+    if (!authResult || !authResult.member) {
       return NextResponse.json(
         {
           success: false,
-          error: "Invalid 4-digit passcode. Use 1111 for Elder, 2222 for Family, or 3333 for Caretaker.",
+          error: "Invalid 4-digit passcode for selected elder profile.",
         },
         { status: 401 }
       );
     }
 
+    // Switch active patient to the authenticated one
+    switchActivePatient(authResult.patientId);
     const state = getKinCareState();
-    const token = encodeSession(member);
+    const token = encodeSession(authResult.member, authResult.patientId);
 
     const response = NextResponse.json({
       success: true,
-      member,
+      member: authResult.member,
+      patientId: authResult.patientId,
       elderProfile: state.elderProfile,
       redirectUrl: "/dashboard",
     });

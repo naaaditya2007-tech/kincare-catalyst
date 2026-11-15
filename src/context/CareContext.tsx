@@ -2,13 +2,24 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import type { KinCareState, Role, Medication, CareCircleMember, DoseLog } from "@/types/kincare";
+import type {
+  KinCareState,
+  Role,
+  Medication,
+  CareCircleMember,
+  DoseLog,
+  ElderProfile,
+  PatientOnboardingInput,
+} from "@/types/kincare";
 
 interface CareContextType {
   state: KinCareState | null;
   loading: boolean;
   currentRole: Role;
+  allPatients: ElderProfile[];
   setCurrentRole: (role: Role) => Promise<void>;
+  switchPatient: (patientId: string) => Promise<void>;
+  createPatient: (input: PatientOnboardingInput) => Promise<void>;
   refreshState: () => Promise<void>;
   logDoseAction: (
     medicationId: string,
@@ -30,6 +41,8 @@ interface CareContextType {
   showToast: (msg: string) => void;
   emailCenterOpen: boolean;
   setEmailCenterOpen: (open: boolean) => void;
+  onboardingModalOpen: boolean;
+  setOnboardingModalOpen: (open: boolean) => void;
   handleLogout: () => Promise<void>;
 }
 
@@ -41,6 +54,7 @@ export const CareProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
   const [currentRole, setCurrentRoleState] = useState<Role>("ELDER");
   const [emailCenterOpen, setEmailCenterOpen] = useState(false);
+  const [onboardingModalOpen, setOnboardingModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = useCallback((msg: string) => {
@@ -84,30 +98,73 @@ export const CareProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     init();
   }, []);
 
-  const setCurrentRole = useCallback(async (newRole: Role) => {
-    setCurrentRoleState(newRole);
-    try {
-      const res = await fetch("/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role: newRole }),
-      });
-      const data = await res.json();
-      if (data.success && data.member) {
-        showToast(
-          `Switched view to ${
-            newRole === "ELDER"
-              ? "Elder Companion"
-              : newRole === "FAMILY_ADMIN"
-              ? "Family Admin"
-              : "Caretaker"
-          }`
-        );
+  const setCurrentRole = useCallback(
+    async (newRole: Role) => {
+      setCurrentRoleState(newRole);
+      try {
+        const res = await fetch("/api/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: newRole }),
+        });
+        const data = await res.json();
+        if (data.success && data.member) {
+          showToast(
+            `Switched view to ${
+              newRole === "ELDER"
+                ? "Elder Companion"
+                : newRole === "FAMILY_ADMIN"
+                ? "Family Admin"
+                : "Caretaker"
+            }`
+          );
+        }
+      } catch {
+        showToast(`Switched view to ${newRole}`);
       }
-    } catch {
-      showToast(`Switched view to ${newRole}`);
-    }
-  }, [showToast]);
+    },
+    [showToast]
+  );
+
+  const switchPatient = useCallback(
+    async (patientId: string) => {
+      try {
+        const res = await fetch("/api/kincare", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "SWITCH_PATIENT", patientId }),
+        });
+        const data = await res.json();
+        if (data.success && data.state) {
+          setState(data.state);
+          showToast(`Active elder switched to ${data.state.elderProfile.name}`);
+        }
+      } catch {
+        showToast("Failed to switch patient profile.");
+      }
+    },
+    [showToast]
+  );
+
+  const createPatient = useCallback(
+    async (input: PatientOnboardingInput) => {
+      try {
+        const res = await fetch("/api/kincare", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "CREATE_PATIENT", patientData: input }),
+        });
+        const data = await res.json();
+        if (data.success && data.state) {
+          setState(data.state);
+          showToast(`Onboarded new elder profile: ${input.name}`);
+        }
+      } catch {
+        showToast("Failed to onboard new patient profile.");
+      }
+    },
+    [showToast]
+  );
 
   const handleLogout = useCallback(async () => {
     try {
@@ -153,12 +210,10 @@ export const CareProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               : "Nurse Priya Nair",
         };
 
-        // Filter out any existing log for this med today to replace with the fresh action
         const filteredLogs = prevState.doseLogs.filter(
           (l) => !(l.medicationId === medicationId && l.date === todayStr)
         );
 
-        // Decrement stock if TAKEN
         const updatedMeds = prevState.medications.map((m) => {
           if (m.id === medicationId && status === "TAKEN") {
             return {
@@ -198,12 +253,10 @@ export const CareProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         });
         const data = await res.json();
         if (data.success && data.state) {
-          // Re-sync with authoritative server state
           setState(data.state);
         }
       } catch (err) {
         console.error("Dose action server sync failed:", err);
-        // Refresh state from server to ensure integrity
         refreshState();
       }
     },
@@ -339,13 +392,18 @@ export const CareProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     showToast("Urgent call ping sent to Anita Iyer and Nurse Priya!");
   }, [showToast]);
 
+  const allPatients = state?.allPatients || (state?.elderProfile ? [state.elderProfile] : []);
+
   return (
     <CareContext.Provider
       value={{
         state,
         loading,
         currentRole,
+        allPatients,
         setCurrentRole,
+        switchPatient,
+        createPatient,
         refreshState,
         logDoseAction,
         updateMedication,
@@ -359,6 +417,8 @@ export const CareProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         showToast,
         emailCenterOpen,
         setEmailCenterOpen,
+        onboardingModalOpen,
+        setOnboardingModalOpen,
         handleLogout,
       }}
     >

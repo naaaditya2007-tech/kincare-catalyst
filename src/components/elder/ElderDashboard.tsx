@@ -251,43 +251,59 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
           </span>
         </div>
 
-        {/* Morning Dose Group */}
-        {morning.length > 0 && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-2.5 text-slate-800 font-bold text-xl">
-              <Sun className="w-6 h-6 text-amber-500" />
-              <span>Morning Schedule (Before 12:00 PM)</span>
+        {morning.length === 0 && afternoon.length === 0 && night.length === 0 ? (
+          <div className="border-2 border-dashed border-slate-200/90 rounded-3xl p-12 text-center bg-white shadow-xs flex flex-col items-center justify-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-teal-50 flex items-center justify-center text-teal-600">
+              <Check className="w-8 h-8 stroke-[3]" />
             </div>
-            <div className="space-y-8 sm:space-y-10">
-              {morning.map((med) => renderMedicationCard(med))}
+            <div className="max-w-md space-y-2">
+              <h3 className="text-2xl font-bold text-slate-900">No Medications Scheduled Today</h3>
+              <p className="text-base text-slate-600">
+                Good health and peace of mind! If you are prescribed new medication, your Family Administrator can add it directly to your schedule.
+              </p>
             </div>
           </div>
-        )}
+        ) : (
+          <>
+            {/* Morning Dose Group */}
+            {morning.length > 0 && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-2.5 text-slate-800 font-bold text-xl">
+                  <Sun className="w-6 h-6 text-amber-500" />
+                  <span>Morning Schedule (Before 12:00 PM)</span>
+                </div>
+                <div className="space-y-8 sm:space-y-10">
+                  {morning.map((med) => renderMedicationCard(med))}
+                </div>
+              </div>
+            )}
 
-        {/* Afternoon Dose Group */}
-        {afternoon.length > 0 && (
-          <div className="space-y-6 pt-6">
-            <div className="flex items-center gap-2.5 text-slate-800 font-bold text-xl">
-              <Sunset className="w-6 h-6 text-teal-600" />
-              <span>Afternoon Schedule (12:00 PM – 5:00 PM)</span>
-            </div>
-            <div className="space-y-8 sm:space-y-10">
-              {afternoon.map((med) => renderMedicationCard(med))}
-            </div>
-          </div>
-        )}
+            {/* Afternoon Dose Group */}
+            {afternoon.length > 0 && (
+              <div className="space-y-6 pt-6">
+                <div className="flex items-center gap-2.5 text-slate-800 font-bold text-xl">
+                  <Sunset className="w-6 h-6 text-teal-600" />
+                  <span>Afternoon Schedule (12:00 PM – 5:00 PM)</span>
+                </div>
+                <div className="space-y-8 sm:space-y-10">
+                  {afternoon.map((med) => renderMedicationCard(med))}
+                </div>
+              </div>
+            )}
 
-        {/* Night Dose Group */}
-        {night.length > 0 && (
-          <div className="space-y-6 pt-6">
-            <div className="flex items-center gap-2.5 text-slate-800 font-bold text-xl">
-              <Moon className="w-6 h-6 text-indigo-600" />
-              <span>Night Schedule (Before Sleep)</span>
-            </div>
-            <div className="space-y-8 sm:space-y-10">
-              {night.map((med) => renderMedicationCard(med))}
-            </div>
-          </div>
+            {/* Night Dose Group */}
+            {night.length > 0 && (
+              <div className="space-y-6 pt-6">
+                <div className="flex items-center gap-2.5 text-slate-800 font-bold text-xl">
+                  <Moon className="w-6 h-6 text-indigo-600" />
+                  <span>Night Schedule (Before Sleep)</span>
+                </div>
+                <div className="space-y-8 sm:space-y-10">
+                  {night.map((med) => renderMedicationCard(med))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 

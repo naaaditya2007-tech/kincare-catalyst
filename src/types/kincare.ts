@@ -98,7 +98,33 @@ export interface ElderProfile {
   emergencyPhone: string;
 }
 
+export interface PatientRecord {
+  elderProfile: ElderProfile;
+  careCircle: CareCircleMember[];
+  medications: Medication[];
+  doseLogs: DoseLog[];
+  appointments: Appointment[];
+  emailLogs: EmailAlertLog[];
+  lastUpdated: string;
+}
+
+export interface PatientOnboardingInput {
+  name: string;
+  age: number;
+  bloodGroup: string;
+  allergies: string[];
+  primaryDoctor?: string;
+  conditions?: string[];
+  residence?: string;
+  emergencyPhone?: string;
+  elderPin: string;
+  familyPin: string;
+  caretakerPin?: string;
+}
+
 export interface KinCareState {
+  activePatientId: string;
+  allPatients: ElderProfile[];
   elderProfile: ElderProfile;
   careCircle: CareCircleMember[];
   medications: Medication[];
