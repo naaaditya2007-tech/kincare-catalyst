@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   Zap,
   Clock,
+  Sparkles,
 } from "lucide-react";
 import { KinCareState, EmailAlertLog } from "@/types/kincare";
 import { EmailPreviewModal } from "./EmailPreviewModal";
@@ -36,12 +37,18 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
     null
   );
   const [previewLog, setPreviewLog] = useState<EmailAlertLog | null>(null);
+  const [inlinePreview, setInlinePreview] = useState<{
+    subject: string;
+    html: string;
+    deliveryMode: string;
+    recipient: string;
+  } | null>(null);
 
   if (!isOpen) return null;
 
-  const handleTriggerWorkflow = async (workflowType: "UPCOMING_DOSE" | "MISSED_DOSE_ESCALATION" | "DOCTOR_BRIEF") => {
+  const handleTriggerWorkflow = async (workflowType: "UPCOMING_DOSE" | "MISSED_DOSE_ESCALATION" | "APPOINTMENT_REMINDER") => {
     if (!targetEmail.trim()) {
-      setFeedbackMsg({ type: "error", text: "Please provide a valid recipient email" });
+      setFeedbackMsg({ type: "error", text: "Please enter a valid recipient email address" });
       return;
     }
 
@@ -49,12 +56,12 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
     setFeedbackMsg(null);
 
     try {
-      const res = await fetch("/api/reminders", {
+      const res = await fetch("/api/send-alert", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          workflow: workflowType,
-          targetEmail: targetEmail.trim(),
+          alertType: workflowType,
+          recipientEmail: targetEmail.trim(),
           medicationName: "Amlodipine Besylate 5mg",
           elderNote: "Feeling slightly dizzy, waiting until after light meal",
         }),
@@ -64,8 +71,18 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
       if (data.success) {
         setFeedbackMsg({
           type: "success",
-          text: data.result?.message || `Dispatched ${workflowType} successfully!`,
+          text: data.message || `Dispatched ${workflowType.replace(/_/g, " ")} successfully!`,
         });
+
+        if (data.preview) {
+          setInlinePreview({
+            subject: data.preview.subject,
+            html: data.preview.html,
+            deliveryMode: data.deliveryMode,
+            recipient: data.preview.recipient,
+          });
+        }
+
         await onRefreshState();
       } else {
         setFeedbackMsg({ type: "error", text: data.error || "Failed to trigger workflow" });
@@ -97,11 +114,14 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
                 <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
                   Email Testing Center
                 </h2>
-                <p className="text-xs text-slate-500 font-normal">Live preview & Resend transactional delivery simulator</p>
+                <p className="text-xs text-slate-500 font-normal">
+                  Live Resend Transactional Delivery & HTML Simulation Engine
+                </p>
               </div>
             </div>
 
             <button
+              type="button"
               onClick={onClose}
               className="p-2.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition"
             >
@@ -114,21 +134,20 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                 <Mail className="w-3.5 h-3.5 text-teal-600" />
-                Target Recipient Email (Judge Live Test)
+                Enter your email to test live alerts.
               </label>
-              <span className="text-[11px] text-teal-700 font-semibold">Test with your address</span>
+              <span className="text-[11px] text-teal-700 font-semibold">Live Judge Verification</span>
             </div>
 
             <input
               type="email"
               value={targetEmail}
               onChange={(e) => setTargetEmail(e.target.value)}
-              placeholder="Enter your personal or judge email to test live delivery"
+              placeholder="Enter your email to test live alerts."
               className="w-full px-5 py-3 bg-white border border-slate-200 rounded-full text-sm font-medium focus:border-slate-900 focus:outline-none shadow-2xs"
             />
             <p className="text-[11px] text-slate-500 mt-2.5 leading-relaxed">
-              If <code>RESEND_API_KEY</code> is present in environment, dispatches live email. Otherwise,
-              instant fallback records the dispatch in the Audit Log below with fully rendered HTML preview!
+              If <code>RESEND_API_KEY</code> is present in your environment, dispatches actual emails to this address. If not configured or if an error occurs, an instant fallback generates and renders the complete HTML preview directly below!
             </p>
           </div>
 
@@ -148,25 +167,26 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
             </motion.div>
           )}
 
-          {/* 3 Real Workflow Action Buttons (Human Designed / High Polish) */}
-          <div className="space-y-3.5 mb-10">
+          {/* 3 Prominent Trigger Buttons */}
+          <div className="space-y-3.5 mb-8">
             <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1 flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5 text-amber-500" />
               Trigger One-Click Autonomous Workflows
             </div>
 
-            {/* Workflow 1: Simulate Upcoming Dose */}
+            {/* Button 1: Simulate Upcoming Dose Alert */}
             <button
+              type="button"
               onClick={() => handleTriggerWorkflow("UPCOMING_DOSE")}
               disabled={!!triggeringWorkflow}
               className="w-full text-left p-5 rounded-2xl bg-white hover:bg-slate-50/80 ring-1 ring-slate-900/5 hover:ring-slate-900/15 transition flex items-center justify-between group shadow-2xs active:scale-99"
             >
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 group-hover:bg-teal-600 group-hover:text-white transition">
+                <div className="w-10 h-10 rounded-full bg-teal-50 text-teal-700 flex items-center justify-center shrink-0 group-hover:bg-teal-600 group-hover:text-white transition">
                   <Send className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900 text-sm">Simulate Upcoming Dose</div>
+                  <div className="font-bold text-slate-900 text-sm">Simulate Upcoming Dose Alert</div>
                   <div className="text-xs text-slate-500 mt-0.5">
                     Dispatches today&apos;s full medication schedule and spacing precautions to Care Circle
                   </div>
@@ -177,8 +197,9 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
               </span>
             </button>
 
-            {/* Workflow 2: Simulate Missed Dose */}
+            {/* Button 2: Simulate Missed Dose Escalation */}
             <button
+              type="button"
               onClick={() => handleTriggerWorkflow("MISSED_DOSE_ESCALATION")}
               disabled={!!triggeringWorkflow}
               className="w-full text-left p-5 rounded-2xl bg-white hover:bg-rose-50/30 ring-1 ring-slate-900/5 hover:ring-rose-500/20 transition flex items-center justify-between group shadow-2xs active:scale-99"
@@ -188,9 +209,9 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
                   <AlertOctagon className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900 text-sm">Simulate Missed Dose</div>
+                  <div className="font-bold text-slate-900 text-sm">Simulate Missed Dose Escalation</div>
                   <div className="text-xs text-slate-500 mt-0.5">
-                    Marks overdue dose, bundles Raghavan&apos;s last note (&ldquo;Feeling dizzy&rdquo;) and notifies family
+                    Marks overdue dose, bundles Raghavan&apos;s last note (&ldquo;Feeling dizzy&rdquo;) and alerts family
                   </div>
                 </div>
               </div>
@@ -199,28 +220,65 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
               </span>
             </button>
 
-            {/* Workflow 3: Simulate Appointment */}
+            {/* Button 3: Simulate Appointment Reminder */}
             <button
-              onClick={() => handleTriggerWorkflow("DOCTOR_BRIEF")}
+              type="button"
+              onClick={() => handleTriggerWorkflow("APPOINTMENT_REMINDER")}
               disabled={!!triggeringWorkflow}
               className="w-full text-left p-5 rounded-2xl bg-white hover:bg-slate-50/80 ring-1 ring-slate-900/5 hover:ring-slate-900/15 transition flex items-center justify-between group shadow-2xs active:scale-99"
             >
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 group-hover:bg-slate-900 group-hover:text-white transition">
+                <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition">
                   <FileCheck2 className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900 text-sm">Simulate Appointment</div>
+                  <div className="font-bold text-slate-900 text-sm">Simulate Appointment Reminder</div>
                   <div className="text-xs text-slate-500 mt-0.5">
-                    Compiles patient history, active meds, and discussion checklist for Dr. Arvind Swaminathan
+                    Compiles patient clinical history, active meds, and discussion checklist for Dr. Arvind Swaminathan
                   </div>
                 </div>
               </div>
               <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3.5 py-1.5 rounded-full group-hover:bg-slate-900 group-hover:text-white transition">
-                {triggeringWorkflow === "DOCTOR_BRIEF" ? "Compiling..." : "Simulate"}
+                {triggeringWorkflow === "APPOINTMENT_REMINDER" ? "Compiling..." : "Simulate"}
               </span>
             </button>
           </div>
+
+          {/* Direct In-Drawer Live HTML Email Preview (For immediate judge evaluation) */}
+          {inlinePreview && (
+            <div className="mb-8 bg-slate-900 text-white rounded-2xl p-6 shadow-md space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-teal-400" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-teal-300">
+                    Active HTML Email Preview ({inlinePreview.deliveryMode})
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setInlinePreview(null)}
+                  className="text-xs text-slate-400 hover:text-white"
+                >
+                  Close Preview
+                </button>
+              </div>
+
+              <div>
+                <div className="text-sm font-bold text-white truncate">{inlinePreview.subject}</div>
+                <div className="text-xs text-slate-400 mt-0.5">Recipient: {inlinePreview.recipient}</div>
+              </div>
+
+              {/* Sandboxed iframe displaying the rendered HTML email */}
+              <div className="bg-white rounded-xl overflow-hidden border border-slate-700 h-[360px]">
+                <iframe
+                  title="HTML Email Preview"
+                  srcDoc={inlinePreview.html}
+                  className="w-full h-full border-none"
+                  sandbox="allow-same-origin"
+                />
+              </div>
+            </div>
+          )}
 
           {/* Live Email Dispatch Audit Log */}
           <div className="flex-1 flex flex-col">
@@ -232,7 +290,7 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
               <span className="text-[11px] text-slate-400">Click any row to inspect HTML</span>
             </div>
 
-            <div className="rounded-2xl overflow-hidden ring-1 ring-slate-900/5 divide-y divide-slate-100 flex-1 overflow-y-auto">
+            <div className="rounded-2xl overflow-hidden ring-1 ring-slate-900/5 divide-y divide-slate-100 flex-1 overflow-y-auto max-h-[280px]">
               {state.emailLogs.length === 0 ? (
                 <div className="p-8 text-center text-xs text-slate-400">
                   No email alerts logged yet. Trigger one above!
@@ -247,7 +305,12 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
                     <div className="min-w-0">
                       <div className="font-bold text-slate-900 truncate">{log.subject}</div>
                       <div className="text-slate-400 text-[11px] truncate mt-0.5">
-                        To: {log.recipientEmail} • {new Date(log.sentAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                        To: {log.recipientEmail} •{" "}
+                        {new Date(log.sentAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })}
                       </div>
                     </div>
 

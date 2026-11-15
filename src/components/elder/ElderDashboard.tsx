@@ -253,12 +253,12 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
 
         {/* Morning Dose Group */}
         {morning.length > 0 && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-slate-700 font-bold text-lg">
-              <Sun className="w-5 h-5 text-amber-500" />
-              <span>Morning (Before 12:00 PM)</span>
+          <div className="space-y-6">
+            <div className="flex items-center gap-2.5 text-slate-800 font-bold text-xl">
+              <Sun className="w-6 h-6 text-amber-500" />
+              <span>Morning Schedule (Before 12:00 PM)</span>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-8 sm:space-y-10">
               {morning.map((med) => renderMedicationCard(med))}
             </div>
           </div>
@@ -266,12 +266,12 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
 
         {/* Afternoon Dose Group */}
         {afternoon.length > 0 && (
-          <div className="space-y-4 pt-4">
-            <div className="flex items-center gap-2 text-slate-700 font-bold text-lg">
-              <Sunset className="w-5 h-5 text-teal-600" />
-              <span>Afternoon (12:00 PM – 5:00 PM)</span>
+          <div className="space-y-6 pt-6">
+            <div className="flex items-center gap-2.5 text-slate-800 font-bold text-xl">
+              <Sunset className="w-6 h-6 text-teal-600" />
+              <span>Afternoon Schedule (12:00 PM – 5:00 PM)</span>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-8 sm:space-y-10">
               {afternoon.map((med) => renderMedicationCard(med))}
             </div>
           </div>
@@ -279,12 +279,12 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
 
         {/* Night Dose Group */}
         {night.length > 0 && (
-          <div className="space-y-4 pt-4">
-            <div className="flex items-center gap-2 text-slate-700 font-bold text-lg">
-              <Moon className="w-5 h-5 text-indigo-600" />
-              <span>Night (Before Sleep)</span>
+          <div className="space-y-6 pt-6">
+            <div className="flex items-center gap-2.5 text-slate-800 font-bold text-xl">
+              <Moon className="w-6 h-6 text-indigo-600" />
+              <span>Night Schedule (Before Sleep)</span>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-8 sm:space-y-10">
               {night.map((med) => renderMedicationCard(med))}
             </div>
           </div>
@@ -395,11 +395,15 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
             </div>
 
             <div>
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-                <Pill className="w-7 h-7 text-[#0D9488] shrink-0" />
-                {med.name}
-              </h3>
-              <p className="text-lg sm:text-xl text-slate-700 mt-2 font-normal leading-relaxed">
+              <div className="flex items-center gap-3.5 mb-2">
+                <div className="w-12 h-12 rounded-full bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <Pill className="w-6 h-6 fill-white text-white" />
+                </div>
+                <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                  {med.name}
+                </h3>
+              </div>
+              <p className="text-lg sm:text-xl text-slate-700 font-normal leading-relaxed">
                 Dosage: <strong className="text-slate-900 font-bold">{med.dosage}</strong> ({med.form})
                 {med.purpose ? ` • ${med.purpose}` : ""}
               </p>
@@ -425,13 +429,13 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
           </div>
 
           {/* Right Action Buttons (Pill-shaped, massive tactile target) */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 shrink-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 shrink-0">
             {isTaken ? (
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className="h-16 px-8 rounded-full bg-emerald-600 text-white font-extrabold text-lg flex items-center justify-center gap-3 shadow-sm"
+                className="py-4 px-8 rounded-full bg-emerald-600 text-white font-extrabold text-xl flex items-center justify-center gap-3 shadow-md shadow-emerald-900/10"
               >
                 <CheckCircle2 className="w-6 h-6" />
                 <span>
@@ -439,8 +443,8 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
                 </span>
               </motion.div>
             ) : isSkipped ? (
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="h-16 px-7 rounded-full bg-amber-50 text-amber-900 font-bold text-base sm:text-lg flex items-center justify-center gap-2.5">
+              <div className="flex flex-col sm:flex-row gap-3.5">
+                <div className="py-4 px-7 rounded-full bg-amber-50 text-amber-900 font-bold text-lg flex items-center justify-center gap-2.5">
                   <Clock className="w-5 h-5 text-amber-700" />
                   <span>Postponed / Reason Logged</span>
                 </div>
@@ -448,10 +452,10 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
                   type="button"
                   onClick={() => handleTakeDose(med)}
                   disabled={isCurrentlyTaking}
-                  className="h-16 px-8 rounded-full bg-[#0D9488] hover:bg-[#0F766E] text-white font-extrabold text-base sm:text-lg transition shadow-sm active:scale-98 disabled:opacity-50 flex items-center justify-center gap-2.5"
+                  className="py-4 px-8 text-xl rounded-full bg-[#0D9488] hover:bg-[#0F766E] text-white font-extrabold transition shadow-md shadow-teal-900/20 active:scale-98 disabled:opacity-50 flex items-center justify-center gap-2.5"
                 >
-                  <Check className="w-5 h-5 stroke-[3]" />
-                  <span>Take Now</span>
+                  <Check className="w-6 h-6 stroke-[3]" />
+                  <span>I Took This</span>
                 </button>
               </div>
             ) : (
@@ -461,19 +465,19 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
                   type="button"
                   onClick={() => setSelectedMedForSkip(med)}
                   disabled={isCurrentlyTaking}
-                  className="h-16 px-8 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-base sm:text-lg transition active:scale-98 disabled:opacity-50"
+                  className="py-4 px-8 text-xl rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold transition active:scale-98 disabled:opacity-50"
                 >
                   Not Now / Skip
                 </button>
 
-                {/* Primary Pill Button: Take Now in deep medical teal bg-[#0D9488] */}
+                {/* Primary Pill Button: I Took This in deep medical teal bg-[#0D9488] with shadow-md shadow-teal-900/20 */}
                 <motion.button
                   type="button"
                   onClick={() => handleTakeDose(med)}
                   disabled={isCurrentlyTaking}
                   animate={isCurrentlyTaking ? { scale: [1, 1.05, 1], backgroundColor: "#0F766E" } : {}}
                   transition={{ duration: 0.35 }}
-                  className="h-16 px-9 rounded-full bg-[#0D9488] hover:bg-[#0F766E] text-white font-extrabold text-lg sm:text-xl transition shadow-sm flex items-center justify-center gap-3 active:scale-98 disabled:opacity-90"
+                  className="py-4 px-8 text-xl rounded-full bg-[#0D9488] hover:bg-[#0F766E] text-white font-extrabold transition shadow-md shadow-teal-900/20 flex items-center justify-center gap-3 active:scale-98 disabled:opacity-90"
                 >
                   {isCurrentlyTaking ? (
                     <motion.div
@@ -488,7 +492,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
                   ) : (
                     <>
                       <Check className="w-6 h-6 stroke-[3.5]" />
-                      <span>Take Now</span>
+                      <span>I Took This</span>
                     </>
                   )}
                 </motion.button>

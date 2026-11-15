@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Activity,
   AlertTriangle,
@@ -101,10 +102,13 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
             <Sparkles className="w-4 h-4 text-teal-600" />
             Care Circle Command Center • {currentRole === "FAMILY_ADMIN" ? "Family Administrator" : "Caretaker"}
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Patient Oversight: {elder.name}
+          <h1 className="text-2xl sm:text-3xl text-slate-500 font-medium tracking-tight">
+            Patient Oversight:{" "}
+            <span className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 inline-block">
+              {elder.name}
+            </span>
           </h1>
-          <p className="text-sm sm:text-base text-slate-500 mt-1 font-normal">
+          <p className="text-sm sm:text-base text-slate-500 mt-2 font-normal">
             Real-time adherence telemetry, prescription safety guard, and doctor visit briefing
           </p>
         </div>
@@ -231,9 +235,13 @@ export const CommandCenterDashboard: React.FC<CommandCenterDashboardProps> = (pr
         <div className="bg-amber-50 rounded-2xl p-6 text-amber-900 space-y-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-2">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
-                <ShieldAlert className="w-5 h-5" />
-              </div>
+              <motion.div
+                animate={{ scale: [1, 1.1, 1], opacity: [0.95, 1, 0.95] }}
+                transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
+                className="w-11 h-11 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm"
+              >
+                <ShieldAlert className="w-5 h-5 text-white" />
+              </motion.div>
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-amber-900 bg-amber-200/70 px-2.5 py-0.5 rounded-full inline-block">
                   Autonomous Timing Guard • Active Clinical Safeguard
