@@ -4,7 +4,6 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Volume2,
-  VolumeX,
   CheckCircle2,
   Clock,
   AlertTriangle,
@@ -216,41 +215,36 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
       return;
     }
 
-    const lines: string[] = [
-      `Hello ${elder.name}. Here is your medication schedule for today.`,
-    ];
+    const firstName = elder.name.split(" ")[0];
+    let sentence = "";
 
-    if (morning.length > 0) {
-      lines.push("In the morning:");
-      morning.forEach((m) => {
-        const log = getMedDoseLog(m.id);
-        const statusText = log?.status === "TAKEN" ? "already taken" : "scheduled for " + m.scheduledTimes.join(", ");
-        lines.push(`${m.name}, ${m.dosage}, ${m.instructions}. Status: ${statusText}.`);
-      });
+    if (nextDueInfo) {
+      const nextMed = nextDueInfo.medication;
+      const scheduledTimeStr = nextMed.scheduledTimes[0] || "08:00";
+      const [h, m] = scheduledTimeStr.split(":").map(Number);
+      const ampm = h >= 12 ? "PM" : "AM";
+      const h12 = h % 12 || 12;
+      const timeFormatted = `${h12}:${(m || 0).toString().padStart(2, "0")} ${ampm}`;
+      const instructionText = nextMed.instructions ? ` on ${nextMed.instructions.toLowerCase()}` : "";
+
+      sentence = `Hello ${firstName}. Your next medication is ${nextMed.name}, due at ${timeFormatted}${instructionText}.`;
+
+      // Count untaken doses today
+      const untakenCount = state.medications.filter((m) => {
+        if (!m.active) return false;
+        const log = state.doseLogs.find((l) => l.medicationId === m.id && l.date === todayStr);
+        return log?.status !== "TAKEN";
+      }).length;
+
+      if (untakenCount > 1) {
+        sentence += ` You have ${untakenCount} medications scheduled for today. Take your time and drink plenty of water.`;
+      }
+    } else {
+      sentence = `Hello ${firstName}. All your scheduled medications for today have been taken. Have a peaceful and restful day!`;
     }
 
-    if (afternoon.length > 0) {
-      lines.push("In the afternoon:");
-      afternoon.forEach((m) => {
-        const log = getMedDoseLog(m.id);
-        const statusText = log?.status === "TAKEN" ? "already taken" : "scheduled for " + m.scheduledTimes.join(", ");
-        lines.push(`${m.name}, ${m.dosage}, ${m.instructions}. Status: ${statusText}.`);
-      });
-    }
-
-    if (night.length > 0) {
-      lines.push("At night before sleep:");
-      night.forEach((m) => {
-        const log = getMedDoseLog(m.id);
-        const statusText = log?.status === "TAKEN" ? "already taken" : "scheduled for " + m.scheduledTimes.join(", ");
-        lines.push(`${m.name}, ${m.dosage}, ${m.instructions}. Status: ${statusText}.`);
-      });
-    }
-
-    lines.push("Take your time, drink plenty of water, and have a peaceful day.");
-
-    const utterance = new SpeechSynthesisUtterance(lines.join(" "));
-    utterance.rate = 0.88;
+    const utterance = new SpeechSynthesisUtterance(sentence);
+    utterance.rate = 0.9;
     utterance.pitch = 1.0;
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
@@ -319,25 +313,26 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
             </button>
           )}
 
-          {/* Read Schedule Aloud Button (Full Pill) */}
+          {/* Read My Schedule Button (Accessible Speech API with subtle pulsing animation) */}
           <button
             type="button"
             onClick={handleReadScheduleAloud}
+            aria-label="Read My Schedule Aloud"
             className={`h-14 sm:h-16 px-8 rounded-full font-extrabold text-base flex items-center justify-center gap-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:scale-98 shrink-0 ${
               isSpeaking
-                ? "bg-rose-600 text-white hover:bg-rose-700 hover:shadow-rose-900/20"
+                ? "bg-teal-600 text-white animate-pulse ring-4 ring-teal-500/30 scale-[1.02] shadow-lg shadow-teal-900/20"
                 : "bg-slate-900 text-white hover:bg-slate-800 hover:shadow-slate-900/20"
             }`}
           >
             {isSpeaking ? (
               <>
-                <VolumeX className="w-5 h-5 stroke-[2.5] animate-pulse" />
-                <span>Stop Reading</span>
+                <Volume2 className="w-5 h-5 stroke-[2.5] animate-bounce" />
+                <span>Reading Schedule...</span>
               </>
             ) : (
               <>
                 <Volume2 className="w-5 h-5 stroke-[2.5]" />
-                <span>Read Schedule Aloud</span>
+                <span>Read My Schedule</span>
               </>
             )}
           </button>

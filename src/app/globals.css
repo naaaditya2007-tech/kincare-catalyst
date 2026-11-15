@@ -44,3 +44,49 @@ body {
   outline: 2px solid #0d9488;
   outline-offset: 2px;
 }
+
+/* Print Styles for Clinical Summary Report */
+@media print {
+  /* Hide all app chrome, navigation, buttons, and backdrop */
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 12pt;
+  }
+
+  header,
+  nav,
+  footer,
+  button,
+  .print\:hidden,
+  [data-print-hidden="true"] {
+    display: none !important;
+  }
+
+  /* Reset modal positioning to flat printable document */
+  .fixed.inset-0 {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  #clinical-summary-report {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    overflow: visible !important;
+  }
+
+  #clinical-summary-report * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+}
