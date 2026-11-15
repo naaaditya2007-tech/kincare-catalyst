@@ -172,6 +172,12 @@ export const CareProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch {
       // Continue to redirect
     }
+    // Completely clear stale state upon logout
+    setState(null);
+    setCurrentRoleState("ELDER");
+    setEmailCenterOpen(false);
+    setOnboardingModalOpen(false);
+    setToastMessage(null);
     router.replace("/");
   }, [router]);
 
