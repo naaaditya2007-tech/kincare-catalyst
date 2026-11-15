@@ -282,17 +282,17 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-10">
-      {/* Elder Greeting Banner (Apple Health Pure Card) */}
-      <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col md:flex-row md:items-center justify-between gap-6">
+      {/* Elder Greeting Banner (Anti-AI Micro-Border Card) */}
+      <div className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-900/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wider text-teal-700 flex items-center gap-1.5 mb-2">
+          <div className="text-xs font-bold uppercase tracking-widest text-teal-700 flex items-center gap-1.5 mb-2">
             <Sparkles className="w-4 h-4 text-teal-600" />
             Elder Companion Mode
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
             Good day, {elder.name}
           </h1>
-          <p className="text-base sm:text-lg text-slate-500 mt-1 font-normal">
+          <p className="text-base sm:text-lg text-slate-600 font-medium leading-relaxed mt-1">
             Today is{" "}
             {new Date().toLocaleDateString("en-US", {
               weekday: "long",
@@ -312,7 +312,7 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
                 setDemoRemainingSeconds(8);
               }}
               title="Fast-forward countdown to 8 seconds to demonstrate live ticking, medical teal transition under 5s, and custom toast notification"
-              className="h-14 sm:h-16 px-6 rounded-full border border-teal-200 bg-teal-50/70 hover:bg-teal-100 text-teal-900 text-xs sm:text-sm font-extrabold flex items-center gap-2 transition active:scale-98 shadow-xs"
+              className="h-14 sm:h-16 px-6 rounded-full border border-teal-200 bg-teal-50/70 hover:bg-teal-100 text-teal-900 text-xs sm:text-sm font-extrabold flex items-center gap-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-98"
             >
               <Sparkles className="w-4 h-4 text-teal-600" />
               <span>⚡ Test 8s Alert Demo</span>
@@ -323,10 +323,10 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
           <button
             type="button"
             onClick={handleReadScheduleAloud}
-            className={`h-14 sm:h-16 px-8 rounded-full font-bold text-base flex items-center justify-center gap-3 transition shadow-xs active:scale-98 shrink-0 ${
+            className={`h-14 sm:h-16 px-8 rounded-full font-extrabold text-base flex items-center justify-center gap-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:scale-98 shrink-0 ${
               isSpeaking
-                ? "bg-rose-600 text-white hover:bg-rose-700"
-                : "bg-slate-900 text-white hover:bg-slate-800"
+                ? "bg-rose-600 text-white hover:bg-rose-700 hover:shadow-rose-900/20"
+                : "bg-slate-900 text-white hover:bg-slate-800 hover:shadow-slate-900/20"
             }`}
           >
             {isSpeaking ? (
@@ -345,14 +345,14 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
       </div>
 
       {/* Quick Ping: Request Family Call (Pure Card) */}
-      <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-5">
+      <div className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-900/5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-5">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
             <PhoneCall className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-slate-900 text-lg sm:text-xl">Need Assistance or Want to Talk?</h3>
-            <p className="text-sm sm:text-base text-slate-500">
+            <h3 className="font-extrabold text-slate-900 text-lg sm:text-xl tracking-tight">Need Assistance or Want to Talk?</h3>
+            <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed">
               One tap will send an instant phone request to Anita and Nurse Priya.
             </p>
           </div>
@@ -362,10 +362,10 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
           type="button"
           onClick={handleCallClick}
           disabled={callRequested}
-          className={`h-14 px-8 rounded-full font-bold text-base flex items-center justify-center gap-2.5 transition shrink-0 active:scale-98 shadow-xs ${
+          className={`h-14 px-8 rounded-full font-extrabold text-base flex items-center justify-center gap-2.5 transition-all duration-200 hover:-translate-y-0.5 shrink-0 active:scale-98 ${
             callRequested
-              ? "bg-emerald-600 text-white"
-              : "bg-slate-100 text-slate-900 hover:bg-slate-200"
+              ? "bg-emerald-600 text-white shadow-md shadow-emerald-900/20"
+              : "bg-slate-100 text-slate-900 hover:bg-slate-200/90 hover:shadow-md"
           }`}
         >
           {callRequested ? (
@@ -449,23 +449,23 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
         )}
       </div>
 
-      {/* Upcoming Doctor Visit Card (Apple Health Pure Card) */}
+      {/* Upcoming Doctor Visit Card (Anti-AI Micro-Border Card) */}
       {nextAppt && (
-        <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-4">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-teal-700">
+        <div className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-900/5 space-y-4">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-teal-700">
             <Calendar className="w-4 h-4 text-teal-600" />
             <span>Upcoming Doctor Consultation</span>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">
+              <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">
                 {nextAppt.doctorName}
               </h3>
-              <p className="text-base text-slate-500 mt-1 font-normal">
+              <p className="text-base text-slate-600 font-medium leading-relaxed mt-1">
                 {nextAppt.specialty} • {nextAppt.hospital}
               </p>
-              <div className="mt-3 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 text-xs font-semibold text-slate-800">
+              <div className="mt-3 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-xs font-bold text-slate-800">
                 <Clock className="w-3.5 h-3.5 text-teal-600" />
                 <span>
                   {new Date(nextAppt.dateTime).toLocaleDateString("en-US", {
@@ -479,11 +479,11 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
               </div>
             </div>
 
-            <div className="bg-slate-50 rounded-xl p-4 max-w-sm">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+            <div className="bg-slate-50 rounded-2xl p-5 max-w-sm ring-1 ring-slate-900/5">
+              <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">
                 Clinical Focus Note:
               </div>
-              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic">
+              <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed italic">
                 &ldquo;{nextAppt.notes}&rdquo;
               </p>
             </div>
@@ -534,14 +534,14 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
         layout
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         key={med.id}
-        className={`bg-white rounded-2xl p-8 shadow-sm transition-all duration-300 relative overflow-hidden ${
+        className={`bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-900/5 transition-all duration-300 relative overflow-hidden ${
           isCurrentlyTaking
             ? "ring-2 ring-teal-500/40 scale-[1.01]"
             : isTaken
             ? "bg-slate-50/70"
             : isSkipped
             ? "bg-amber-50/30"
-            : "bg-white"
+            : "bg-white hover:shadow-[0_12px_40px_rgb(0,0,0,0.06)]"
         }`}
       >
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -656,19 +656,19 @@ export const ElderDashboard: React.FC<ElderDashboardProps> = (props) => {
                   type="button"
                   onClick={() => setSelectedMedForSkip(med)}
                   disabled={isCurrentlyTaking}
-                  className="py-4 px-8 text-xl rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold transition active:scale-98 disabled:opacity-50"
+                  className="py-4 px-8 text-xl rounded-full border border-slate-200/80 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-extrabold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-98 disabled:opacity-50"
                 >
                   Not Now / Skip
                 </button>
 
-                {/* Primary Pill Button: I Took This in deep medical teal bg-[#0D9488] with shadow-md shadow-teal-900/20 */}
+                {/* Primary Pill Button: I Took This in deep medical teal bg-[#0D9488] with shadow and hover lift */}
                 <motion.button
                   type="button"
                   onClick={() => handleTakeDose(med)}
                   disabled={isCurrentlyTaking}
                   animate={isCurrentlyTaking ? { scale: [1, 1.05, 1], backgroundColor: "#0F766E" } : {}}
                   transition={{ duration: 0.35 }}
-                  className="py-4 px-8 text-xl rounded-full bg-[#0D9488] hover:bg-[#0F766E] text-white font-extrabold transition shadow-md shadow-teal-900/20 flex items-center justify-center gap-3 active:scale-98 disabled:opacity-90"
+                  className="py-4 px-8 text-xl rounded-full bg-[#0D9488] hover:bg-[#0F766E] text-white font-extrabold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-teal-900/25 flex items-center justify-center gap-3 active:scale-98 disabled:opacity-90"
                 >
                   {isCurrentlyTaking ? (
                     <motion.div

@@ -19,6 +19,8 @@ import {
   DEFAULT_DOSE_LOGS,
   DEFAULT_APPOINTMENTS,
   DEFAULT_EMAIL_LOGS,
+  DEFAULT_KAVITA_PROFILE,
+  DEFAULT_KAVITA_CARE_CIRCLE,
   KAVITA_SAMPLE_MEDICATIONS,
   KAVITA_SAMPLE_DOSE_LOGS,
   KAVITA_SAMPLE_APPOINTMENTS,
@@ -35,8 +37,8 @@ const STORE_FILE_PATH = path.join(os.tmpdir(), "kincare_multi_patient_store.json
 
 let inMemoryStore: MultiPatientStore | null = null;
 
-function createDefaultSeedPatient(): PatientRecord {
-  return {
+function createDefaultSeedPatients(): PatientRecord[] {
+  const raghavan: PatientRecord = {
     elderProfile: { ...DEFAULT_ELDER_PROFILE },
     careCircle: [...DEFAULT_CARE_CIRCLE],
     medications: [...DEFAULT_MEDICATIONS],
@@ -45,10 +47,80 @@ function createDefaultSeedPatient(): PatientRecord {
     emailLogs: [...DEFAULT_EMAIL_LOGS],
     lastUpdated: new Date().toISOString(),
   };
+
+  const kavita: PatientRecord = {
+    elderProfile: { ...DEFAULT_KAVITA_PROFILE },
+    careCircle: [...DEFAULT_KAVITA_CARE_CIRCLE],
+    medications: [...KAVITA_SAMPLE_MEDICATIONS],
+    doseLogs: [...KAVITA_SAMPLE_DOSE_LOGS],
+    appointments: [...KAVITA_SAMPLE_APPOINTMENTS],
+    emailLogs: [],
+    lastUpdated: new Date().toISOString(),
+  };
+
+  return [raghavan, kavita];
+}
+
+function ensurePatientDataIntegrity(store: MultiPatientStore): boolean {
+  let changed = false;
+
+  // 1. Ensure Kavita Ramanathan exists in the patients list
+  const kavitaExists = store.patients.some((p) =>
+    p.elderProfile.name.toLowerCase().includes("kavita")
+  );
+  if (!kavitaExists) {
+    const kavitaRecord: PatientRecord = {
+      elderProfile: { ...DEFAULT_KAVITA_PROFILE },
+      careCircle: [...DEFAULT_KAVITA_CARE_CIRCLE],
+      medications: [...KAVITA_SAMPLE_MEDICATIONS],
+      doseLogs: [...KAVITA_SAMPLE_DOSE_LOGS],
+      appointments: [...KAVITA_SAMPLE_APPOINTMENTS],
+      emailLogs: [],
+      lastUpdated: new Date().toISOString(),
+    };
+    store.patients.push(kavitaRecord);
+    changed = true;
+  }
+
+  // 2. Ensure each patient has medications and dose logs
+  store.patients.forEach((p) => {
+    const isKavita = p.elderProfile.name.toLowerCase().includes("kavita");
+    if (isKavita) {
+      if (!p.medications || p.medications.length === 0) {
+        p.medications = [...KAVITA_SAMPLE_MEDICATIONS];
+        p.doseLogs = [...KAVITA_SAMPLE_DOSE_LOGS];
+        p.appointments = [...KAVITA_SAMPLE_APPOINTMENTS];
+        changed = true;
+      }
+    } else {
+      if (!p.medications || p.medications.length === 0) {
+        p.medications = generateStarterMedications(p.elderProfile.id);
+        p.doseLogs = p.medications.map((m, idx) => ({
+          id: `dose_${p.elderProfile.id}_${idx}`,
+          medicationId: m.id,
+          medicationName: m.name,
+          date: getTodayDateString(),
+          scheduledTime: m.scheduledTimes[0] || "08:00",
+          status: idx === 0 ? "TAKEN" : "UPCOMING",
+          takenAt: idx === 0 ? new Date().toISOString() : undefined,
+          elderNote: idx === 0 ? "Taken on schedule" : undefined,
+          loggedByRole: "ELDER",
+          loggedByName: p.elderProfile.name,
+        }));
+        changed = true;
+      }
+    }
+  });
+
+  return changed;
 }
 
 export function getMultiPatientStore(): MultiPatientStore {
   if (inMemoryStore && inMemoryStore.patients?.length > 0) {
+    const changed = ensurePatientDataIntegrity(inMemoryStore);
+    if (changed) {
+      saveMultiPatientStore(inMemoryStore);
+    }
     return inMemoryStore;
   }
 
@@ -58,19 +130,7 @@ export function getMultiPatientStore(): MultiPatientStore {
       if (raw && raw.trim().length > 0) {
         const parsed = JSON.parse(raw);
         if (parsed.patients && Array.isArray(parsed.patients) && parsed.patients.length > 0) {
-          // Auto-populate Kavita Ramanathan if she currently has empty prescriptions
-          let changed = false;
-          parsed.patients.forEach((p: PatientRecord) => {
-            if (
-              p.elderProfile.name.toLowerCase().includes("kavita") &&
-              (!p.medications || p.medications.length === 0)
-            ) {
-              p.medications = [...KAVITA_SAMPLE_MEDICATIONS];
-              p.doseLogs = [...KAVITA_SAMPLE_DOSE_LOGS];
-              p.appointments = [...KAVITA_SAMPLE_APPOINTMENTS];
-              changed = true;
-            }
-          });
+          const changed = ensurePatientDataIntegrity(parsed);
           inMemoryStore = parsed;
           if (changed) {
             saveMultiPatientStore(inMemoryStore!);
@@ -91,6 +151,7 @@ export function getMultiPatientStore(): MultiPatientStore {
             activePatientId: legacyPatient.elderProfile.id,
             patients: [legacyPatient],
           };
+          ensurePatientDataIntegrity(inMemoryStore);
           saveMultiPatientStore(inMemoryStore);
           return inMemoryStore;
         }
@@ -100,10 +161,10 @@ export function getMultiPatientStore(): MultiPatientStore {
     console.warn("Could not read multi-patient persistence file, initializing fallback store:", err);
   }
 
-  const defaultPatient = createDefaultSeedPatient();
+  const defaultPatients = createDefaultSeedPatients();
   inMemoryStore = {
-    activePatientId: defaultPatient.elderProfile.id,
-    patients: [defaultPatient],
+    activePatientId: defaultPatients[0].elderProfile.id,
+    patients: defaultPatients,
   };
   saveMultiPatientStore(inMemoryStore);
   return inMemoryStore;
@@ -284,10 +345,10 @@ export function createElderPatient(input: PatientOnboardingInput): { state: KinC
 }
 
 export function resetToSeedState(): KinCareState {
-  const defaultPatient = createDefaultSeedPatient();
+  const defaultPatients = createDefaultSeedPatients();
   inMemoryStore = {
-    activePatientId: defaultPatient.elderProfile.id,
-    patients: [defaultPatient],
+    activePatientId: defaultPatients[0].elderProfile.id,
+    patients: defaultPatients,
   };
   saveMultiPatientStore(inMemoryStore);
   return getKinCareState();

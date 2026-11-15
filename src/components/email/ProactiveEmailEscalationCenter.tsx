@@ -130,13 +130,13 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
           </div>
 
           {/* Tester Recipient Input Box (Pill Input) */}
-          <div className="bg-slate-50 rounded-3xl p-6 sm:p-7 mb-8 ring-1 ring-slate-900/5">
+          <div className="bg-slate-50/70 rounded-3xl p-6 sm:p-8 mb-8 ring-1 ring-slate-900/5 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
             <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-700 flex items-center gap-1.5">
                 <Mail className="w-3.5 h-3.5 text-teal-600" />
                 Enter your email to test live alerts.
               </label>
-              <span className="text-[11px] text-teal-700 font-semibold">Live Judge Verification</span>
+              <span className="text-[11px] text-teal-700 font-bold uppercase tracking-wider">Live Judge Verification</span>
             </div>
 
             <input
@@ -144,9 +144,9 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
               value={targetEmail}
               onChange={(e) => setTargetEmail(e.target.value)}
               placeholder="Enter your email to test live alerts."
-              className="w-full px-5 py-3 bg-white border border-slate-200 rounded-full text-sm font-medium focus:border-slate-900 focus:outline-none shadow-2xs"
+              className="w-full px-5 py-3.5 bg-white ring-1 ring-slate-900/10 rounded-full text-sm font-medium focus:ring-2 focus:ring-slate-900 focus:outline-none shadow-2xs"
             />
-            <p className="text-[11px] text-slate-500 mt-2.5 leading-relaxed">
+            <p className="text-xs text-slate-500 font-medium leading-relaxed mt-2.5">
               If <code>RESEND_API_KEY</code> is present in your environment, dispatches actual emails to this address. If not configured or if an error occurs, an instant fallback generates and renders the complete HTML preview directly below!
             </p>
           </div>
@@ -156,10 +156,10 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
             <motion.div
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`p-3.5 rounded-full text-xs font-semibold mb-6 flex items-center gap-2 ${
+              className={`p-4 rounded-full text-xs font-bold mb-6 flex items-center gap-2 ${
                 feedbackMsg.type === "success"
-                  ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                  : "bg-rose-50 text-rose-800 border border-rose-200"
+                  ? "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200 shadow-xs"
+                  : "bg-rose-50 text-rose-800 ring-1 ring-rose-200 shadow-xs"
               }`}
             >
               <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
@@ -168,8 +168,8 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
           )}
 
           {/* 3 Prominent Trigger Buttons */}
-          <div className="space-y-3.5 mb-8">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1 flex items-center gap-1.5">
+          <div className="space-y-4 mb-8">
+            <div className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1 flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5 text-amber-500" />
               Trigger One-Click Autonomous Workflows
             </div>
@@ -179,20 +179,20 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
               type="button"
               onClick={() => handleTriggerWorkflow("UPCOMING_DOSE")}
               disabled={!!triggeringWorkflow}
-              className="w-full text-left p-5 rounded-2xl bg-white hover:bg-slate-50/80 ring-1 ring-slate-900/5 hover:ring-slate-900/15 transition flex items-center justify-between group shadow-2xs active:scale-99"
+              className="w-full text-left p-6 rounded-3xl bg-white hover:bg-slate-50/80 ring-1 ring-slate-900/5 shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between group"
             >
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-teal-50 text-teal-700 flex items-center justify-center shrink-0 group-hover:bg-teal-600 group-hover:text-white transition">
-                  <Send className="w-4 h-4" />
+                <div className="w-12 h-12 rounded-full bg-teal-50 text-teal-700 flex items-center justify-center shrink-0 group-hover:bg-teal-600 group-hover:text-white transition">
+                  <Send className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900 text-sm">Simulate Upcoming Dose Alert</div>
-                  <div className="text-xs text-slate-500 mt-0.5">
+                  <div className="font-extrabold text-slate-900 text-sm tracking-tight">Simulate Upcoming Dose Alert</div>
+                  <div className="text-xs text-slate-500 font-medium leading-relaxed mt-0.5">
                     Dispatches today&apos;s full medication schedule and spacing precautions to Care Circle
                   </div>
                 </div>
               </div>
-              <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3.5 py-1.5 rounded-full group-hover:bg-slate-900 group-hover:text-white transition">
+              <span className="text-xs font-bold text-slate-700 bg-slate-100 px-4 py-2 rounded-full group-hover:bg-slate-900 group-hover:text-white transition-all shadow-xs shrink-0 ml-3">
                 {triggeringWorkflow === "UPCOMING_DOSE" ? "Sending..." : "Simulate"}
               </span>
             </button>
@@ -202,20 +202,20 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
               type="button"
               onClick={() => handleTriggerWorkflow("MISSED_DOSE_ESCALATION")}
               disabled={!!triggeringWorkflow}
-              className="w-full text-left p-5 rounded-2xl bg-white hover:bg-rose-50/30 ring-1 ring-slate-900/5 hover:ring-rose-500/20 transition flex items-center justify-between group shadow-2xs active:scale-99"
+              className="w-full text-left p-6 rounded-3xl bg-white hover:bg-rose-50/30 ring-1 ring-slate-900/5 shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between group"
             >
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 group-hover:bg-rose-600 group-hover:text-white transition">
-                  <AlertOctagon className="w-4 h-4" />
+                <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 group-hover:bg-rose-600 group-hover:text-white transition">
+                  <AlertOctagon className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900 text-sm">Simulate Missed Dose Escalation</div>
-                  <div className="text-xs text-slate-500 mt-0.5">
+                  <div className="font-extrabold text-slate-900 text-sm tracking-tight">Simulate Missed Dose Escalation</div>
+                  <div className="text-xs text-slate-500 font-medium leading-relaxed mt-0.5">
                     Marks overdue dose, bundles Raghavan&apos;s last note (&ldquo;Feeling dizzy&rdquo;) and alerts family
                   </div>
                 </div>
               </div>
-              <span className="text-xs font-bold text-rose-700 bg-rose-50 px-3.5 py-1.5 rounded-full group-hover:bg-rose-600 group-hover:text-white transition">
+              <span className="text-xs font-bold text-rose-700 bg-rose-50 ring-1 ring-rose-200 px-4 py-2 rounded-full group-hover:bg-rose-600 group-hover:text-white transition-all shadow-xs shrink-0 ml-3">
                 {triggeringWorkflow === "MISSED_DOSE_ESCALATION" ? "Escalating..." : "Simulate"}
               </span>
             </button>
@@ -225,20 +225,20 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
               type="button"
               onClick={() => handleTriggerWorkflow("APPOINTMENT_REMINDER")}
               disabled={!!triggeringWorkflow}
-              className="w-full text-left p-5 rounded-2xl bg-white hover:bg-slate-50/80 ring-1 ring-slate-900/5 hover:ring-slate-900/15 transition flex items-center justify-between group shadow-2xs active:scale-99"
+              className="w-full text-left p-6 rounded-3xl bg-white hover:bg-slate-50/80 ring-1 ring-slate-900/5 shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between group"
             >
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition">
-                  <FileCheck2 className="w-4 h-4" />
+                <div className="w-12 h-12 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition">
+                  <FileCheck2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900 text-sm">Simulate Appointment Reminder</div>
-                  <div className="text-xs text-slate-500 mt-0.5">
+                  <div className="font-extrabold text-slate-900 text-sm tracking-tight">Simulate Appointment Reminder</div>
+                  <div className="text-xs text-slate-500 font-medium leading-relaxed mt-0.5">
                     Compiles patient clinical history, active meds, and discussion checklist for Dr. Arvind Swaminathan
                   </div>
                 </div>
               </div>
-              <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3.5 py-1.5 rounded-full group-hover:bg-slate-900 group-hover:text-white transition">
+              <span className="text-xs font-bold text-slate-700 bg-slate-100 px-4 py-2 rounded-full group-hover:bg-slate-900 group-hover:text-white transition-all shadow-xs shrink-0 ml-3">
                 {triggeringWorkflow === "APPOINTMENT_REMINDER" ? "Compiling..." : "Simulate"}
               </span>
             </button>
@@ -246,30 +246,30 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
 
           {/* Direct In-Drawer Live HTML Email Preview (For immediate judge evaluation) */}
           {inlinePreview && (
-            <div className="mb-8 bg-slate-900 text-white rounded-2xl p-6 shadow-md space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="mb-8 bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl space-y-4 ring-1 ring-white/10 animate-in fade-in slide-in-from-top-2 duration-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-teal-400" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-teal-300">
+                  <span className="text-xs font-bold uppercase tracking-widest text-teal-300">
                     Active HTML Email Preview ({inlinePreview.deliveryMode})
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setInlinePreview(null)}
-                  className="text-xs text-slate-400 hover:text-white"
+                  className="text-xs font-bold text-slate-400 hover:text-white uppercase tracking-wider"
                 >
                   Close Preview
                 </button>
               </div>
 
               <div>
-                <div className="text-sm font-bold text-white truncate">{inlinePreview.subject}</div>
+                <div className="text-base font-extrabold text-white tracking-tight truncate">{inlinePreview.subject}</div>
                 <div className="text-xs text-slate-400 mt-0.5">Recipient: {inlinePreview.recipient}</div>
               </div>
 
               {/* Sandboxed iframe displaying the rendered HTML email */}
-              <div className="bg-white rounded-xl overflow-hidden border border-slate-700 h-[360px]">
+              <div className="bg-white rounded-2xl overflow-hidden ring-1 ring-slate-800 h-[360px]">
                 <iframe
                   title="HTML Email Preview"
                   srcDoc={inlinePreview.html}
@@ -283,16 +283,16 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
           {/* Live Email Dispatch Audit Log */}
           <div className="flex-1 flex flex-col">
             <div className="flex items-center justify-between mb-3.5">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <span className="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-slate-400" />
                 Live Email Dispatch Audit Trail ({state.emailLogs.length})
               </span>
-              <span className="text-[11px] text-slate-400">Click any row to inspect HTML</span>
+              <span className="text-[11px] text-slate-400 font-medium">Click any row to inspect HTML</span>
             </div>
 
-            <div className="rounded-2xl overflow-hidden ring-1 ring-slate-900/5 divide-y divide-slate-100 flex-1 overflow-y-auto max-h-[280px]">
+            <div className="rounded-3xl overflow-hidden ring-1 ring-slate-900/5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] divide-y divide-slate-100 flex-1 overflow-y-auto max-h-[280px]">
               {state.emailLogs.length === 0 ? (
-                <div className="p-8 text-center text-xs text-slate-400">
+                <div className="p-8 text-center text-xs text-slate-400 font-medium">
                   No email alerts logged yet. Trigger one above!
                 </div>
               ) : (
@@ -300,11 +300,11 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
                   <div
                     key={log.id}
                     onClick={() => setPreviewLog(log)}
-                    className="p-4 hover:bg-slate-50 cursor-pointer transition flex items-center justify-between gap-3 text-xs"
+                    className="p-5 hover:bg-slate-50 cursor-pointer transition-colors flex items-center justify-between gap-3 text-xs"
                   >
                     <div className="min-w-0">
-                      <div className="font-bold text-slate-900 truncate">{log.subject}</div>
-                      <div className="text-slate-400 text-[11px] truncate mt-0.5">
+                      <div className="font-extrabold text-slate-900 tracking-tight truncate">{log.subject}</div>
+                      <div className="text-slate-500 font-medium text-[11px] truncate mt-0.5">
                         To: {log.recipientEmail} •{" "}
                         {new Date(log.sentAt).toLocaleTimeString([], {
                           hour: "2-digit",
@@ -316,7 +316,7 @@ export const ProactiveEmailEscalationCenter: React.FC<ProactiveEmailEscalationCe
 
                     <div className="flex items-center gap-2 shrink-0">
                       <span
-                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                        className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full ${
                           log.deliveryMode === "LIVE_RESEND"
                             ? "bg-emerald-100 text-emerald-800"
                             : "bg-slate-100 text-slate-700"

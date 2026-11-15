@@ -76,7 +76,7 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
           initial={{ opacity: 0, scale: 0.96, y: 8 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 8 }}
-          className="bg-white rounded-3xl border border-slate-100 shadow-2xl max-w-xl w-full p-8 sm:p-10 relative max-h-[90vh] overflow-y-auto"
+          className="bg-white rounded-3xl shadow-[0_25px_60px_rgb(0,0,0,0.14)] ring-1 ring-slate-900/5 max-w-xl w-full p-8 sm:p-10 relative max-h-[90vh] overflow-y-auto"
         >
           <button
             onClick={onClose}
@@ -276,13 +276,13 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowAddForm(false)}
-                  className="px-4 py-2 text-xs text-slate-600 hover:bg-slate-200/60 rounded-full"
+                  className="px-5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-200/60 rounded-full transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 text-xs bg-slate-900 hover:bg-slate-800 text-white rounded-full font-semibold shadow-xs"
+                  className="px-6 py-2.5 text-xs bg-slate-900 hover:bg-slate-800 text-white rounded-full font-extrabold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/20 active:scale-95"
                 >
                   Add Member
                 </button>
@@ -291,10 +291,10 @@ export const CareCircleModal: React.FC<CareCircleModalProps> = ({
           ) : (
             <button
               onClick={() => setShowAddForm(true)}
-              className="w-full py-3.5 border border-dashed border-slate-300 hover:border-slate-400 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2 transition"
+              className="w-full py-3.5 bg-slate-50 hover:bg-slate-100 ring-1 ring-slate-900/5 rounded-full text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center justify-center gap-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xs active:scale-98"
             >
-              <UserPlus className="w-4 h-4" />
-              <span>Add Authorized Circle Member</span>
+              <UserPlus className="w-4 h-4 text-teal-600" />
+              <span>+ Add Authorized Circle Member</span>
             </button>
           )}
         </motion.div>

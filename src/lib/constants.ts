@@ -56,6 +56,54 @@ export const DEFAULT_CARE_CIRCLE: CareCircleMember[] = [
   },
 ];
 
+export const DEFAULT_KAVITA_PROFILE: ElderProfile = {
+  id: "elder_kavita_02",
+  name: "Kavita Ramanathan",
+  age: 76,
+  bloodGroup: "B+",
+  allergies: ["Sulfa drugs", "Aspirin"],
+  primaryDoctor: "Dr. Meenakshi Sundaram (Geriatric & Rheumatology)",
+  conditions: ["Osteoarthritis", "Type 2 Diabetes", "Mild Hypertension"],
+  residence: "Villa 12, Sobha Malachite, Bengaluru",
+  emergencyPhone: "+91 98450 99999",
+};
+
+export const DEFAULT_KAVITA_CARE_CIRCLE: CareCircleMember[] = [
+  {
+    id: "member_kavita_elder",
+    name: "Kavita Ramanathan",
+    role: "ELDER",
+    relation: "Self (Elder)",
+    email: "kavita.ramanathan.care@gmail.com",
+    passcode: "1111",
+    permissions: ["LOG_DOSE", "VIEW_SCHEDULE", "REQUEST_CALL"],
+    phone: "+91 98450 99999",
+    avatarBg: "bg-teal-700",
+  },
+  {
+    id: "member_kavita_family",
+    name: "Suresh Ramanathan",
+    role: "FAMILY_ADMIN",
+    relation: "Son (Primary Admin)",
+    email: "suresh.ramanathan@gmail.com",
+    passcode: "2222",
+    permissions: ["ALL"],
+    phone: "+91 98451 22222",
+    avatarBg: "bg-indigo-700",
+  },
+  {
+    id: "member_kavita_caretaker",
+    name: "Nurse Deepa Nair",
+    role: "CARETAKER",
+    relation: "Visiting Home Nurse",
+    email: "deepa.nair.care@gmail.com",
+    passcode: "3333",
+    permissions: ["LOG_DOSE", "UPDATE_INVENTORY", "DOCTOR_PREP"],
+    phone: "+91 98452 33333",
+    avatarBg: "bg-emerald-700",
+  },
+];
+
 export const DEFAULT_MEDICATIONS: Medication[] = [
   {
     id: "med_thyronorm",
@@ -359,11 +407,8 @@ export const KAVITA_SAMPLE_DOSE_LOGS: DoseLog[] = [
     medicationName: "Telmisartan (Telma 40)",
     date: getTodayDateString(),
     scheduledTime: "08:30",
-    status: "TAKEN",
-    takenAt: new Date(Date.now() - 2.5 * 3600 * 1000).toISOString(),
-    elderNote: "Taken post breakfast with tea.",
-    loggedByRole: "ELDER",
-    loggedByName: "Kavita Ramanathan",
+    status: "UPCOMING",
+    loggedByRole: "SYSTEM",
   },
   {
     id: "dose_log_kavita_03",

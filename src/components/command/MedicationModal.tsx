@@ -65,7 +65,7 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+        <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5">
           Medication Brand / Generic Name *
         </label>
         <input
@@ -74,13 +74,13 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
           placeholder="e.g., Amlodipine Besylate"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none"
+          className="w-full px-5 py-3 bg-slate-50/70 ring-1 ring-slate-900/10 rounded-full text-sm font-medium focus:ring-2 focus:ring-slate-900 focus:outline-none transition"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3.5">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+          <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5">
             Dosage *
           </label>
           <input
@@ -89,18 +89,18 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
             placeholder="e.g., 5 mg or 50 mcg"
             value={dosage}
             onChange={(e) => setDosage(e.target.value)}
-            className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none"
+            className="w-full px-5 py-3 bg-slate-50/70 ring-1 ring-slate-900/10 rounded-full text-sm font-medium focus:ring-2 focus:ring-slate-900 focus:outline-none transition"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+          <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5">
             Dosage Form
           </label>
           <select
             value={form}
             onChange={(e) => setForm(e.target.value as MedicationForm)}
-            className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none bg-white"
+            className="w-full px-5 py-3 bg-slate-50/70 ring-1 ring-slate-900/10 rounded-full text-sm font-medium focus:ring-2 focus:ring-slate-900 focus:outline-none transition"
           >
             {FORM_OPTIONS.map((f) => (
               <option key={f} value={f}>
@@ -113,13 +113,13 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
 
       <div className="grid grid-cols-2 gap-3.5">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+          <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5">
             Meal Instruction
           </label>
           <select
             value={instructions}
             onChange={(e) => setInstructions(e.target.value as MealInstruction)}
-            className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none bg-white"
+            className="w-full px-5 py-3 bg-slate-50/70 ring-1 ring-slate-900/10 rounded-full text-sm font-medium focus:ring-2 focus:ring-slate-900 focus:outline-none transition"
           >
             {INSTRUCTION_OPTIONS.map((inst) => (
               <option key={inst} value={inst}>
@@ -130,7 +130,7 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+          <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5">
             Daily Intake Time
           </label>
           <input
@@ -138,14 +138,14 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
             required
             value={time}
             onChange={(e) => setTime(e.target.value)}
-            className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none"
+            className="w-full px-5 py-3 bg-slate-50/70 ring-1 ring-slate-900/10 rounded-full text-sm font-medium focus:ring-2 focus:ring-slate-900 focus:outline-none transition font-mono"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3.5">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+          <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5">
             Stock Units Remaining
           </label>
           <input
@@ -153,12 +153,12 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
             min="0"
             value={stock}
             onChange={(e) => setStock(Number(e.target.value))}
-            className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none"
+            className="w-full px-5 py-3 bg-slate-50/70 ring-1 ring-slate-900/10 rounded-full text-sm font-medium focus:ring-2 focus:ring-slate-900 focus:outline-none transition font-mono"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+          <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5">
             Refill Alert Threshold
           </label>
           <input
@@ -166,13 +166,13 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
             min="1"
             value={refillThreshold}
             onChange={(e) => setRefillThreshold(Number(e.target.value))}
-            className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none"
+            className="w-full px-5 py-3 bg-slate-50/70 ring-1 ring-slate-900/10 rounded-full text-sm font-medium focus:ring-2 focus:ring-slate-900 focus:outline-none transition font-mono"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+        <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5">
           Clinical Purpose / Condition
         </label>
         <input
@@ -180,12 +180,12 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
           placeholder="e.g., Blood pressure control"
           value={purpose}
           onChange={(e) => setPurpose(e.target.value)}
-          className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none"
+          className="w-full px-5 py-3 bg-slate-50/70 ring-1 ring-slate-900/10 rounded-full text-sm font-medium focus:ring-2 focus:ring-slate-900 focus:outline-none transition"
         />
       </div>
 
       <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5 flex items-center gap-1.5">
+        <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5 flex items-center gap-1.5">
           <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
           Timing Guard & Spacing Precaution Note
         </label>
@@ -194,7 +194,7 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
           placeholder="e.g., Space 2 hours apart from Calcium or antacids"
           value={conflictNote}
           onChange={(e) => setConflictNote(e.target.value)}
-          className="w-full px-4 py-3 border border-slate-200 rounded-full text-sm focus:border-slate-900 focus:outline-none"
+          className="w-full px-5 py-3 bg-slate-50/70 ring-1 ring-slate-900/10 rounded-full text-sm font-medium focus:ring-2 focus:ring-slate-900 focus:outline-none transition"
         />
       </div>
 
@@ -202,13 +202,13 @@ const MedicationFormInner: React.FC<FormInnerProps> = ({ medicationToEdit, onClo
         <button
           type="button"
           onClick={onClose}
-          className="px-5 py-3 rounded-full border border-slate-200 text-slate-700 font-semibold text-xs hover:bg-slate-50 transition"
+          className="px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition active:scale-98"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-6 py-3 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition shadow-xs"
+          className="px-7 py-3 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/20 active:scale-98"
         >
           {medicationToEdit ? "Update Medication" : "Save Prescription"}
         </button>
@@ -227,12 +227,12 @@ export const MedicationModal: React.FC<MedicationModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-xs">
         <motion.div
           initial={{ opacity: 0, scale: 0.96, y: 8 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 8 }}
-          className="bg-white rounded-3xl border border-slate-100 shadow-2xl max-w-lg w-full p-8 sm:p-10 relative max-h-[90vh] overflow-y-auto"
+          className="bg-white rounded-3xl shadow-[0_25px_60px_rgb(0,0,0,0.14)] ring-1 ring-slate-900/5 max-w-lg w-full p-8 sm:p-10 relative max-h-[90vh] overflow-y-auto"
         >
           <button
             onClick={onClose}

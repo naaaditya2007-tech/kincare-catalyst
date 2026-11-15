@@ -25,7 +25,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({
           initial={{ opacity: 0, scale: 0.96, y: 8 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 8 }}
-          className="bg-white rounded-3xl border border-slate-100 shadow-2xl max-w-2xl w-full p-8 sm:p-10 relative max-h-[90vh] flex flex-col"
+          className="bg-white rounded-3xl ring-1 ring-slate-900/5 shadow-[0_12px_40px_rgb(0,0,0,0.08)] max-w-2xl w-full p-8 sm:p-10 relative max-h-[90vh] flex flex-col"
         >
           {/* Close */}
           <button
